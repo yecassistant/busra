@@ -255,11 +255,11 @@
     if (!KINDS[state.t] || state.t === "surpriz") state.t = "kahve";
     var T = state.t;
     var heads = {
-      kahve:   ["Hangi <em>kahve</em> olsun?", "Önce kahveni seç, sonra yanına tatlı; ikisi de senin."],
-      yemek:   ["Ne <em>yiyelim</em>?", "Canın ne çekiyorsa, oraya gideriz."],
-      sinema:  ["Ne <em>izleyelim</em>?", "Mısır büyük boy, paylaşırız."],
-      tiyatro: ["Hangi <em>oyun</em>?", "Tür senden, perde ikimizden."],
-      gezme:   ["Nereyi <em>gezelim</em>?", "Açık hava, uzun yürüyüş, bol sohbet."]
+      kahve:   ["Hangi <em>kahve</em> olsun?", "Önce kahve, sonra yanına tatlı."],
+      yemek:   ["Ne <em>yiyelim</em>?", "Canın ne çekiyorsa."],
+      sinema:  ["Ne <em>izleyelim</em>?", "Türünü seç, filmi sonra beraber seçeriz."],
+      tiyatro: ["Hangi <em>oyun</em>?", "Türünü seç, oyuna sonra bakarız."],
+      gezme:   ["Nereyi <em>gezelim</em>?", "Nereye istersen."]
     };
     $("title").innerHTML = heads[T][0]; $("sub").textContent = heads[T][1];
 
@@ -278,7 +278,7 @@
               var m = picked.k + (picked.d === "Tatlı istemem" ? "" : " + " + picked.d);
               setTimeout(function () { go("gun.html", { m: m }); }, 400);
             } else {
-              $("secimHint").textContent = picked.k ? "Bir de yanına tatlı seç 🍰" : "Bir de kahveni seç ☕";
+              $("secimHint").textContent = picked.k ? "Şimdi yanına tatlı seç" : "Bir de kahveni seç";
               /* seçilmeyen grubu görünür yap */
               var other = $("grp-" + (picked.k ? "d" : "k"));
               try { other.scrollIntoView({ behavior: "smooth", block: "start" }); } catch (e) { other.scrollIntoView(); }
@@ -288,44 +288,44 @@
         });
       }
       grp("Kahven", [
-        { ico: "☕", bg: "#fff0c9", label: "Americano", sub: "Tahmin ettim 😅" },
-        { ico: "🫖", bg: "#efe7fb", label: "Türk kahvesi", sub: "Yanında lokumla" },
-        { ico: "🥛", bg: "#fdd9e6", label: "Latte / Cappuccino", sub: "Bol köpüklü" },
-        { ico: "🎁", bg: "#e3f1ee", label: "Sen seç", sub: "Sürprize açığım" }
+        { ico: "☕", bg: "#fff0c9", label: "Americano", sub: "Sade ve sert" },
+        { ico: "🫖", bg: "#efe7fb", label: "Türk kahvesi", sub: "Köpüklü, yanında lokum" },
+        { ico: "🥛", bg: "#fdd9e6", label: "Latte / Cappuccino", sub: "Sütlü, yumuşak" },
+        { ico: "🎁", bg: "#e3f1ee", label: "Sen seç", sub: "Ne istersen" }
       ], "k");
       grp("Yanına tatlı", [
-        { ico: "🫐", bg: "#efe7fb", label: "Yaban mersinli muffin", sub: "Senin için not aldım 😅" },
-        { ico: "🍓", bg: "#fdd9e6", label: "Bol çilekli çikolatalı sufle", sub: "Sıcak, akışkan, bol çilek" },
+        { ico: "🫐", bg: "#efe7fb", label: "Yaban mersinli muffin", sub: "Taze, bol yaban mersinli" },
+        { ico: "🍓", bg: "#fdd9e6", label: "Bol çilekli çikolatalı sufle", sub: "Sıcak, akışkan çikolata" },
         { ico: "🙅‍♀️", bg: "#fff0c9", label: "Tatlı istemem", sub: "Sadece kahve" }
       ], "d");
     } else {
       var lists = {
         yemek: [
           { ico: "🍝", bg: "#fdd9e6", label: "İtalyan", sub: "Makarna ve pizza" },
-          { ico: "🍣", bg: "#efe7fb", label: "Sushi", sub: "Çubuk kullanmayı öğrenirim" },
-          { ico: "🥟", bg: "#fff0c9", label: "Ev usulü mantı", sub: "Sıcacık, klasik" },
-          { ico: "🍔", bg: "#fdd9e6", label: "Burger", sub: "Patatesi paylaşırız" },
-          { ico: "🥪", bg: "#e3f1ee", label: "Atom tost", sub: "Şaka şaka… ama seçersen giderim 😅" },
-          { ico: "🎁", bg: "#efe7fb", label: "Sen seç", sub: "Sürprize açığım" }
+          { ico: "🍣", bg: "#efe7fb", label: "Sushi", sub: "Taze, hafif" },
+          { ico: "🥟", bg: "#fff0c9", label: "Ev usulü mantı", sub: "Klasik, doyurucu" },
+          { ico: "🍔", bg: "#fdd9e6", label: "Burger", sub: "Patates kızartmasıyla" },
+          { ico: "🥪", bg: "#e3f1ee", label: "Atom tost", sub: "Şaka… ya da değil 😅" },
+          { ico: "🎁", bg: "#efe7fb", label: "Sen seç", sub: "Ne istersen" }
         ],
         sinema: [
-          { ico: "💞", bg: "#fdd9e6", label: "Romantik komedi", sub: "Gülüp bir de iç çekeriz" },
-          { ico: "💥", bg: "#fff0c9", label: "Aksiyon / macera", sub: "Mısır biter, film bitmez" },
-          { ico: "👻", bg: "#efe7fb", label: "Korku", sub: "Cesaretin varsa 😅" },
-          { ico: "🎨", bg: "#e3f1ee", label: "Animasyon", sub: "Herkes için" },
+          { ico: "💞", bg: "#fdd9e6", label: "Romantik komedi", sub: "Hafif, keyifli" },
+          { ico: "💥", bg: "#fff0c9", label: "Aksiyon / macera", sub: "Tempolu" },
+          { ico: "👻", bg: "#efe7fb", label: "Korku", sub: "Gerilim de olur" },
+          { ico: "🎨", bg: "#e3f1ee", label: "Animasyon", sub: "Renkli, eğlenceli" },
           { ico: "🎁", bg: "#fdd9e6", label: "Vizyonda ne varsa", sub: "Sen seç" }
         ],
         tiyatro: [
-          { ico: "😂", bg: "#fff0c9", label: "Komedi", sub: "Bol kahkaha" },
-          { ico: "🎭", bg: "#efe7fb", label: "Dram", sub: "Mendil getiririm" },
-          { ico: "🎶", bg: "#fdd9e6", label: "Müzikal", sub: "Şarkılı, danslı" },
+          { ico: "😂", bg: "#fff0c9", label: "Komedi", sub: "Güldüren" },
+          { ico: "🎭", bg: "#efe7fb", label: "Dram", sub: "Düşündüren" },
+          { ico: "🎶", bg: "#fdd9e6", label: "Müzikal", sub: "Müzikli, hareketli" },
           { ico: "🎁", bg: "#e3f1ee", label: "Hangisi olursa", sub: "Sen seç" }
         ],
         gezme: [
-          { ico: "🌊", bg: "#e3f1ee", label: "Sahilde yürüyüş", sub: "Elimizde kahve, deniz kenarı" },
-          { ico: "⛴️", bg: "#efe7fb", label: "Adalar", sub: "Vapur, bisiklet, gün batımı" },
-          { ico: "🌳", bg: "#fff0c9", label: "Çamlıca", sub: "Manzara, çay, uzun sohbet" },
-          { ico: "🏘️", bg: "#fdd9e6", label: "Moda – Kadıköy", sub: "Sokaklar, sahil, dondurma" },
+          { ico: "🌊", bg: "#e3f1ee", label: "Sahilde yürüyüş", sub: "Deniz kenarı, uzun yürüyüş" },
+          { ico: "⛴️", bg: "#efe7fb", label: "Adalar", sub: "Vapur ve bisiklet" },
+          { ico: "🌳", bg: "#fff0c9", label: "Çamlıca", sub: "Manzara ve çay" },
+          { ico: "🏘️", bg: "#fdd9e6", label: "Moda – Kadıköy", sub: "Sokaklar ve sahil" },
           { ico: "🎁", bg: "#e3f1ee", label: "Sen seç", sub: "Nereye istersen" }
         ]
       };
@@ -375,14 +375,14 @@
   if (page === "saat") {
     var saatler = {
       kahve: [
-        { ico: "🌸", bg: "#fdd9e6", label: "11:00", sub: "Güne kahveyle başlarız" },
-        { ico: "☀️", bg: "#fff0c9", label: "15:00", sub: "Öğleden sonra molası" },
+        { ico: "🌸", bg: "#fdd9e6", label: "11:00", sub: "Sabah" },
+        { ico: "☀️", bg: "#fff0c9", label: "15:00", sub: "Öğleden sonra" },
         { ico: "🏙️", bg: "#efe7fb", label: "18:00", sub: "İş çıkışı" }
       ],
       yemek: [
         { ico: "🌤️", bg: "#fff0c9", label: "13:00", sub: "Öğle arası" },
         { ico: "🏙️", bg: "#fdd9e6", label: "19:00", sub: "İş çıkışı" },
-        { ico: "🌙", bg: "#efe7fb", label: "20:30", sub: "Akşam yemeği, acelesiz" }
+        { ico: "🌙", bg: "#efe7fb", label: "20:30", sub: "Akşam" }
       ],
       sinema: [
         { ico: "🍿", bg: "#fff0c9", label: "16:00", sub: "Öğleden sonra seansı" },
@@ -395,7 +395,7 @@
         { ico: "🌙", bg: "#fdd9e6", label: "20:30", sub: "Gece oyunu" }
       ],
       gezme: [
-        { ico: "🌤️", bg: "#e3f1ee", label: "11:00", sub: "Sabah serinliği" },
+        { ico: "🌤️", bg: "#e3f1ee", label: "11:00", sub: "Sabah" },
         { ico: "☀️", bg: "#fff0c9", label: "14:00", sub: "Öğleden sonra" },
         { ico: "🌅", bg: "#fdd9e6", label: "17:30", sub: "Gün batımı" }
       ],
