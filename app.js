@@ -160,7 +160,7 @@
     var box = $(boxId);
     items.forEach(function (it) {
       var b = document.createElement("button"); b.type = "button"; b.className = "opt";
-      b.innerHTML = '<span class="ico" style="background:' + it.bg + '">' + it.ico + "</span><span><b>" + it.label + "</b><small>" + it.sub + "</small></span>";
+      b.innerHTML = '<span class="ico" style="background:' + it.bg + '">' + it.ico + "</span><span><b>" + it.label + (it.tag ? '<i class="tag">' + it.tag + "</i>" : "") + "</b><small>" + it.sub + "</small></span>";
       if (state[key] === it.label) b.classList.add("on");
       b.onclick = function () {
         box.querySelectorAll(".opt").forEach(function (o) { o.classList.remove("on"); });
@@ -270,7 +270,7 @@
         var h = document.createElement("h4"); h.className = "grp"; h.textContent = title; h.id = "grp-" + key; $("opts").appendChild(h);
         items.forEach(function (it) {
           var b = document.createElement("button"); b.type = "button"; b.className = "opt"; b.dataset.g = key;
-          b.innerHTML = '<span class="ico" style="background:' + it.bg + '">' + it.ico + "</span><span><b>" + it.label + "</b><small>" + it.sub + "</small></span>";
+          b.innerHTML = '<span class="ico" style="background:' + it.bg + '">' + it.ico + "</span><span><b>" + it.label + (it.tag ? '<i class="tag">' + it.tag + "</i>" : "") + "</b><small>" + it.sub + "</small></span>";
           b.onclick = function () {
             $("opts").querySelectorAll('.opt[data-g="' + key + '"]').forEach(function (o) { o.classList.remove("on"); });
             b.classList.add("on"); picked[key] = it.label; burst(18);
@@ -288,14 +288,14 @@
         });
       }
       grp("Kahven", [
-        { ico: "☕", bg: "#fff0c9", label: "Americano", sub: "Sade ve sert" },
+        { ico: "☕", bg: "#fff0c9", label: "Americano", sub: "Sade ve sert", tag: "not almıştım" },
         { ico: "🫖", bg: "#efe7fb", label: "Türk kahvesi", sub: "Köpüklü, yanında lokum" },
         { ico: "🥛", bg: "#fdd9e6", label: "Latte / Cappuccino", sub: "Sütlü, yumuşak" },
         { ico: "🎁", bg: "#e3f1ee", label: "Sen seç", sub: "Ne istersen" }
       ], "k");
       grp("Yanına tatlı", [
-        { ico: "🫐", bg: "#efe7fb", label: "Yaban mersinli muffin", sub: "Taze, bol yaban mersinli" },
-        { ico: "🍓", bg: "#fdd9e6", label: "Bol çilekli çikolatalı sufle", sub: "Sıcak, akışkan çikolata" },
+        { ico: "🫐", bg: "#efe7fb", label: "Yaban mersinli muffin", sub: "Taze, bol yaban mersinli", tag: "not almıştım" },
+        { ico: "🍓", bg: "#fdd9e6", label: "Bol çilekli çikolatalı sufle", sub: "Sıcak, akışkan çikolata", tag: "not almıştım" },
         { ico: "🙅‍♀️", bg: "#fff0c9", label: "Tatlı istemem", sub: "Sadece kahve" }
       ], "d");
     } else {
@@ -305,7 +305,7 @@
           { ico: "🍣", bg: "#efe7fb", label: "Sushi", sub: "Taze, hafif" },
           { ico: "🥟", bg: "#fff0c9", label: "Ev usulü mantı", sub: "Klasik, doyurucu" },
           { ico: "🍔", bg: "#fdd9e6", label: "Burger", sub: "Patates kızartmasıyla" },
-          { ico: "🥪", bg: "#e3f1ee", label: "Atom tost", sub: "Şaka… ya da değil 😅" },
+          { ico: "🥪", bg: "#e3f1ee", label: "Atom tost", sub: "Şaka mıydı, hâlâ emin değilim 😅", tag: "not almıştım" },
           { ico: "🎁", bg: "#efe7fb", label: "Sen seç", sub: "Ne istersen" }
         ],
         sinema: [
@@ -326,6 +326,7 @@
           { ico: "⛴️", bg: "#efe7fb", label: "Adalar", sub: "Vapur ve bisiklet" },
           { ico: "🌳", bg: "#fff0c9", label: "Çamlıca", sub: "Manzara ve çay" },
           { ico: "🏘️", bg: "#fdd9e6", label: "Moda – Kadıköy", sub: "Sokaklar ve sahil" },
+          { ico: "🐈", bg: "#fff0c9", label: "Kedili sokaklar", sub: "Yol üstündekiler sevilmeden geçilmez", tag: "not almıştım" },
           { ico: "🎁", bg: "#e3f1ee", label: "Sen seç", sub: "Nereye istersen" }
         ]
       };
