@@ -214,6 +214,15 @@ body[data-page="bilet"] .frame{width:min(58%,200px)}
 .big:active{transform:scale(.97)}
 .big.coffee{background:linear-gradient(170deg,#fff6e3,var(--lily-l))}
 .big.food{background:linear-gradient(170deg,#fff0f5,var(--peony-l))}
+.big.cinema{background:linear-gradient(170deg,#f8f3ff,var(--lavender-l))}
+.big.theater{background:linear-gradient(170deg,#fff6ee,#fde2c8)}
+.big.walk{background:linear-gradient(170deg,#f3fbf5,#dff3ea)}
+.big.gift{background:linear-gradient(170deg,#fff8e6,#fdd9e6)}
+.duo.six .big{padding:12px 8px 14px}
+.duo.six .big svg{max-width:96px}
+.duo.six .big b{font-size:1.35rem}
+.duo.six .big span{font-size:.8rem}
+.grp{margin:6px 0 -2px;font-size:.78rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--soft);text-align:left}
 .big svg{width:100%;max-width:130px;height:auto}
 .big b{font-family:var(--display);font-size:1.6rem;font-weight:600;font-style:italic}
 .big span{font-size:.85rem;color:var(--soft);font-weight:600}

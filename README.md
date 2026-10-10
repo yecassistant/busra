@@ -5,8 +5,8 @@ Lavanta, şakayık ve lilyum temalı, sayfa sayfa ilerleyen flörtöz bir davet.
 ## Sayfalar (sırasıyla)
 1. `index.html` – Resmin hazır (resim soluk görünür)
 2. `davet.html` – "Bu resim elden teslim edilir… Benimle buluşur musun?" (Hayır butonu kaçar, tıklanamaz)
-3. `tercih.html` – Kahve mi, yemek mi?
-4. `secim.html` – Kahve / yemek çeşidi
+3. `tercih.html` – Ne yapalım? (Kahve, Yemek, Sinema, Tiyatro, Gezelim, Sürpriz)
+4. `secim.html` – Seçilen plana göre çeşit (kahvede kahve + tatlı)
 5. `gun.html` – Gün seçimi (önümüzdeki 14 gün + takvimden "Başka bir gün")
 6. `saat.html` – Saat seçimi (hazır saatler + "Başka bir saat")
 7. `not.html` – Hazır kısa notlar + isteğe bağlı yazı
@@ -22,7 +22,7 @@ Ortak dosyalar: `style.css` (tasarım), `app.js` (çiçekler, animasyonlar, seç
 
 ## Değiştirmek istersen
 - **Resim:** `resim.jpg`'yi aynı isimle kendi çizimin ile değiştir (dikey, 3:4 ideal)
-- **Kahve / yemek çeşitleri:** `app.js` → `/* 4 · Menü */` bölümü
+- **Seçenekler (kahve, tatlı, yemek, sinema, tiyatro, gezme):** `app.js` → `/* 4 · Menü */` bölümü
 - **Saatler:** `app.js` → `/* 6 · Saat */`
 - **Hayır butonunun yazıları:** `app.js` → `texts` listesi
 - **Link önizleme görseli:** sayfaların `<head>` kısmındaki `og:image` adresi `https://yecassistant.github.io/busranur/onizleme.jpg`. Repo adı farklıysa bu adresi düzelt.

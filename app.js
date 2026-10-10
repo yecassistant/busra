@@ -229,32 +229,108 @@
     yes.onclick = function () { burst(120); setTimeout(function () { go("tercih.html"); }, 650); };
   }
 
-  /* 3 · Kahve mi yemek mi */
+  /* 3 · Ne yapalım */
+  var KINDS = {
+    kahve:   { ad: "Kahve",   emo: "☕", satir: "Menü" },
+    yemek:   { ad: "Yemek",   emo: "🍽️", satir: "Menü" },
+    sinema:  { ad: "Sinema",  emo: "🎬", satir: "Film" },
+    tiyatro: { ad: "Tiyatro", emo: "🎭", satir: "Oyun" },
+    gezme:   { ad: "Gezme",   emo: "🚶‍♀️", satir: "Rota" },
+    surpriz: { ad: "Sürpriz", emo: "🎁", satir: "Plan" }
+  };
   if (page === "tercih") {
     document.querySelectorAll("[data-t]").forEach(function (b) {
-      b.onclick = function () { burst(40); var t = b.dataset.t; setTimeout(function () { go("secim.html", { t: t, m: "", s: "" }); }, 350); };
+      b.onclick = function () {
+        burst(40); var t = b.dataset.t;
+        setTimeout(function () {
+          if (t === "surpriz") go("gun.html", { t: t, m: "Sen seç, sürprize açığım", s: "" });
+          else go("secim.html", { t: t, m: "", s: "" });
+        }, 350);
+      };
     });
   }
 
   /* 4 · Menü */
   if (page === "secim") {
-    if (!state.t) state.t = "kahve";
-    var isK = state.t !== "yemek";
-    $("title").innerHTML = isK ? "Hangi <em>kahve</em> olsun?" : "Ne <em>yiyelim</em>?";
-    $("sub").textContent = isK ? "Sen seç, ben uyarım." : "Canın ne çekiyorsa, oraya gideriz.";
-    choices("opts", isK ? [
-      { ico: "☕", bg: "#fff0c9", label: "Türk kahvesi", sub: "Yanında lokumla" },
-      { ico: "🥛", bg: "#efe7fb", label: "Latte / Cappuccino", sub: "Bol köpüklü" },
-      { ico: "🍰", bg: "#fdd9e6", label: "Kahve ve tatlı", sub: "Cheesecake'i paylaşırız" },
-      { ico: "🌊", bg: "#e3f1ee", label: "Sahilde kahve", sub: "Elimizde kahve, deniz kenarında yürüyüş" },
-      { ico: "🎁", bg: "#fff0c9", label: "Sen seç", sub: "Sürprize açığım" }
-    ] : [
-      { ico: "🍝", bg: "#fdd9e6", label: "İtalyan", sub: "Makarna ve pizza" },
-      { ico: "🍣", bg: "#efe7fb", label: "Sushi", sub: "Çubuk kullanmayı öğrenirim" },
-      { ico: "🥟", bg: "#fff0c9", label: "Ev usulü mantı", sub: "Sıcacık, klasik" },
-      { ico: "🍔", bg: "#fdd9e6", label: "Burger", sub: "Patatesi paylaşırız" },
-      { ico: "🎁", bg: "#efe7fb", label: "Sen seç", sub: "Sürprize açığım" }
-    ], "m", "gun.html");
+    if (!KINDS[state.t] || state.t === "surpriz") state.t = "kahve";
+    var T = state.t;
+    var heads = {
+      kahve:   ["Hangi <em>kahve</em> olsun?", "Önce kahveni seç, sonra yanına tatlı; ikisi de senin."],
+      yemek:   ["Ne <em>yiyelim</em>?", "Canın ne çekiyorsa, oraya gideriz."],
+      sinema:  ["Ne <em>izleyelim</em>?", "Mısır büyük boy, paylaşırız."],
+      tiyatro: ["Hangi <em>oyun</em>?", "Tür senden, perde ikimizden."],
+      gezme:   ["Nereyi <em>gezelim</em>?", "Açık hava, uzun yürüyüş, bol sohbet."]
+    };
+    $("title").innerHTML = heads[T][0]; $("sub").textContent = heads[T][1];
+
+    if (T === "kahve") {
+      /* iki grup: önce kahve, sonra tatlı; ikisi seçilince devam */
+      var picked = { k: "", d: "" };
+      function grp(title, items, key) {
+        var h = document.createElement("h4"); h.className = "grp"; h.textContent = title; h.id = "grp-" + key; $("opts").appendChild(h);
+        items.forEach(function (it) {
+          var b = document.createElement("button"); b.type = "button"; b.className = "opt"; b.dataset.g = key;
+          b.innerHTML = '<span class="ico" style="background:' + it.bg + '">' + it.ico + "</span><span><b>" + it.label + "</b><small>" + it.sub + "</small></span>";
+          b.onclick = function () {
+            $("opts").querySelectorAll('.opt[data-g="' + key + '"]').forEach(function (o) { o.classList.remove("on"); });
+            b.classList.add("on"); picked[key] = it.label; burst(18);
+            if (picked.k && picked.d) {
+              var m = picked.k + (picked.d === "Tatlı istemem" ? "" : " + " + picked.d);
+              setTimeout(function () { go("gun.html", { m: m }); }, 400);
+            } else {
+              $("secimHint").textContent = picked.k ? "Bir de yanına tatlı seç 🍰" : "Bir de kahveni seç ☕";
+              /* seçilmeyen grubu görünür yap */
+              var other = $("grp-" + (picked.k ? "d" : "k"));
+              try { other.scrollIntoView({ behavior: "smooth", block: "start" }); } catch (e) { other.scrollIntoView(); }
+            }
+          };
+          $("opts").appendChild(b);
+        });
+      }
+      grp("Kahven", [
+        { ico: "☕", bg: "#fff0c9", label: "Americano", sub: "Tahmin ettim 😅" },
+        { ico: "🫖", bg: "#efe7fb", label: "Türk kahvesi", sub: "Yanında lokumla" },
+        { ico: "🥛", bg: "#fdd9e6", label: "Latte / Cappuccino", sub: "Bol köpüklü" },
+        { ico: "🎁", bg: "#e3f1ee", label: "Sen seç", sub: "Sürprize açığım" }
+      ], "k");
+      grp("Yanına tatlı", [
+        { ico: "🫐", bg: "#efe7fb", label: "Yaban mersinli muffin", sub: "Senin için not aldım 😅" },
+        { ico: "🍓", bg: "#fdd9e6", label: "Bol çilekli çikolatalı sufle", sub: "Sıcak, akışkan, bol çilek" },
+        { ico: "🙅‍♀️", bg: "#fff0c9", label: "Tatlı istemem", sub: "Sadece kahve" }
+      ], "d");
+    } else {
+      var lists = {
+        yemek: [
+          { ico: "🍝", bg: "#fdd9e6", label: "İtalyan", sub: "Makarna ve pizza" },
+          { ico: "🍣", bg: "#efe7fb", label: "Sushi", sub: "Çubuk kullanmayı öğrenirim" },
+          { ico: "🥟", bg: "#fff0c9", label: "Ev usulü mantı", sub: "Sıcacık, klasik" },
+          { ico: "🍔", bg: "#fdd9e6", label: "Burger", sub: "Patatesi paylaşırız" },
+          { ico: "🥪", bg: "#e3f1ee", label: "Atom tost", sub: "Şaka şaka… ama seçersen giderim 😅" },
+          { ico: "🎁", bg: "#efe7fb", label: "Sen seç", sub: "Sürprize açığım" }
+        ],
+        sinema: [
+          { ico: "💞", bg: "#fdd9e6", label: "Romantik komedi", sub: "Gülüp bir de iç çekeriz" },
+          { ico: "💥", bg: "#fff0c9", label: "Aksiyon / macera", sub: "Mısır biter, film bitmez" },
+          { ico: "👻", bg: "#efe7fb", label: "Korku", sub: "Cesaretin varsa 😅" },
+          { ico: "🎨", bg: "#e3f1ee", label: "Animasyon", sub: "Herkes için" },
+          { ico: "🎁", bg: "#fdd9e6", label: "Vizyonda ne varsa", sub: "Sen seç" }
+        ],
+        tiyatro: [
+          { ico: "😂", bg: "#fff0c9", label: "Komedi", sub: "Bol kahkaha" },
+          { ico: "🎭", bg: "#efe7fb", label: "Dram", sub: "Mendil getiririm" },
+          { ico: "🎶", bg: "#fdd9e6", label: "Müzikal", sub: "Şarkılı, danslı" },
+          { ico: "🎁", bg: "#e3f1ee", label: "Hangisi olursa", sub: "Sen seç" }
+        ],
+        gezme: [
+          { ico: "🌊", bg: "#e3f1ee", label: "Sahilde yürüyüş", sub: "Elimizde kahve, deniz kenarı" },
+          { ico: "⛴️", bg: "#efe7fb", label: "Adalar", sub: "Vapur, bisiklet, gün batımı" },
+          { ico: "🌳", bg: "#fff0c9", label: "Çamlıca", sub: "Manzara, çay, uzun sohbet" },
+          { ico: "🏘️", bg: "#fdd9e6", label: "Moda – Kadıköy", sub: "Sokaklar, sahil, dondurma" },
+          { ico: "🎁", bg: "#e3f1ee", label: "Sen seç", sub: "Nereye istersen" }
+        ]
+      };
+      choices("opts", lists[T], "m", "gun.html");
+    }
   }
 
   /* 5 · Gün */
@@ -297,15 +373,39 @@
 
   /* 6 · Saat */
   if (page === "saat") {
-    choices("opts", state.t === "yemek" ? [
-      { ico: "🌤️", bg: "#fff0c9", label: "13:00", sub: "Öğle arası" },
-      { ico: "🏙️", bg: "#fdd9e6", label: "19:00", sub: "İş çıkışı" },
-      { ico: "🌙", bg: "#efe7fb", label: "20:30", sub: "Akşam yemeği, acelesiz" }
-    ] : [
-      { ico: "🌸", bg: "#fdd9e6", label: "11:00", sub: "Güne kahveyle başlarız" },
-      { ico: "☀️", bg: "#fff0c9", label: "15:00", sub: "Öğleden sonra molası" },
-      { ico: "🏙️", bg: "#efe7fb", label: "18:00", sub: "İş çıkışı" }
-    ], "s", "not.html");
+    var saatler = {
+      kahve: [
+        { ico: "🌸", bg: "#fdd9e6", label: "11:00", sub: "Güne kahveyle başlarız" },
+        { ico: "☀️", bg: "#fff0c9", label: "15:00", sub: "Öğleden sonra molası" },
+        { ico: "🏙️", bg: "#efe7fb", label: "18:00", sub: "İş çıkışı" }
+      ],
+      yemek: [
+        { ico: "🌤️", bg: "#fff0c9", label: "13:00", sub: "Öğle arası" },
+        { ico: "🏙️", bg: "#fdd9e6", label: "19:00", sub: "İş çıkışı" },
+        { ico: "🌙", bg: "#efe7fb", label: "20:30", sub: "Akşam yemeği, acelesiz" }
+      ],
+      sinema: [
+        { ico: "🍿", bg: "#fff0c9", label: "16:00", sub: "Öğleden sonra seansı" },
+        { ico: "🎬", bg: "#fdd9e6", label: "19:00", sub: "Akşam seansı" },
+        { ico: "🌙", bg: "#efe7fb", label: "21:30", sub: "Geç seans" }
+      ],
+      tiyatro: [
+        { ico: "☀️", bg: "#fff0c9", label: "15:00", sub: "Matine" },
+        { ico: "🎭", bg: "#efe7fb", label: "20:00", sub: "Akşam oyunu" },
+        { ico: "🌙", bg: "#fdd9e6", label: "20:30", sub: "Gece oyunu" }
+      ],
+      gezme: [
+        { ico: "🌤️", bg: "#e3f1ee", label: "11:00", sub: "Sabah serinliği" },
+        { ico: "☀️", bg: "#fff0c9", label: "14:00", sub: "Öğleden sonra" },
+        { ico: "🌅", bg: "#fdd9e6", label: "17:30", sub: "Gün batımı" }
+      ],
+      surpriz: [
+        { ico: "🌤️", bg: "#fff0c9", label: "12:00", sub: "Öğlen" },
+        { ico: "☀️", bg: "#efe7fb", label: "15:00", sub: "Öğleden sonra" },
+        { ico: "🌙", bg: "#fdd9e6", label: "19:00", sub: "Akşam" }
+      ]
+    };
+    choices("opts", saatler[state.t] || saatler.kahve, "s", "not.html");
     /* kendi saatini seçsin */
     var box = $("customBox"), inp = $("customTime");
     if (state.s && /^\d\d:\d\d$/.test(state.s)) inp.value = state.s;
@@ -350,12 +450,13 @@
   /* 8 · Bilet */
   if (page === "bilet") {
     if (!state.t || !state.m || !state.g || !state.s) { location.replace("index.html"); return; }
-    var kind = state.t === "yemek" ? "Yemek" : "Kahve";
-    $("tKind").textContent = kind; $("tMenu").textContent = state.m;
+    var K = KINDS[state.t] || KINDS.kahve, kind = K.ad;
+    var menuText = state.m === "Atom tost" ? "Atom tost (ciddi miyiz? 😅)" : state.m;
+    $("tKind").textContent = kind; $("tMenuLabel").textContent = K.satir; $("tMenu").textContent = menuText;
     $("tDay").textContent = state.g; $("tTime").textContent = state.s;
     if (state.n) $("tNote").textContent = state.n; else $("tNoteRow").hidden = true;
     var msg = "Peki madem 😅 Davetini kabul ediyorum.\n\n" +
-      (kind === "Kahve" ? "☕ " : "🍽️ ") + kind + ": " + state.m + "\n" +
+      K.emo + " " + kind + ": " + menuText + "\n" +
       "📅 " + state.g + "\n" +
       "🕰️ " + state.s + "\n" +
       (state.n ? "📝 " + state.n + "\n" : "") +
