@@ -36,7 +36,7 @@
     <h3 id="codeTitle">Çiçekler ne alaka? 🙄</h3>
     <p id="codeText">Lavanta, şakayık, lilyum: en sevdiklerin, resmi şimdilik koruyor. Çekilmeleri için küçük bir kod lazım 😅</p>
     <ol class="steps" id="steps">
-      <li><span>1</span><div>Aşağıdaki bileti <b>WhatsApp'tan bana gönder</b> <button type="button" class="mini" id="toTicket">Bilete git ↓</button></div></li>
+      <li><span>1</span><div>Aşağıdaki bileti <b>WhatsApp'tan ya da Instagram'dan bana gönder</b> <button type="button" class="mini" id="toTicket">Bilete git ↓</button></div></li>
       <li><span>2</span><div>Ben sana <b>kodu</b> yazayım</div></li>
       <li><span>3</span><div>Kodu buraya gir, çiçekler çekilsin</div></li>
     </ol>
@@ -60,23 +60,11 @@
   <p class="sign">Görüşmek üzere 🌸</p>
   <div class="btns" id="bilet-btns">
     <a class="btn green" id="wa" target="_blank" rel="noopener">WhatsApp'tan gönder</a>
-    <button class="btn ghost" id="copy">Metni kopyala</button>
+    <button class="btn ghost" id="copy">Instagram için kopyala</button>
+    <a class="btn ghost" id="ig" target="_blank" rel="noopener" hidden>Instagram'da bana yaz</a>
   </div>
-  <p class="small" id="copyMsg">Butona basınca bilet WhatsApp'tan bana gelir.</p>
-  <p class="small" id="inapp" hidden>WhatsApp açılmazsa sağ üstteki ⋯ menüsünden "Safari'de aç"a dokun ya da metni kopyalayıp bana gönder.</p>
-  <div class="notebook">
-    <h3>Not defterimden 📝</h3>
-    <ul>
-      <li><span>Çiçek</span><div>lavanta, şakayık, lilyum</div></li>
-      <li><span>Renk</span><div>beyaz ve soft morlar; yeşil, mavi de olur</div></li>
-      <li><span>Kahve</span><div>americano</div></li>
-      <li><span>Tatlı</span><div>yaban mersinli muffin, bol çilekli çikolatalı sufle</div></li>
-      <li><span>Plan</span><div>sinema, tiyatro, dışarıda vakit geçirmek</div></li>
-      <li><span>Kediler</span><div>yol üstündekiler sevilmeden geçilmez</div></li>
-      <li><span>Atom tost</span><div>şaka mıydı, hâlâ emin değilim 😅</div></li>
-    </ul>
-    <p class="small">Hepsini sorarak öğrendim; bir kısmını sen fark etmeden 😅</p>
-  </div>
+  <p class="small" id="copyMsg">WhatsApp'ı seçersen sohbet numaramla hazır açılır; Instagram'ı seçersen kopyala, DM'e yapıştır.</p>
+  <pre class="msgPreview" id="msgPreview" hidden></pre>
   <div class="btns"><button class="btn link" id="again">Planı değiştir</button></div>
 </main>
 <button type="button" class="ticketPill" id="ticketPill">🎟️ Biletin aşağıda ↓</button>

@@ -305,7 +305,7 @@
           { ico: "🍣", bg: "#efe7fb", label: "Sushi", sub: "Taze, hafif" },
           { ico: "🥟", bg: "#fff0c9", label: "Ev usulü mantı", sub: "Klasik, doyurucu" },
           { ico: "🍔", bg: "#fdd9e6", label: "Burger", sub: "Patates kızartmasıyla" },
-          { ico: "🥪", bg: "#e3f1ee", label: "Atom tost", sub: "Şaka mıydı, hâlâ emin değilim 😅", tag: "not almıştım" },
+          { ico: "🥪", bg: "#e3f1ee", label: "Atom tost", sub: "Bol malzemeli", tag: "not almıştım" },
           { ico: "🎁", bg: "#efe7fb", label: "Sen seç", sub: "Ne istersen" }
         ],
         sinema: [
@@ -337,8 +337,12 @@
   /* 5 · Gün */
   if (page === "gun") {
     var box = $("days"), today = new Date();
-    for (var d = 1; d <= 14; d++) {
-      var dt = new Date(today); dt.setDate(today.getDate() + d);
+    /* Buluşma günleri en erken bu tarihten başlar (bugünden sonraki günse bugün+1) */
+    var START = new Date(2026, 9, 16);   // 16 Ekim 2026 Cuma
+    var first = new Date(today); first.setDate(today.getDate() + 1); first.setHours(0, 0, 0, 0);
+    if (START > first) first = START;
+    for (var d = 0; d < 14; d++) {
+      var dt = new Date(first); dt.setDate(first.getDate() + d);
       var label = dt.toLocaleDateString("tr-TR", { day: "numeric", month: "long", weekday: "long" });
       var b = document.createElement("button"); b.type = "button"; b.className = "day";
       if (dt.getDay() === 0 || dt.getDay() === 6) b.classList.add("weekend");
@@ -356,8 +360,8 @@
     var dbox = $("customBox"), dinp = $("customDate");
     var pad2 = function (x) { return (x < 10 ? "0" : "") + x; };
     var iso = function (dd) { return dd.getFullYear() + "-" + pad2(dd.getMonth() + 1) + "-" + pad2(dd.getDate()); };
-    var minD = new Date(today); minD.setDate(today.getDate() + 1);
-    var maxD = new Date(today); maxD.setDate(today.getDate() + 120);
+    var minD = new Date(first);
+    var maxD = new Date(first); maxD.setDate(first.getDate() + 120);
     dinp.min = iso(minD); dinp.max = iso(maxD);
     $("customToggle").onclick = function () {
       dbox.hidden = false; this.classList.add("on");
@@ -452,7 +456,7 @@
   if (page === "bilet") {
     if (!state.t || !state.m || !state.g || !state.s) { location.replace("index.html"); return; }
     var K = KINDS[state.t] || KINDS.kahve, kind = K.ad;
-    var menuText = state.m === "Atom tost" ? "Atom tost (ciddi miyiz? 😅)" : state.m;
+    var menuText = state.m;
     $("tKind").textContent = kind; $("tMenuLabel").textContent = K.satir; $("tMenu").textContent = menuText;
     $("tDay").textContent = state.g; $("tTime").textContent = state.s;
     if (state.n) $("tNote").textContent = state.n; else $("tNoteRow").hidden = true;
@@ -462,20 +466,35 @@
       "🕰️ " + state.s + "\n" +
       (state.n ? "📝 " + state.n + "\n" : "") +
       "\nResmimi de getirmeyi unutma 🎨";
-    /* Mesaj direkt bu numaraya gider */
+    /* Bilet iki yoldan gönderilebilir:
+       1) WhatsApp: düğme, bu numarayla sohbeti hazır mesajla açar (numaran otomatik gider)
+       2) Instagram: metni kopyala → DM'e yapıştır. IG'ye kullanıcı adını yazarsan DM düğmesi de görünür. */
     var PHONE = "905318864491";
+    var IG = "";
+    var inIG = /Instagram|FBAN|FBAV|FB_IAB/i.test(navigator.userAgent);
+    $("msgPreview").textContent = msg;
     $("wa").href = "https://wa.me/" + PHONE + "?text=" + encodeURIComponent(msg);
-    $("copy").onclick = function () {
-      var ok = function () { $("copyMsg").textContent = "Kopyalandı. Şimdi bana yapıştırıp gönderebilirsin."; };
-      var fail = function () { $("copyMsg").textContent = msg; };
-      try { navigator.clipboard.writeText(msg).then(ok, fail); } catch (e) { fail(); }
-    };
-    $("again").onclick = function () { go("tercih.html"); };
     $("wa").addEventListener("click", function () {
-      $("copyMsg").textContent = "WhatsApp açıldı. Gönder'e basmayı unutma; kod gelince yukarıdaki kutuya yaz 😅";
+      $("copyMsg").textContent = inIG
+        ? "WhatsApp açılmazsa sağ üstteki ⋯ menüsünden \"Safari'de aç\"a dokun ya da bileti kopyalayıp Instagram'dan gönder."
+        : "WhatsApp açıldı; Gönder'e basman yeterli. Kod oradan gelir.";
     });
-    /* Instagram / Facebook içindeki tarayıcıda WhatsApp açılmayabilir */
-    if (/Instagram|FBAN|FBAV|FB_IAB/i.test(navigator.userAgent)) $("inapp").hidden = false;
+    function copied() {
+      $("copyMsg").textContent = inIG
+        ? "Kopyalandı. Sol üstteki ✕ ile Instagram'a dön, mesaja yapıştır, gönder."
+        : "Kopyalandı. Instagram'da bana yapıştırıp gönder.";
+      $("copy").textContent = "Kopyalandı ✓";
+      setTimeout(function () { $("copy").textContent = "Instagram için kopyala"; }, 2500);
+    }
+    function copyFail() {
+      $("copyMsg").textContent = "Kopyalama olmadı; aşağıdaki metni seçip kopyalayabilirsin.";
+      $("msgPreview").hidden = false;
+    }
+    $("copy").onclick = function () {
+      try { navigator.clipboard.writeText(msg).then(copied, copyFail); } catch (e) { copyFail(); }
+    };
+    if (IG) { $("ig").href = "https://ig.me/m/" + IG; $("ig").hidden = false; }
+    $("again").onclick = function () { go("tercih.html"); };
     /* resme dokununca büyük bak */
     var lb = $("lightbox");
     $("frame").onclick = function () { lb.hidden = false; document.body.style.overflow = "hidden"; };
@@ -485,7 +504,7 @@
     /* ---------- filigran ve kod ----------
        Bilet sana gelince ona bu kodu veriyorsun; kodu girince filigran kalkıyor.
        Kodu değiştirmek için sadece bu satırı değiştir (büyük/küçük harf ve boşluk fark etmez): */
-    var CODE = "LAVANTA26";
+    var CODE = "5318864491";
 
     /* filigran: en sevdiği çiçeklerden (lavanta, şakayık, lilyum) örülü bir örtü.
        Kenar çiçekleriyle aynı yöntem (tek tek <img>), her tarayıcıda görünür. */
@@ -544,7 +563,9 @@
     function check() {
       var v = norm($("code").value);
       if (!v) { $("codeHint").textContent = "Önce kodu yaz. Kod bende, bileti gönderince geliyor 😅"; return; }
-      if (v === norm(CODE)) { unlock(true); return; }
+      /* numara olarak yazılırsa başındaki 0 / +90 fark etmez */
+      var vd = v.replace(/\D/g, ""), cd = norm(CODE).replace(/\D/g, "");
+      if (v === norm(CODE) || (cd.length >= 10 && vd.length >= 10 && vd.slice(-10) === cd.slice(-10))) { unlock(true); return; }
       tries++;
       $("codeHint").textContent = wrongs[Math.min(tries - 1, wrongs.length - 1)];
       $("code").value = "";

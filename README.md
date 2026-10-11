@@ -10,9 +10,9 @@ Lavanta, şakayık ve lilyum temalı, sayfa sayfa ilerleyen flörtöz bir davet.
 5. `gun.html` – Gün seçimi (önümüzdeki 14 gün + takvimden "Başka bir gün")
 6. `saat.html` – Saat seçimi (hazır saatler + "Başka bir saat")
 7. `not.html` – Hazır kısa notlar + isteğe bağlı yazı
-8. `bilet.html` – Resim açılır ama üstü **çiçek filigranlı** (lavanta, şakayık, lilyum); randevu bileti + WhatsApp'tan gönder. Bilet sana gelince ona kodu verirsin, kodu girince çiçekler çekilir.
+8. `bilet.html` – Resim açılır ama üstü **çiçek filigranlı** (lavanta, şakayık, lilyum); randevu bileti → "WhatsApp'tan gönder" (numaranla hazır sohbet) ya da "Instagram için kopyala" → DM'e yapıştırır. Bilet sana gelince ona kodu verirsin, kodu girince çiçekler çekilir.
 
-Ortak dosyalar: `style.css` (tasarım), `app.js` (çiçekler, animasyonlar, seçenekler), `resim.jpg` (resim), `onizleme.jpg` (Instagram/WhatsApp link önizleme görseli).
+Ortak dosyalar: `style.css` (tasarım), `app.js` (çiçekler, animasyonlar, seçenekler), `resim.jpg` (resim), `onizleme.jpg` (Instagram link önizleme görseli).
 
 ## GitHub Pages'te yayınlama
 1. GitHub'da yeni repo aç (adı `busranur`), **Public** olsun
@@ -26,5 +26,7 @@ Ortak dosyalar: `style.css` (tasarım), `app.js` (çiçekler, animasyonlar, seç
 - **Saatler:** `app.js` → `/* 6 · Saat */`
 - **Hayır butonunun yazıları:** `app.js` → `texts` listesi
 - **Link önizleme görseli:** sayfaların `<head>` kısmındaki `og:image` adresi `https://yecassistant.github.io/busranur/onizleme.jpg`. Repo adı farklıysa bu adresi düzelt.
-- **Çiçek filigranı kodu:** `app.js` → `var CODE = "LAVANTA26"` satırı. Büyük/küçük harf, boşluk ve tire fark etmez. Kod hatırlanmaz: sayfa her açıldığında çiçekler yerindedir ve kod yeniden istenir.
+- **Çiçek filigranı kodu:** `app.js` → `var CODE = "5318864491"` satırı (telefon numarası). Büyük/küçük harf, boşluk ve tire fark etmez. Kod hatırlanmaz: sayfa her açıldığında çiçekler yerindedir ve kod yeniden istenir.
 - **WhatsApp numarası:** `app.js` → `var PHONE = "905318864491"` (başında 90, + yok)
+- **Instagram düğmesi:** `app.js` → `var IG = ""` satırına Instagram kullanıcı adını yazarsan bilette "Instagram'da bana yaz" düğmesi görünür (DM'i açar).
+- **Buluşma günleri:** `app.js` → `/* 5 · Gün */` içindeki `START` tarihi (şu an 16 Ekim 2026 Cuma).
