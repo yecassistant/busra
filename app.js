@@ -9,7 +9,9 @@
   new URLSearchParams(location.search).forEach(function (v, k) { state[k] = v; });
 
   /* ---------- sayfa geçişi (giriş animasyonu CSS'te, JS gerekmez) ---------- */
+  var going = false;
   function go(url, add) {
+    if (going) return; going = true;
     var p = new URLSearchParams();
     var all = Object.assign({}, state, add || {});
     Object.keys(all).forEach(function (k) { if (all[k] !== undefined && all[k] !== "") p.set(k, all[k]); });
@@ -17,7 +19,8 @@
     document.body.classList.add("leaving");
     setTimeout(function () { location.href = url + (q ? "?" + q : ""); }, 420);
   }
-  window.addEventListener("pageshow", function (e) { if (e.persisted) { document.body.classList.remove("leaving"); document.body.style.opacity = "1"; } });
+  window.addEventListener("pageshow", function (e) { going = false; if (e.persisted) { document.body.classList.remove("leaving"); document.body.style.opacity = "1"; } });
+  window.addEventListener("pagehide", function () { going = false; });
 
   /* ---------- çiçek çizimleri ---------- */
   function lavender(c1, c2) {
@@ -531,8 +534,15 @@
       box.dataset.w = W;
     }
     var wmFrame = document.querySelector("#frame .wm"), wmLb = document.querySelector("#lightbox .wm");
-    fillFlowers(wmFrame);
-    addEventListener("resize", function () { if (wmFrame.dataset.w != wmFrame.clientWidth) fillFlowers(wmFrame); });
+    function fillFrame() { if (wmFrame.dataset.w != wmFrame.clientWidth || !wmFrame.childNodes.length) fillFlowers(wmFrame); }
+    fillFrame();
+    /* eski iOS'ta çerçeve yüksekliği resim yüklenince oluşur: tekrar dene */
+    var frameImg = document.querySelector("#frame img");
+    frameImg.addEventListener("load", fillFrame);
+    setTimeout(fillFrame, 400); setTimeout(fillFrame, 1500);
+    addEventListener("load", fillFrame);
+    addEventListener("resize", fillFrame);
+    addEventListener("orientationchange", function () { setTimeout(fillFrame, 300); });
     var lbImg = document.querySelector("#lightbox img");
     function fillLb() { setTimeout(function () { fillFlowers(wmLb); }, 60); }
     $("frame").addEventListener("click", fillLb);

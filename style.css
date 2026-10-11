@@ -25,6 +25,9 @@
 html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 *,*::before,*::after{touch-action:manipulation}
 button,a,.frame,.opt,.day,.quick,.big{-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none}
+/* iOS'un kendi buton/alan görünümünü kapat (tarih ve saat kutuları hariç) */
+button,input[type="text"],textarea{-webkit-appearance:none;appearance:none;margin:0}
+button{color:inherit}
 img{-webkit-touch-callout:none;-webkit-user-drag:none}
 html,body{min-height:100%;margin:0}
 body{
@@ -95,6 +98,7 @@ h1 em,h2 em{font-style:italic;color:var(--lavender-d)}
 }
 .frame > img{width:100%;height:100%;object-fit:cover;display:block;opacity:.38;filter:blur(2px) saturate(.9);transition:opacity 1.6s ease, filter 1.6s ease}
 .frame.open > img{opacity:1;filter:none}
+@supports not (aspect-ratio:1){.frame > img{height:auto}}
 .frame .seal{
   position:absolute;left:50%;top:50%;margin:-58px 0 0 -58px;
   width:116px;height:116px;border-radius:50%;display:grid;place-items:center;text-align:center;
@@ -108,7 +112,7 @@ h1 em,h2 em{font-style:italic;color:var(--lavender-d)}
 @keyframes pulse{50%{-webkit-transform:rotate(-8deg) scale(1.07);transform:rotate(-8deg) scale(1.07)}}
 .frame.small{width:150px;max-width:46%;align-self:center}
 .frame.small .seal{margin:-44px 0 0 -44px}
-.frame.shake{animation:shake .5s}
+.frame.shake{-webkit-animation:shake .5s;animation:shake .5s}
 @-webkit-keyframes shake{20%{-webkit-transform:rotate(-3deg);transform:rotate(-3deg)}40%{-webkit-transform:rotate(3deg);transform:rotate(3deg)}60%{-webkit-transform:rotate(-2deg);transform:rotate(-2deg)}80%{-webkit-transform:rotate(1deg);transform:rotate(1deg)}}
 @keyframes shake{20%{-webkit-transform:rotate(-3deg);transform:rotate(-3deg)}40%{-webkit-transform:rotate(3deg);transform:rotate(3deg)}60%{-webkit-transform:rotate(-2deg);transform:rotate(-2deg)}80%{-webkit-transform:rotate(1deg);transform:rotate(1deg)}}
 
@@ -188,7 +192,7 @@ body[data-page="bilet"] .frame{width:min(58%,200px)}
 .coderow input::placeholder{letter-spacing:.05em;font-size:1.05rem;text-transform:none;color:#a996a8;font-weight:700}
 .coderow input:focus{outline:none;box-shadow:0 0 0 3px #fff,0 0 0 5.5px var(--peony);background:#fffafc}
 .coderow .btn{width:100%;min-height:60px;font-size:1.15rem}
-.mini{font:inherit;font-weight:800;font-size:.8rem;border:0;cursor:pointer;border-radius:999px;padding:6px 11px;margin-left:2px;vertical-align:middle;
+.mini{font:inherit;font-weight:800;font-size:.82rem;border:0;cursor:pointer;border-radius:999px;padding:9px 13px;min-height:36px;margin-left:2px;vertical-align:middle;
   background:var(--lavender-l);color:var(--lavender-d);-webkit-tap-highlight-color:transparent;box-shadow:0 0 0 1.5px #d9cbf0}
 .mini:active{transform:scale(.96)}
 
