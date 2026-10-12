@@ -163,7 +163,7 @@
     var box = $(boxId);
     items.forEach(function (it) {
       var b = document.createElement("button"); b.type = "button"; b.className = "opt";
-      b.innerHTML = '<span class="ico" style="background:' + it.bg + '">' + it.ico + "</span><span><b>" + it.label + (it.tag ? '<i class="tag">' + it.tag + "</i>" : "") + "</b><small>" + it.sub + "</small></span>";
+      b.innerHTML = '<span class="ico" style="background:' + it.bg + '">' + it.ico + "</span><span><b>" + it.label + (it.tag ? '<i class="tag' + (it.us ? " us" : "") + '">' + it.tag + "</i>" : "") + "</b><small>" + it.sub + "</small></span>";
       if (state[key] === it.label) b.classList.add("on");
       b.onclick = function () {
         box.querySelectorAll(".opt").forEach(function (o) { o.classList.remove("on"); });
@@ -273,7 +273,7 @@
         var h = document.createElement("h4"); h.className = "grp"; h.textContent = title; h.id = "grp-" + key; $("opts").appendChild(h);
         items.forEach(function (it) {
           var b = document.createElement("button"); b.type = "button"; b.className = "opt"; b.dataset.g = key;
-          b.innerHTML = '<span class="ico" style="background:' + it.bg + '">' + it.ico + "</span><span><b>" + it.label + (it.tag ? '<i class="tag">' + it.tag + "</i>" : "") + "</b><small>" + it.sub + "</small></span>";
+          b.innerHTML = '<span class="ico" style="background:' + it.bg + '">' + it.ico + "</span><span><b>" + it.label + (it.tag ? '<i class="tag' + (it.us ? " us" : "") + '">' + it.tag + "</i>" : "") + "</b><small>" + it.sub + "</small></span>";
           b.onclick = function () {
             $("opts").querySelectorAll('.opt[data-g="' + key + '"]').forEach(function (o) { o.classList.remove("on"); });
             b.classList.add("on"); picked[key] = it.label; burst(18);
@@ -325,6 +325,7 @@
           { ico: "🎁", bg: "#e3f1ee", label: "Hangisi olursa", sub: "Sen seç" }
         ],
         gezme: [
+          { ico: "🕌", bg: "#fff0c9", label: "Fatih – Tarihi Yarımada", sub: "Süleymaniye, Balat, Vefa…", tag: "ikimizin favorisi", us: true },
           { ico: "🌊", bg: "#e3f1ee", label: "Sahilde yürüyüş", sub: "Deniz kenarı, uzun yürüyüş" },
           { ico: "⛴️", bg: "#efe7fb", label: "Adalar", sub: "Vapur ve bisiklet" },
           { ico: "🌳", bg: "#fff0c9", label: "Çamlıca", sub: "Manzara ve çay" },
