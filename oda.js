@@ -290,7 +290,7 @@
       if (!blob) { hint("Görsel oluşturulamadı; ekran görüntüsü al 📸"); return; }
       var file = null; try { file = new File([blob], "sefin-odasi.png", { type: "image/png" }); } catch (e) {}
       if (file && navigator.canShare && navigator.canShare({ files: [file] }) && navigator.share) {
-        navigator.share({ files: [file], title: "Şefin Odası" }).then(function () { hint("Gönderildi 💐"); }).catch(function () { hint("Paylaşım iptal."); });
+        navigator.share({ files: [file], title: "Şefin Odası" }).then(function () { hint(""); }).catch(function () { hint(""); });
       } else {
         $("lbImg").src = dataUrl; $("lightbox").hidden = false; hint("Görsele basılı tutup kaydedebilirsin.");
       }

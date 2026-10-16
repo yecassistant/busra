@@ -312,7 +312,8 @@ body[data-page="acik"] .lead{font-size:1rem}
 .oyunkart .small{margin:0}
 .oyunkart .small b{color:var(--ink)}
 .oyunbtns{min-height:0;gap:8px}
-.oyunbtns .btn{min-height:46px;padding:10px 16px;font-size:.98rem;flex:1 1 140px}
+.oyunbtns .btn{min-height:46px;padding:10px 16px;font-size:.98rem;flex:1 1 140px;white-space:nowrap}
+.oyunbtns .btn.pink{flex-basis:100%}
 .eski{display:flex;flex-direction:column;gap:6px;text-align:center}
 /* Şefin Planı (oyun) */
 .stage.game{justify-content:flex-start;gap:10px}
@@ -498,6 +499,7 @@ body[data-page="oda"]{padding-top:max(10px,env(safe-area-inset-top));padding-bot
 .room .it{cursor:grab}
 .room .selbox{fill:none;stroke:var(--peony);stroke-width:2;stroke-dasharray:5 4;opacity:.9}
 .room use{pointer-events:all}
+.odaHint:empty{display:none}
 .odaHint{position:absolute;left:8px;right:8px;top:8px;pointer-events:none;text-align:center;font-size:.76rem;font-weight:800;color:var(--lavender-d);
   background:rgba(255,255,255,.88);border-radius:999px;padding:5px 10px;box-shadow:0 2px 10px -4px rgba(61,42,63,.4);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .tools{display:flex;gap:6px;justify-content:center;align-items:center;min-height:40px;flex-wrap:nowrap;overflow:hidden}
@@ -545,3 +547,50 @@ body[data-page="oda"] .overcard .btn{min-height:44px;padding:9px 16px;font-size:
   .tools{min-height:36px}
   .tb{min-height:34px}
 }
+
+
+/* ---------- Peki Madem (: (meyve kasesi) ---------- */
+body[data-page="kase"]{padding-top:max(10px,env(safe-area-inset-top));padding-bottom:max(12px,env(safe-area-inset-bottom))}
+.stage.kase{justify-content:flex-start;gap:8px}
+.khead{display:flex;align-items:center;gap:8px}
+.kscore{flex:1;text-align:center}
+.kscore b{display:block;font-family:var(--display);font-size:2rem;line-height:1;color:var(--lavender-d)}
+.kscore small,.knext small,.kbest small{display:block;font-size:.6rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--soft)}
+.knext,.kbest{flex:none;width:78px;background:rgba(255,255,255,.9);border-radius:16px;box-shadow:0 0 0 1.5px var(--line);text-align:center}
+.knext{padding:6px 4px 4px}
+.knext svg{width:38px;height:38px;display:block;margin:2px auto 0}
+.kbest{padding:8px 4px;min-height:58px;display:flex;flex-direction:column;justify-content:center}
+.kbest b{font-family:var(--display);font-size:1.3rem;color:var(--peony-d);line-height:1.1}
+.bowlwrap{position:relative;margin:0 auto;width:100%;max-width:440px;flex:none}
+#bowl{display:block;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;cursor:pointer}
+.kmsg{text-align:center;font-size:.84rem;color:var(--peony);font-weight:700;margin:0;height:1.3em;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chain{display:flex;align-items:flex-end;justify-content:center;gap:3px;background:rgba(255,255,255,.85);border-radius:16px;padding:5px 8px;box-shadow:0 0 0 1.5px var(--line)}
+.chain svg{display:block}
+.chain i{font-style:normal;font-size:.7rem;color:var(--soft);font-weight:800;padding:0 1px 5px}
+.chain svg.gizli{-webkit-filter:drop-shadow(0 0 4px rgba(246,198,74,.9));filter:drop-shadow(0 0 4px rgba(246,198,74,.9));-webkit-animation:goldglow 1.6s ease-in-out infinite alternate;animation:goldglow 1.6s ease-in-out infinite alternate}
+@-webkit-keyframes goldglow{from{-webkit-filter:drop-shadow(0 0 2px rgba(246,198,74,.6));filter:drop-shadow(0 0 2px rgba(246,198,74,.6));-webkit-transform:scale(1);transform:scale(1)}to{-webkit-filter:drop-shadow(0 0 7px rgba(246,198,74,1));filter:drop-shadow(0 0 7px rgba(246,198,74,1));-webkit-transform:scale(1.08);transform:scale(1.08)}}
+@keyframes goldglow{from{-webkit-filter:drop-shadow(0 0 2px rgba(246,198,74,.6));filter:drop-shadow(0 0 2px rgba(246,198,74,.6));-webkit-transform:scale(1);transform:scale(1)}to{-webkit-filter:drop-shadow(0 0 7px rgba(246,198,74,1));filter:drop-shadow(0 0 7px rgba(246,198,74,1));-webkit-transform:scale(1.08);transform:scale(1.08)}}
+@media (max-height:640px){
+  .stage.kase{gap:6px}
+  .kscore b{font-size:1.6rem}
+  .knext svg{width:32px;height:32px}
+  .kbest{min-height:50px}
+  .chain{padding:4px 6px}
+  .chain svg{transform:scale(.85);transform-origin:bottom}
+}
+
+/* yapım aşaması ekranı (Peki Madem) */
+.over.yapim{background:linear-gradient(160deg,rgba(253,217,230,.92),rgba(239,231,251,.95));-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+.over.yapim .overcard{max-height:calc(100vh - 40px);max-height:calc(100dvh - 40px);overflow:auto;gap:10px}
+.over.yapim .overcard .btns{gap:8px;min-height:0}
+.over.yapim .overcard .btn{min-height:44px;padding:9px 16px;font-size:.95rem}
+.ripen{display:flex;justify-content:center;align-items:flex-end;gap:6px;min-height:58px}
+.ripen svg{width:30px;height:30px;display:block;-webkit-transform-origin:50% 100%;transform-origin:50% 100%;-webkit-animation:ripen 2.8s ease-in-out infinite;animation:ripen 2.8s ease-in-out infinite}
+.ripen svg:nth-child(2){-webkit-animation-delay:.3s;animation-delay:.3s;width:34px;height:34px}
+.ripen svg:nth-child(3){-webkit-animation-delay:.6s;animation-delay:.6s;width:38px;height:38px}
+.ripen svg:nth-child(4){-webkit-animation-delay:.9s;animation-delay:.9s;width:42px;height:42px}
+.ripen svg:nth-child(5){-webkit-animation-delay:1.2s;animation-delay:1.2s;width:46px;height:46px}
+.ripen svg:nth-child(6){-webkit-animation-delay:1.5s;animation-delay:1.5s;width:50px;height:50px}
+.ripen svg:nth-child(7){-webkit-animation-delay:1.8s;animation-delay:1.8s;width:56px;height:56px}
+@-webkit-keyframes ripen{0%{-webkit-transform:scale(.35);transform:scale(.35);opacity:.5}45%{-webkit-transform:scale(1.08);transform:scale(1.08);opacity:1}60%{-webkit-transform:scale(1);transform:scale(1)}85%{-webkit-transform:scale(1);transform:scale(1);opacity:1}100%{-webkit-transform:scale(.35);transform:scale(.35);opacity:.5}}
+@keyframes ripen{0%{-webkit-transform:scale(.35);transform:scale(.35);opacity:.5}45%{-webkit-transform:scale(1.08);transform:scale(1.08);opacity:1}60%{-webkit-transform:scale(1);transform:scale(1)}85%{-webkit-transform:scale(1);transform:scale(1);opacity:1}100%{-webkit-transform:scale(.35);transform:scale(.35);opacity:.5}}
