@@ -147,6 +147,8 @@
       c: cols[(Math.random() * cols.length) | 0], w: Math.random() * 6.28 });
     if (!raf) loop();
   }
+  window.__burst = burst;
+  window.__flower = svgEl;
   function loop() {
     ctx.clearRect(0, 0, innerWidth, innerHeight);
     P.forEach(function (p) {
@@ -176,6 +178,38 @@
 
   /* ================= SAYFALAR ================= */
 
+  var KINDS = {
+    kahve:   { ad: "Kahve",   emo: "☕", satir: "Menü" },
+    yemek:   { ad: "Yemek",   emo: "🍽️", satir: "Menü" },
+    sinema:  { ad: "Sinema",  emo: "🎬", satir: "Film" },
+    tiyatro: { ad: "Tiyatro", emo: "🎭", satir: "Oyun" },
+    gezme:   { ad: "Gezme",   emo: "🚶‍♀️", satir: "Rota" },
+    surpriz: { ad: "Sürpriz", emo: "🎁", satir: "Plan" }
+  };
+  /* 0 · Açık bilet (ikinci aşama): hasta, tarih yok, hazır olunca tek dokunuş */
+  if (page === "acik") {
+    var PHONE2 = "905318864491";
+    /* Gönderdiği bileti biliyorsan buraya yaz; boş kalırsa "Senin planın" görünür */
+    var PLAN = { tur: "", menu: "" };
+    if (PLAN.tur) { var KK = KINDS[PLAN.tur] || KINDS.kahve; $("tKind").textContent = KK.ad; if (PLAN.menu) { $("tMenuLabel").textContent = KK.satir; $("tMenu").textContent = PLAN.menu; $("tMenuRow").hidden = false; } }
+    function waLink(text) { return "https://wa.me/" + PHONE2 + "?text=" + encodeURIComponent(text); }
+    $("ready").href = waLink("Hazırım 🌸 Bilet hâlâ geçerli mi? 😅");
+    $("ready").addEventListener("click", function () { burst(120); });
+
+    /* "Buluşmak istemiyorum": geçen seferki gibi tıklanamaz */
+    makeDodger($("no2"), $("ready"), $("hint2"),
+      ["Ders almıyorsunuz hanımefendi 😅", "Bu buton da bozuk", "Geçen sefer de olmadı", "Hasta hasta uğraşma",
+       "Nasip dedin, nasip işte", "Önce ıhlamur, sonra dene", "Lavantalar yine üzüldü", "Hanımefendi lütfen", "Pes et, çay demle",
+       "Yakalayamazsın", "Bilet süresiz, boşuna", "Hazırım'a bas"],
+      ["", "Bu butonu geçen sefer de yakalayamamıştın 😅", "Evet, hâlâ kaçıyor.", "Hazırım butonu büyüyor, yine.", "Hastayken refleksler yavaşlar, normal 😅", "Bence bu iş belli."],
+      { 5: "Hazırım\u00a0🌸", 9: "Tamam, hazırım\u00a0💐" },
+      "Buton yine kaçtı gitti. Geriye bir seçenek kaldı, iyileşince 😅");
+
+    document.querySelectorAll(".mood .quick").forEach(function (q) { q.href = waLink(q.dataset.m); });
+    $("again").onclick = function () { go("tercih.html"); };
+    setTimeout(function () { burst(60); }, 600);
+  }
+
   /* 1 · Resmin hazır */
   if (page === "hazir") {
     var f = $("frame");
@@ -186,22 +220,18 @@
     f.onclick = tease; $("open").onclick = tease;
   }
 
-  /* 2 · Davet – Hayır demek mümkün değil */
-  if (page === "davet") {
-    var no = $("no"), yes = $("yes"), hint = $("hint"), n = 0;
-    var texts = ["Emin misin?", "Haydaa", "Bir daha düşün", "Lavantalar üzüldü", "Şakayıklar soluyor", "Lilyumlar ağlıyor",
-      "Estağfurullah", "Bu buton bozuk", "Yakalayamazsın", "Hanımefendi lütfen", "Pes et artık", "Evet'e bas"];
-    var hints = ["", "Dedim ya, görmüyorum 😅", "Hmm, bu buton biraz utangaç.", "Evet butonu büyüyor, fark ettin mi?", "Biraz fazla heyecanlıyım, biliyorum 😅", "Bence işaret belli."];
+  /* ---------- kaçan buton: tıklanamaz "Hayır" ----------
+     no: kaçan buton, yes: büyüyen buton, hint: alt satır, texts: butonun yazıları, hints: alt satır yazıları,
+     yesTexts: {5: "...", 9: "..."} gibi adım→yazı, gone: kaçıp gidince yazılacak cümle */
+  function makeDodger(no, yes, hint, texts, hints, yesTexts, gone) {
+    var n = 0, last = 0;
     function growYes() {
-      /* her denemede azıcık büyür, en fazla ~1.6 kat */
       var k = Math.min(n, 6);
       yes.style.fontSize = (1.08 + k * 0.05) + "rem";
       yes.style.padding = (15 + k * 1.4) + "px " + (30 + k * 2) + "px";
-      if (n >= 5) yes.textContent = "Evet, buluşalım\u00a0🌸";
-      if (n >= 9) yes.textContent = "Evet, buluşalım\u00a0💐";
-      if (n >= 12) { no.hidden = true; hint.textContent = "Hayır butonu kaçtı gitti. Geriye bir seçenek kaldı."; }
+      Object.keys(yesTexts).forEach(function (step) { if (n >= +step) yes.textContent = yesTexts[step]; });
+      if (n >= 12) { no.hidden = true; hint.textContent = gone; }
     }
-    var last = 0;
     function dodge(e) {
       if (e) { e.preventDefault(); e.stopPropagation(); }
       var now = Date.now(); if (now - last < 300) return; last = now;
@@ -229,18 +259,22 @@
     no.addEventListener("touchstart", dodge, { passive: false });
     no.addEventListener("click", function (e) { e.preventDefault(); e.stopPropagation(); });
     no.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") dodge(e); });
+  }
+
+  /* 2 · Davet – Hayır demek mümkün değil */
+  if (page === "davet") {
+    var yes = $("yes");
+    makeDodger($("no"), yes, $("hint"),
+      ["Emin misin?", "Haydaa", "Bir daha düşün", "Lavantalar üzüldü", "Şakayıklar soluyor", "Lilyumlar ağlıyor",
+       "Estağfurullah", "Bu buton bozuk", "Yakalayamazsın", "Hanımefendi lütfen", "Pes et artık", "Evet'e bas"],
+      ["", "Dedim ya, görmüyorum 😅", "Hmm, bu buton biraz utangaç.", "Evet butonu büyüyor, fark ettin mi?", "Biraz fazla heyecanlıyım, biliyorum 😅", "Bence işaret belli."],
+      { 5: "Evet, buluşalım\u00a0🌸", 9: "Evet, buluşalım\u00a0💐" },
+      "Hayır butonu kaçtı gitti. Geriye bir seçenek kaldı.");
     yes.onclick = function () { burst(120); setTimeout(function () { go("tercih.html"); }, 650); };
   }
 
   /* 3 · Ne yapalım */
-  var KINDS = {
-    kahve:   { ad: "Kahve",   emo: "☕", satir: "Menü" },
-    yemek:   { ad: "Yemek",   emo: "🍽️", satir: "Menü" },
-    sinema:  { ad: "Sinema",  emo: "🎬", satir: "Film" },
-    tiyatro: { ad: "Tiyatro", emo: "🎭", satir: "Oyun" },
-    gezme:   { ad: "Gezme",   emo: "🚶‍♀️", satir: "Rota" },
-    surpriz: { ad: "Sürpriz", emo: "🎁", satir: "Plan" }
-  };
+
   if (page === "tercih") {
     document.querySelectorAll("[data-t]").forEach(function (b) {
       b.onclick = function () {

@@ -3,7 +3,9 @@
 Lavanta, şakayık ve lilyum temalı, sayfa sayfa ilerleyen flörtöz bir davet.
 
 ## Sayfalar (sırasıyla)
-1. `index.html` – Resmin hazır (resim soluk görünür)
+0. `index.html` – **İkinci aşama (açık bilet):** geçmiş olsun, tarih yok, "Hazırım 🌸" tek dokunuşla WhatsApp'a; "nasılsın" çipleri; "Planı değiştir" eski akışa gider
+0b. `oyun.html` + `oyun.js` – **Şefin Planı**: çiçekli blok bulmaca (8×8, sürükle ya da seç-dokun; satır/sütun dolunca temizlenir). Mesajlar "Şef" diye hitap eder.
+1. `ilk.html` – İlk açılış (Resmin hazır; artık bağlantısız, istersen geri alırsın)
 2. `davet.html` – "Bu resim elden teslim edilir… Benimle buluşur musun?" (Hayır butonu kaçar, tıklanamaz)
 3. `tercih.html` – Ne yapalım? (Kahve, Yemek, Sinema, Tiyatro, Gezelim, Sürpriz)
 4. `secim.html` – Seçilen plana göre çeşit (kahvede kahve + tatlı)
@@ -27,6 +29,7 @@ Ortak dosyalar: `style.css` (tasarım), `app.js` (çiçekler, animasyonlar, seç
 - **Hayır butonunun yazıları:** `app.js` → `texts` listesi
 - **Link önizleme görseli:** sayfaların `<head>` kısmındaki `og:image` adresi `https://yecassistant.github.io/busranur/onizleme.jpg`. Repo adı farklıysa bu adresi düzelt.
 - **Çiçek filigranı kodu:** `app.js` → `var CODE = "5318864491"` satırı (telefon numarası). Büyük/küçük harf, boşluk ve tire fark etmez. Kod hatırlanmaz: sayfa her açıldığında çiçekler yerindedir ve kod yeniden istenir.
+- **Açık biletteki plan:** `app.js` → `/* 0 · Açık bilet */` içinde `PLAN = { tur: "kahve", menu: "Americano + …" }` (gönderdiği bileti yazarsan kartta görünür)
 - **WhatsApp numarası:** `app.js` → `var PHONE = "905318864491"` (başında 90, + yok)
 - **Instagram düğmesi:** `app.js` → `var IG = ""` satırına Instagram kullanıcı adını yazarsan bilette "Instagram'da bana yaz" düğmesi görünür (DM'i açar).
 - **Buluşma günleri:** `app.js` → `/* 5 · Gün */` içindeki `START` tarihi (şu an 16 Ekim 2026 Cuma).

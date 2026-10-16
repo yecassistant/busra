@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-<title>Büşranur'un Resmi</title>
-<meta name="description" content="Resmin hazır! Görmek için tıkla.">
-<meta property="og:title" content="Büşranur, resmin hazır!">
-<meta property="og:description" content="Sadece senin için çizildi. Görmek için tıkla.">
+<title>Büşranur'un Bileti</title>
+<meta name="description" content="Geçmiş olsun. Biletin süresiz geçerli.">
+<meta property="og:title" content="Geçmiş olsun 🌸 Biletin süresiz geçerli">
+<meta property="og:description" content="Önce iyileş. Gerisi hazır, bekliyor.">
 <meta name="color-scheme" content="light">
 <meta property="og:type" content="website">
 <meta property="og:image" content="https://yecassistant.github.io/busranur/onizleme.jpg">
@@ -20,20 +20,69 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;1,9..144,600&family=Nunito:wght@600;700;800&family=Caveat:wght@600;700&display=swap">
 <link rel="stylesheet" href="style.css">
 </head>
-<body data-page="hazir" data-tone="lav">
+<body data-page="acik" data-tone="lav">
 
 <main class="stage">
   <div class="bouquet"></div>
-  <p class="bqcap">lavanta · şakayık · lilyum <span>senin üçlün, not almıştım</span></p>
-  <div class="eyebrow">Büşranur, söz verdiğim sürpriz 😅</div>
-  <h1>Resmin <em>hazır</em>!</h1>
-  <p class="lead">Bayağıdır bekliyordun, biliyorum; biraz uzadı ama sonunda bitti. Tahmin etmiştin belki, yine de şaşırmış gibi yapabilirsin 😅</p>
-  <div class="frame" id="frame" role="button" tabindex="0" aria-label="Resmi aç">
-    <img src="resim.jpg" alt="Senin için çizilen resim">
-    <div class="seal">sana<br>özel</div>
+  <p class="bqcap">lavanta · şakayık · lilyum <span>bu sefer geçmiş olsun için</span></p>
+  <div class="eyebrow">ikinci aşama 😅</div>
+  <h1>Geçmiş <em>olsun</em></h1>
+  <p class="lead">Önce iyileş. Biletin zaten tarihi yoktu; artık resmen süresiz geçerli.</p>
+
+  <div class="ticket acik" id="ticket">
+    <h3>Açık Bilet</h3>
+    <div class="row"><span>Buluşma</span><span id="tKind">Senin planın</span></div>
+    <div class="row" id="tMenuRow" hidden><span id="tMenuLabel">Menü</span><span id="tMenu"></span></div>
+    <div class="row"><span>Gün</span><span>İyileşince</span></div>
+    <div class="row"><span>Saat</span><span>Sen söyle</span></div>
+    <div class="row"><span>Teslimat</span><span>Resmin aslı, elden</span></div>
+    <div class="stampwrap"><span class="stamp" aria-hidden="true">süresiz geçerli</span></div>
   </div>
-  <div class="btns"><button class="btn pink" id="open">Hadi göster artık</button></div>
+
+  <p class="small">Tarih sormuyorum. Hazır olduğunda tek dokunuş yeter:</p>
+  <div class="btns">
+    <a class="btn pink" id="ready" target="_blank" rel="noopener">Hazırım 🌸</a>
+    <button type="button" class="btn ghost parked" id="no2">Buluşmak istemiyorum</button>
+  </div>
+  <p class="hint" id="hint2">"İstemiyorum" butonunu geçen sefer de deneyip kaçırmıştın; istersen bir daha dene 😅</p>
+
+  <div class="rapor">
+    <h3>Doktor raporu 🩺 <small>(gayriresmî)</small></h3>
+    <div class="row"><span>Teşhis</span><span>Boğaz ağrısı, iş yoğunluğu</span></div>
+    <div class="row"><span>Tedavi</span><span>Dinlenme, ilaçları aksatma</span></div>
+    <div class="row"><span>Yan etki</span><span>Buluşma ertelenir :(</span></div>
+    <div class="row"><span>Not</span><span>Biletin geçerliliğini etkilemez</span></div>
+    <div class="row"><span>İmza</span><span>Yunus (doktor değil)</span></div>
+  </div>
+
+
+  <div class="oyunkart">
+    <h3>Yatarken canın sıkılırsa 🧩</h3>
+    <p class="small">Sana küçük bir oyun yaptım: mimar olduğun için bir bahçe planı dolduruyorsun. Lavanta, şakayık ve lilyum yan yana gelince sarmaşık sarıyor; satır dolunca açıyor.</p>
+    <div class="btns" style="min-height:0"><a class="btn lav" href="oyun.html" id="toGame">Şefin Planı'nı aç</a></div>
+  </div>
+
+  <div class="mood">
+    <p class="small">İstersen bugün nasılsın, bir dokunuşla söyle:</p>
+    <div class="quicks">
+      <a class="quick" data-m="🤒 Bugün yatıyorum" target="_blank" rel="noopener">🤒 Yatıyorum</a>
+      <a class="quick" data-m="😮‍💨 İdare eder" target="_blank" rel="noopener">😮‍💨 İdare eder</a>
+      <a class="quick" data-m="🌸 Toparladım" target="_blank" rel="noopener">🌸 Toparladım</a>
+    </div>
+  </div>
+
+  <div class="frame small open" id="frame"><img src="resim.jpg" alt="Senin için çizilen resim"></div>
+  <p class="small">Aslı bende, seni bekliyor.</p>
+
+  <div class="eski">
+    <p class="small">İlk site kaybolmadı; sen iyileşene kadar bu sayfayı görüyorsun.</p>
+    <div class="btns" style="min-height:0">
+      <a class="btn ghost" href="ilk.html">İlk sayfaya dön 🌸</a>
+      <button type="button" class="btn link" id="again">Planı değiştirmek istersen</button>
+    </div>
+  </div>
 </main>
+
 <script src="app.js"></script>
 </body>
 </html>
