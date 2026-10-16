@@ -156,7 +156,7 @@
     if (cleared.n) {
       score += cleared.n * 10 * cleared.n;
       msg(FL[cleared.color].ad + (cleared.n > 1 ? " ×" + cleared.n : "") + " " + pick(CLEAR) + " " + FL[cleared.color].emo);
-      burst(50 + cleared.n * 50);
+      burst(14 + cleared.n * 10);
     } else if (bonus) msg("Sarmaşık bağlandı, +" + bonus + " 🌿");
     else if (moves === 1) msg("Yan yana gelen çiçekleri sarmaşık bağlar 🌿");
     else msg(pick(PLACE));
@@ -183,7 +183,7 @@
     if (score > best) { best = score; try { localStorage.setItem("sef_best", String(best)); } catch (e) {} bestEl.textContent = best; }
     $("overScore").textContent = score;
     $("overText").textContent = score > 150 ? "Bu bahçe onaylandı, Şef. Tebrikler 🏗️" : score > 60 ? "Fena değil, mimar gözü belli 😅" : "Isınma turuydu, Şef. Bir daha?";
-    over.hidden = false; burst(120);
+    over.hidden = false; burst(40);
   }
   function msg(t) { msgEl.textContent = t; }
 

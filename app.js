@@ -131,34 +131,46 @@
   /* ---------- yaprak yağmuru ---------- */
   var reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
   var cv = document.createElement("canvas"); cv.id = "petals"; document.body.appendChild(cv);
-  var ctx = cv.getContext("2d"), P = [], raf = null;
+  var ctx = cv.getContext("2d"), P = [], raf = null, R = 1, lastT = 0;
+  /* Hafif yaprak efekti: kısa ömür (≈1.5 sn), üst sınır (telefonda 40 yaprak), DPR 1, save/restore yok.
+     Eski sürümde yapraklar ekranın çok üstünden yavaş düşüyor, 15 sn sürüyor ve üst üste binince telefonu kasıyordu. */
+  var MAXP = innerWidth < 520 ? 40 : 70;
   function fit() {
-    var r = Math.min(window.devicePixelRatio || 1, 1.5);
-    cv.width = Math.round(innerWidth * r); cv.height = Math.round(innerHeight * r);
+    R = innerWidth < 520 ? 1 : Math.min(window.devicePixelRatio || 1, 1.5);
+    cv.width = Math.round(innerWidth * R); cv.height = Math.round(innerHeight * R);
     cv.style.width = innerWidth + "px"; cv.style.height = innerHeight + "px";
-    ctx.setTransform(r, 0, 0, r, 0, 0);
   }
   fit(); addEventListener("resize", fit);
   var cols = ["#9b7fd1", "#b9a1ea", "#ec6f9a", "#f7a9c4", "#ffd56b", "#ffffff", "#ff9ebd", "#fbb98c"];
   function burst(n) {
     if (reduce) return;
-    if (innerWidth < 520) n = Math.round(n * 0.5);
-    for (var i = 0; i < n; i++) P.push({ x: Math.random() * innerWidth, y: -20 - Math.random() * innerHeight * 0.6, s: 6 + Math.random() * 9,
-      vy: 1.2 + Math.random() * 2.2, vx: -1 + Math.random() * 2, r: Math.random() * 6.28, vr: -0.06 + Math.random() * 0.12,
-      c: cols[(Math.random() * cols.length) | 0], w: Math.random() * 6.28 });
-    if (!raf) loop();
+    n = Math.round(n * (innerWidth < 520 ? 0.35 : 0.6));
+    if (n < 4) n = 4;
+    for (var i = 0; i < n; i++) P.push({ x: Math.random() * innerWidth, y: -16 - Math.random() * innerHeight * 0.12, s: 6 + Math.random() * 8,
+      vy: 2.4 + Math.random() * 2.4, vx: -0.8 + Math.random() * 1.6, r: Math.random() * 6.28, vr: -0.08 + Math.random() * 0.16,
+      c: cols[(Math.random() * cols.length) | 0], w: Math.random() * 6.28, life: 70 + Math.random() * 40 });
+    if (P.length > MAXP) P.splice(0, P.length - MAXP);
+    if (!raf) { lastT = 0; raf = requestAnimationFrame(loop); }
   }
   window.__burst = burst;
   window.__flower = svgEl;
-  function loop() {
-    ctx.clearRect(0, 0, innerWidth, innerHeight);
-    P.forEach(function (p) {
-      p.w += 0.04; p.x += p.vx + Math.sin(p.w) * 0.8; p.y += p.vy; p.r += p.vr;
-      ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.r); ctx.fillStyle = p.c; ctx.globalAlpha = 0.9;
-      ctx.beginPath(); ctx.ellipse(0, 0, p.s * 0.55, p.s, 0, 0, 6.28); ctx.fill(); ctx.restore();
-    });
-    P = P.filter(function (p) { return p.y < innerHeight + 30; });
-    raf = P.length ? requestAnimationFrame(loop) : null;
+  function loop(t) {
+    var dt = lastT ? Math.min(2, (t - lastT) / 16.7) : 1; lastT = t;
+    ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, cv.width, cv.height);
+    var keep = [], H = innerHeight + 24;
+    for (var i = 0; i < P.length; i++) {
+      var p = P[i];
+      p.w += 0.05 * dt; p.x += (p.vx + Math.sin(p.w) * 0.9) * dt; p.y += p.vy * dt; p.r += p.vr * dt; p.life -= dt;
+      if (p.life <= 0 || p.y > H) continue;
+      keep.push(p);
+      var c = Math.cos(p.r), s = Math.sin(p.r);
+      ctx.setTransform(c * R, s * R, -s * R, c * R, p.x * R, p.y * R);
+      ctx.globalAlpha = p.life < 24 ? Math.max(0, p.life / 24) * 0.9 : 0.9;
+      ctx.fillStyle = p.c; ctx.beginPath(); ctx.ellipse(0, 0, p.s * 0.55, p.s, 0, 0, 6.28); ctx.fill();
+    }
+    P = keep;
+    if (P.length) raf = requestAnimationFrame(loop);
+    else { raf = null; ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, cv.width, cv.height); }
   }
 
   /* ---------- tek seçimli liste: seçince sonraki sayfa ---------- */

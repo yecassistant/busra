@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>Fatih Turu</title>
+<meta name="description" content="Tarihi Yarımada'nın mimari ve tarihi durakları üzerine 12 soruluk tur.">
+<meta property="og:title" content="Fatih Turu 🕌">
+<meta property="og:description" content="Yatarken canın sıkılırsa: 12 duraklık Fatih soru turu, hafiften zorlaşır.">
+<meta name="color-scheme" content="light">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://yecassistant.github.io/busranur/onizleme.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#9b7fd1">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E%F0%9F%95%8C%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;1,9..144,600&family=Nunito:wght@600;700;800&family=Caveat:wght@600;700&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body data-page="fatih" data-tone="lav">
+
+<!-- arka planda silüet: kubbeler, minareler, su kemeri (dekor) -->
+<svg class="skyline" viewBox="0 0 800 130" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
+  <g fill="currentColor">
+    <!-- su kemeri -->
+    <path d="M0 88h230v10H0z"/>
+    <path d="M0 98h230v32H0zM20 130V112a16 16 0 0 1 32 0v18zM70 130V112a16 16 0 0 1 32 0v18zM120 130V112a16 16 0 0 1 32 0v18zM170 130V112a16 16 0 0 1 32 0v18z" fill-rule="evenodd"/>
+    <!-- büyük cami: ana kubbe, yarım kubbeler, minareler -->
+    <path d="M330 130V96h140v34z"/>
+    <path d="M345 96a55 55 0 0 1 110 0z"/>
+    <path d="M316 96a22 22 0 0 1 44 0zM440 96a22 22 0 0 1 44 0z"/>
+    <path d="M398 38h4v6h-4z"/><circle cx="400" cy="36" r="3"/>
+    <path d="M292 130V50l4-14 4 14v80zM520 130V50l-4-14-4 14v80zM275 130V62l3-10 3 10v68zM534 130V62l-3-10-3 10v68z"/>
+    <path d="M286 72h20v3h-20zM494 72h20v3h-20zM270 82h16v3h-16zM514 82h16v3h-16z"/>
+    <!-- küçük külliye kubbeleri -->
+    <path d="M560 130v-14h60v14zM570 116a20 20 0 0 1 40 0zM620 130v-10h40v10zM626 120a14 14 0 0 1 28 0z"/>
+    <!-- kule -->
+    <path d="M700 130V60h20v70zM698 60h24v6h-24zM703 60V46a7 7 0 0 1 14 0v14z"/>
+    <!-- sur duvarı -->
+    <path d="M740 130v-24h60v24zM740 106v-8h8v8zM756 106v-8h8v8zM772 106v-8h8v8zM788 106v-8h8v8z"/>
+  </g>
+</svg>
+
+<main class="stage quiz">
+  <div class="gtop">
+    <a class="gback" href="index.html">← Geri</a>
+    <div class="gtitle"><b>Fatih Turu</b><small>Büşranur'a özel 🕌</small></div>
+    <div class="gscore"><span>Durak <b id="qNo">1/12</b></span><span>Doğru <b id="qOk">0</b></span></div>
+  </div>
+  <div class="progress route" id="route" aria-hidden="true"></div>
+  <section class="qcard" id="qcard"></section>
+  <div class="qopts" id="qopts" hidden></div>
+  <div class="qfoot" id="qfoot"></div>
+</main>
+
+<div class="over" id="over" hidden>
+  <div class="overcard">
+    <div class="eyebrow">tur bitti 🏁</div>
+    <h2><em id="overScore">0</em> / <span id="overTot">12</span></h2>
+    <p class="lead" id="overText"></p>
+    <p class="small" id="overBest"></p>
+    <div class="btns"><button type="button" class="btn pink" id="again2">Tekrar tur</button><a class="btn ghost" href="oda.html">Şefin Dairesi 🛋️</a><a class="btn ghost" href="oyun.html">Şefin Planı 🌿</a><a class="btn ghost" href="index.html">Geri dön</a></div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+<script src="fatih.js"></script>
+</body>
+</html>
