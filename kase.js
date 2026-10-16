@@ -346,7 +346,12 @@
     return;
   }
   measure();
-  buildSprites(function () { start(); });
+  buildSprites(function () {
+    /* ilk açılışta kısa tanıtım kartı; "başla" deyince oyun başlar */
+    var intro = $("intro"), go = $("introGo");
+    if (intro && go) { intro.hidden = false; render(now()); go.onclick = function () { intro.hidden = true; start(); }; }
+    else start();
+  });
 
   /* test kancası: kase.html#test */
   if (location.hash === "#test") {
