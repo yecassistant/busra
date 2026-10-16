@@ -2,7 +2,7 @@
    Parçaları yerleştirdikçe çiçekler birbirine sarmaşıkla bağlanır; satır/sütun dolunca "açar" ve temizlenir. */
 (function () {
   "use strict";
-  var N = 8, grid = [], score = 0, best = 0, tray = [], selected = -1, cellPx = 36, gap = 3;
+  var N = 8, grid = [], score = 0, moves = 0, best = 0, tray = [], selected = -1, cellPx = 36, gap = 3;
   var $ = function (id) { return document.getElementById(id); };
   var board = $("board"), vines = $("vines"), trayEl = $("tray"), msgEl = $("gmsg"), scoreEl = $("score"), bestEl = $("best"), over = $("over");
   var FL = {   /* çiçek: svg anahtarı, adı, en/boy oranı */
@@ -43,8 +43,21 @@
 
   /* ---------- ölçü ---------- */
   function measure() {
-    var w = Math.min(board.parentNode.clientWidth, 380);
-    cellPx = Math.floor((w - 12 - gap * (N - 1)) / N);
+    var wrap = board.parentNode, stage = wrap.parentNode;
+    var w = Math.min(wrap.clientWidth, 380);
+    var byW = Math.floor((w - 12 - gap * (N - 1)) / N);
+    /* üst bar + tepsi + mesaj satırı + boşluklar ölçülür; kalan yükseklik plana verilir → tek ekran, kaydırma yok */
+    var used = 0;
+    try {
+      var cs = getComputedStyle(stage), bs = getComputedStyle(document.body);
+      used += (parseFloat(cs.paddingTop) || 0) + (parseFloat(cs.paddingBottom) || 0) + (parseFloat(bs.paddingTop) || 0) + (parseFloat(bs.paddingBottom) || 0);
+      var g = parseFloat(cs.rowGap || cs.gap); if (isNaN(g)) g = 10;
+      var kids = stage.children, n = 0;
+      for (var k = 0; k < kids.length; k++) { n++; if (kids[k] !== wrap) used += kids[k].offsetHeight; }
+      used += g * (n - 1);
+    } catch (e) { used = 48 + 84 + 40 + 52; }
+    var byH = Math.floor((innerHeight - used - 12 - gap * (N - 1)) / N);
+    cellPx = Math.max(22, Math.min(byW, byH));
     var inner = cellPx * N + gap * (N - 1);
     board.style.width = (inner + 12) + "px";
     var cells = board.children;
@@ -136,7 +149,7 @@
     if (!p || !canPlace(p.shape, r0, c0)) { msg(pick(NOPE)); return false; }
     var bonus = vineBonus(p.shape, r0, c0, p.color);
     for (var i = 0; i < p.shape.length; i++) grid[r0 + p.shape[i][0]][c0 + p.shape[i][1]] = p.color;
-    score += p.shape.length + bonus;
+    score += p.shape.length + bonus; moves++;
     tray[idx] = null; selected = -1;
     paint(); renderTray();
     var cleared = clearLines();
@@ -145,6 +158,7 @@
       msg(FL[cleared.color].ad + (cleared.n > 1 ? " ×" + cleared.n : "") + " " + pick(CLEAR) + " " + FL[cleared.color].emo);
       burst(50 + cleared.n * 50);
     } else if (bonus) msg("Sarmaşık bağlandı, +" + bonus + " 🌿");
+    else if (moves === 1) msg("Yan yana gelen çiçekleri sarmaşık bağlar 🌿");
     else msg(pick(PLACE));
     scoreEl.textContent = score;
     if (!tray[0] && !tray[1] && !tray[2]) fillTray();
@@ -249,12 +263,16 @@
 
   /* ---------- başlat ---------- */
   function start() {
-    score = 0; scoreEl.textContent = 0; over.hidden = true; selected = -1;
+    score = 0; moves = 0; scoreEl.textContent = 0; over.hidden = true; selected = -1;
     buildBoard(); fillTray(); drawVines();
-    msg("Hoş geldin Şef 👷‍♀️ Çiçekleri yan yana diz, sarmaşık bağlasın.");
+    msg("Sürükle ya da seç, sonra plana dokun 🌿");
   }
   $("restart").onclick = start; $("again2").onclick = start;
-  addEventListener("resize", function () { measure(); paint(); renderTray(); });
+  function refit() { measure(); paint(); renderTray(); drawVines(); }
+  addEventListener("resize", refit);
+  addEventListener("orientationchange", function () { setTimeout(refit, 250); });
+  /* iOS: araç çubukları yerleşince ölçüyü bir kez daha al */
+  addEventListener("load", function () { setTimeout(refit, 300); });
   /* test kancası: oyun.html#test */
   if (location.hash === "#test") {
     window.__sef = {

@@ -106,6 +106,7 @@
     ];
     var scale = Math.min(1, b.clientWidth / 340);
     if (innerHeight < 700) scale = Math.min(scale, 0.8);
+    if (page === "acik") scale = Math.min(scale, innerHeight < 700 ? 0.56 : 0.68);
     b.style.height = 170 * scale + "px";
     parts.forEach(function (p, i) {
       var el = svgEl(p[0], p[3] * scale, p[4] * scale);
@@ -188,6 +189,10 @@
   };
   /* 0 · Açık bilet (ikinci aşama): hasta, tarih yok, hazır olunca tek dokunuş */
   if (page === "acik") {
+    var sh = $("scrollHint");
+    function shCheck() { if (sh) sh.classList.toggle("off", scrollY > 60 || document.documentElement.scrollHeight <= innerHeight + 40); }
+    shCheck(); addEventListener("scroll", shCheck, { passive: true }); addEventListener("resize", shCheck);
+    if (sh) sh.onclick = function () { try { scrollBy({ top: innerHeight * 0.7, behavior: "smooth" }); } catch (e) { scrollBy(0, innerHeight * 0.7); } };
     var PHONE2 = "905318864491";
     /* Gönderdiği bileti biliyorsan buraya yaz; boş kalırsa "Senin planın" görünür */
     var PLAN = { tur: "", menu: "" };

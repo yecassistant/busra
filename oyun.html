@@ -23,28 +23,19 @@
 <body data-page="oyun" data-tone="lil">
 
 <main class="stage game">
-  <div class="eyebrow">Büşranur'a özel 🌿</div>
-  <h2>Şefin <em>Planı</em></h2>
-  <p class="lead">Bahçe planını çiçeklerinle doldur: parçayı sürükle ya da seç, sonra plana dokun. Yan yana gelen çiçekleri sarmaşık bağlar; satır ya da sütun dolunca açar.</p>
-  <div class="legend">
-    <span class="lg f-lav"></span> lavanta <span class="lg f-peo"></span> şakayık <span class="lg f-lil"></span> lilyum
+  <div class="gtop">
+    <a class="gback" href="index.html">← Geri</a>
+    <div class="gtitle"><b>Şefin Planı</b><small>Büşranur'a özel 🌿</small></div>
+    <div class="gscore"><span>Puan <b id="score">0</b></span><span>En iyi <b id="best">0</b></span></div>
   </div>
-
-  <div class="scorebar">
-    <div><small>Puan</small><b id="score">0</b></div>
-    <div><small>En iyi</small><b id="best">0</b></div>
-  </div>
-
   <div class="boardwrap">
     <div class="board" id="board"></div>
     <svg class="vines" id="vines" aria-hidden="true"></svg>
   </div>
-  <p class="hint" id="gmsg"></p>
   <div class="tray" id="tray"></div>
-
-  <div class="btns" style="min-height:0">
-    <button type="button" class="btn ghost" id="restart">Yeni proje</button>
-    <a class="btn link" href="index.html">Geri dön</a>
+  <div class="gfoot">
+    <p class="hint gmsg" id="gmsg"></p>
+    <button type="button" class="grestart" id="restart">Yeni proje ↻</button>
   </div>
 </main>
 
