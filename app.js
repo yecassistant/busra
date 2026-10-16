@@ -5,6 +5,34 @@
   "use strict";
   var $ = function (id) { return document.getElementById(id); };
   var page = document.body.dataset.page;
+
+  /* iPhone: çift dokunmayla yakınlaşmayı engelle (Safari user-scalable=no'yu dikkate almıyor; touch-action yetmezse JS yedeği).
+     Yazı alanlarında devre dışı. Pinch'i de engelle. */
+  var lastTouchEnd = 0, lastX = 0, lastY = 0, lastEl = null;
+  function ctrlOf(t) { while (t && t !== document && !(t.tagName === "BUTTON" || t.tagName === "A")) t = t.parentNode; return t === document ? null : t; }
+  document.addEventListener("touchend", function (e) {
+    var tg = e.target, tag = tg && tg.tagName;
+    if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
+    var t = e.changedTouches && e.changedTouches[0], x = t ? t.clientX : 0, y = t ? t.clientY : 0, now = Date.now(), el = ctrlOf(tg) || tg;
+    /* sadece aynı öğeye, aynı noktaya hızlı ikinci dokunuş (gerçek çift dokunma) engellenir; başka bir butona art arda dokunmak serbest */
+    if (now - lastTouchEnd < 300 && el === lastEl && Math.abs(x - lastX) < 24 && Math.abs(y - lastY) < 24) e.preventDefault();
+    lastTouchEnd = now; lastX = x; lastY = y; lastEl = el;
+  }, { passive: false });
+  document.addEventListener("gesturestart", function (e) { e.preventDefault(); }, { passive: false });
+  document.addEventListener("touchmove", function (e) { if (e.touches && e.touches.length > 1) e.preventDefault(); }, { passive: false });
+  /* yakınlaşmış kaldıysa sayfa açılırken ölçeği sıfırla */
+  var vp = document.querySelector('meta[name="viewport"]');
+  if (vp) addEventListener("pageshow", function () { var c = vp.getAttribute("content"); vp.setAttribute("content", c + ", minimum-scale=1"); setTimeout(function () { vp.setAttribute("content", c); }, 50); });
+
+  /* Çift dokunma koruması: aynı buton/linke 350 ms içinde ikinci dokunuş yok sayılır
+     (iPhone'da hızlı çift tıklama "Sonraki durak"ı iki kez tetikleyip soru atlatıyordu). */
+  document.addEventListener("click", function (e) {
+    var t = e.target; while (t && t !== document && !(t.tagName === "BUTTON" || (t.tagName === "A" && t.className.indexOf("btn") >= 0))) t = t.parentNode;
+    if (!t || t === document) return;
+    var now = Date.now();
+    if (t.__lastTap && now - t.__lastTap < 350) { e.stopImmediatePropagation(); e.preventDefault(); return; }
+    t.__lastTap = now;
+  }, true);
   var state = {};
   new URLSearchParams(location.search).forEach(function (v, k) { state[k] = v; });
 

@@ -1,4 +1,4 @@
-/* Şefin Dairesi — çizim tabanlı oda döşeme oyunu (iç mimari). Doğru cevap yok; parça seç, sürükle, renk ver, Şef onayına sun.
+/* Şefin Odası — çizim tabanlı oda döşeme oyunu (iç mimari). Doğru cevap yok; parça seç, sürükle, renk ver, Şef onayına sun.
    Oda localStorage'da saklanır (sef_oda). Paylaş: SVG → PNG → iOS paylaşım menüsü (yoksa büyük görsel + basılı tut). */
 (function () {
   "use strict";
@@ -278,7 +278,7 @@
       x.fillStyle = "#fbfaf7"; x.fillRect(0, 0, c.width, c.height);
       x.drawImage(im, 0, 0, 800 * S, 640 * S);
       x.fillStyle = "#6e52a8"; x.font = "bold " + (22 * S) + "px Nunito, -apple-system, Helvetica, sans-serif"; x.textAlign = "center";
-      x.fillText("Şefin Dairesi · Büşranur'un odası 🛋️", 400 * S, 678 * S);
+      x.fillText("Şefin Odası · Büşranur'un odası 🛋️", 400 * S, 678 * S);
       try { c.toBlob(function (b) { cb(b, c.toDataURL("image/png")); }, "image/png"); } catch (e) { cb(null, null); }
     };
     im.onerror = function () { cb(null, null); };
@@ -288,9 +288,9 @@
     hint("Görsel hazırlanıyor…");
     toPng(function (blob, dataUrl) {
       if (!blob) { hint("Görsel oluşturulamadı; ekran görüntüsü al 📸"); return; }
-      var file = null; try { file = new File([blob], "sefin-dairesi.png", { type: "image/png" }); } catch (e) {}
+      var file = null; try { file = new File([blob], "sefin-odasi.png", { type: "image/png" }); } catch (e) {}
       if (file && navigator.canShare && navigator.canShare({ files: [file] }) && navigator.share) {
-        navigator.share({ files: [file], title: "Şefin Dairesi" }).then(function () { hint("Gönderildi 💐"); }).catch(function () { hint("Paylaşım iptal."); });
+        navigator.share({ files: [file], title: "Şefin Odası" }).then(function () { hint("Gönderildi 💐"); }).catch(function () { hint("Paylaşım iptal."); });
       } else {
         $("lbImg").src = dataUrl; $("lightbox").hidden = false; hint("Görsele basılı tutup kaydedebilirsin.");
       }

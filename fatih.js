@@ -72,21 +72,21 @@
     /* ---- fotoğraf durakları: fotoğraf sorunun kendisi (foto/ klasöründe dosya yoksa tura girmez) ---- */
     { lv: 1, foto: true, pin: true, img: "ivybalat.jpg", q: "Balat'taki bu dükkân kimin? 📷", a: ["Yunus'un abisinin", "Ünlü bir tasarımcının", "Belediyenin", "Bir dizi setinin"],
       n: "Hatırlıyorsunnn :) Ivy Butik, Balat. Abimin dükkânı." },
-    { lv: 1, foto: true, img: "ayasofya.jpg", q: "Bu neresi? 📷", a: ["Ayasofya", "Sultanahmet Camii", "Süleymaniye Camii", "Fatih Camii"],
+    { lv: 1, foto: true, img: "ayasofya.jpg", q: "Burası neresi? 📷", a: ["Ayasofya", "Sultanahmet Camii", "Süleymaniye Camii", "Fatih Camii"],
       n: "Ayasofya, 537. Dört minaresi üç ayrı dönemde eklendi; batıdaki ikisi Mimar Sinan'ın." },
-    { lv: 1, foto: true, img: "sultanahmet.jpg", q: "Bu neresi? 📷", a: ["Sultanahmet Camii", "Süleymaniye Camii", "Yeni Cami", "Fatih Camii"],
+    { lv: 1, foto: true, img: "sultanahmet.jpg", q: "Burası neresi? 📷", a: ["Sultanahmet Camii", "Süleymaniye Camii", "Yeni Cami", "Fatih Camii"],
       n: "Altı minare, 1616. Sedefkâr Mehmed Ağa'nın eseri; Ayasofya'nın tam karşısında." },
     { lv: 1, foto: true, img: "kapalicarsi.jpg", q: "Bu çarşı hangisi? 📷", a: ["Kapalıçarşı", "Mısır Çarşısı", "Arasta Çarşısı", "Sahaflar Çarşısı"],
       n: "Kapalıçarşı: 1461'den beri. Boyalı tonozlu sokakları, binlerce dükkânı; kaybolmak serbest." },
     { lv: 1, foto: true, img: "balat.jpg", q: "Bu rengârenk sokak hangi mahallede? 📷", a: ["Balat", "Kuzguncuk", "Cihangir", "Arnavutköy"],
       n: "Balat, Haliç kıyısında; cumbalı rengârenk evleri ve dik sokaklarıyla Fatih'in en çok fotoğraflanan mahallesi." },
-    { lv: 1, foto: true, img: "yerebatan.jpg", q: "Bu neresi? 📷", a: ["Yerebatan Sarnıcı", "Binbirdirek Sarnıcı", "Kariye", "Tekfur Sarayı"],
+    { lv: 1, foto: true, img: "yerebatan.jpg", q: "Burası neresi? 📷", a: ["Yerebatan Sarnıcı", "Binbirdirek Sarnıcı", "Kariye", "Tekfur Sarayı"],
       n: "Yerebatan: 6. yüzyıl, 336 sütun, iki Medusa başı. Yazın şehrin en serin yeri." },
     { lv: 1, foto: true, img: "gulhane.jpg", q: "Bu park hangisi? 📷", a: ["Gülhane Parkı", "Emirgan Korusu", "Yıldız Parkı", "Fethi Paşa Korusu"],
       n: "Gülhane, Topkapı'nın dış bahçesiydi; 1912'de halka açıldı. Lale zamanı ayrı güzel." },
     { lv: 2, foto: true, img: "suleymaniye.jpg", q: "Bu cami hangisi? 📷", a: ["Süleymaniye Camii", "Sultanahmet Camii", "Yeni Cami", "Fatih Camii"],
       n: "Süleymaniye, Haliç'e hâkim tepede; 1557. Sinan'ın kendi türbesi de külliyenin köşesinde." },
-    { lv: 2, foto: true, img: "bozdogan.jpg", q: "Bu neresi? 📷", a: ["Bozdoğan Kemeri", "Yedikule Hisarı", "Theodosius Surları", "Mağlova Kemeri"],
+    { lv: 2, foto: true, img: "bozdogan.jpg", q: "Burası neresi? 📷", a: ["Bozdoğan Kemeri", "Yedikule Hisarı", "Theodosius Surları", "Mağlova Kemeri"],
       n: "Bozdoğan (Valens) Kemeri, 368. Atatürk Bulvarı'nın üstünden geçen su kemeri; 1.600 yıldır ayakta." },
     { lv: 2, foto: true, img: "misircarsisi.jpg", q: "Bu çarşı hangisi? 📷", a: ["Mısır Çarşısı", "Kapalıçarşı", "Arasta Çarşısı", "Sahaflar Çarşısı"],
       n: "Mısır Çarşısı: L planlı, 1660'lar. Baharat kokusu Eminönü'ne kadar gelir." },
@@ -94,7 +94,7 @@
       n: "Sirkeci Garı, 1890; mimarı August Jasmund. Oryantalist cephesiyle Orient Express'in son durağı." },
     { lv: 2, foto: true, img: "kariye.jpg", q: "Bu mozaikler nerede? 📷", a: ["Kariye", "Ayasofya", "Fethiye Camii", "Zeyrek Camii"],
       n: "Kariye'nin 14. yüzyıl mozaik ve freskleri; Edirnekapı'da, geç Bizans sanatının zirvesi." },
-    { lv: 2, foto: true, img: "yedikule.jpg", q: "Bu neresi? 📷", a: ["Yedikule Hisarı", "Rumeli Hisarı", "Anadolu Hisarı", "Tekfur Sarayı"],
+    { lv: 2, foto: true, img: "yedikule.jpg", q: "Burası neresi? 📷", a: ["Yedikule Hisarı", "Rumeli Hisarı", "Anadolu Hisarı", "Tekfur Sarayı"],
       n: "Yedikule, 1458. Bizans'ın Altın Kapı'sını da içine alan yedi kuleli hisar." },
     { lv: 2, foto: true, img: "almancesmesi.jpg", q: "Bu çeşme hangisi? 📷", a: ["Alman Çeşmesi", "III. Ahmet Çeşmesi", "Tophane Çeşmesi", "Bezmiâlem Valide Çeşmesi"],
       n: "Kayzer II. Wilhelm'in hediyesi, 1901. Parçaları Almanya'da yapılıp Hipodrom'da birleştirildi." },
@@ -104,7 +104,7 @@
       n: "Rüstem Paşa, 1563, Mimar Sinan. Duvarları baştan aşağı İznik çinisi; dükkânların üstünde yükselir." },
     { lv: 3, foto: true, img: "zeyrek.jpg", q: "Bu yapı hangisi? 📷", a: ["Zeyrek Camii", "Kariye", "Fethiye Camii", "Küçük Ayasofya Camii"],
       n: "Zeyrek (Pantokrator), 12. yüzyıl. Üç kilisenin birleştiği, Haliç'e bakan tuğla kütle." },
-    { lv: 3, foto: true, img: "tekfur.jpg", q: "Bu neresi? 📷", a: ["Tekfur Sarayı", "Bukoleon Sarayı", "Yedikule Hisarı", "Anemas Zindanları"],
+    { lv: 3, foto: true, img: "tekfur.jpg", q: "Burası neresi? 📷", a: ["Tekfur Sarayı", "Bukoleon Sarayı", "Yedikule Hisarı", "Anemas Zindanları"],
       n: "Tekfur Sarayı, geç Bizans; Edirnekapı'da surlara bitişik. Tuğla-taş işçiliğiyle cephesi hâlâ ayakta." },
     { lv: 3, foto: true, img: "buyukpostane.jpg", q: "Bu bina hangisi? 📷", a: ["Büyük Postane", "Sirkeci Garı", "IV. Vakıf Han", "Arkeoloji Müzesi"],
       n: "Büyük Postane, 1909, Vedat Tek. Birinci Ulusal Mimarlık'ın Sirkeci'deki yüzü." },
@@ -251,7 +251,9 @@
     if (im.complete && im.naturalWidth) tallCheck(); else im.onload = tallCheck;
     im.onerror = function () { if (box.parentNode) box.parentNode.removeChild(box); fit(); };
   }
+  var lastNext = 0;
   function next() {
+    var now = Date.now(); if (now - lastNext < 450) return; lastNext = now;
     at++;
     if (at >= tour.length) finish(); else showQuestion();
   }
