@@ -305,6 +305,7 @@
     no.addEventListener("click", function (e) { e.preventDefault(); e.stopPropagation(); });
     no.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") dodge(e); });
   }
+  window.__makeDodger = makeDodger;   /* kase.html'deki hediye kutusunun "Hayır"ı da aynı mekanizmayı kullanır */
 
   /* 2 · Davet – Hayır demek mümkün değil */
   if (page === "davet") {

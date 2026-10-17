@@ -316,7 +316,7 @@
   addEventListener("load", function () { setTimeout(refit, 300); });
 
   paintRoom(); render(); measure();
-  hint(scene.items.length ? "Odan kaldığı gibi duruyor. Devam et, Şef 🛋️" : "Tepsiden parça seç, odaya yerleştir. Doğru cevap yok, Şef 🛋️");
+  hint(scene.items.length ? "Odan kaldığı gibi duruyor. Devam et 🛋️" : "Tepsiden parça seç, odaya yerleştir. Doğru cevap yok 🛋️");
 
   if (location.hash === "#test") window.__oda = { scene: function () { return scene; }, add: add, sel: function () { return sel; }, toPng: toPng };
 })();

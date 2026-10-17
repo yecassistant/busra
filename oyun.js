@@ -26,9 +26,9 @@
     [[0, 0], [0, 1], [0, 2], [1, 1]], [[0, 1], [1, 0], [1, 1], [1, 2]], [[0, 0], [1, 0], [1, 1], [2, 0]], [[0, 1], [1, 0], [1, 1], [2, 1]],
     [[0, 0], [0, 1], [1, 1], [1, 2]], [[0, 1], [0, 2], [1, 0], [1, 1]]
   ];
-  var CLEAR = ["açtı, Şef 🏗️", "sırası tamam, mimari onay ✓", "hizaya girdi, statik tuttu 📐", "dizildi; ruhsat çıktı 😅", "tamam, şantiye tertemiz"];
-  var NOPE = ["Oraya sığmaz, Şef", "Kolon çakıştı 😅", "Kat planı uymuyor", "Mimar bakışıyla tekrar dene"];
-  var PLACE = ["Yerleşti.", "Güzel.", "Tam oturdu.", "Devam, Şef.", "Plan büyüyor."];
+  var CLEAR = ["açtı 🏗️", "sırası tamam, mimari onay ✓", "hizaya girdi, statik tuttu 📐", "dizildi; ruhsat çıktı 😅", "tamam, şantiye tertemiz"];
+  var NOPE = ["Oraya sığmaz", "Kolon çakıştı 😅", "Kat planı uymuyor", "Mimar bakışıyla tekrar dene"];
+  var PLACE = ["Yerleşti.", "Güzel.", "Tam oturdu.", "Devam.", "Plan büyüyor."];
   function pick(a) { return a[Math.floor(Math.random() * a.length)]; }
   function burst(n) { try { if (window.__burst) window.__burst(n); } catch (e) {} }
   function flowerImg(color, size) {
@@ -182,7 +182,7 @@
     if (any) return;
     if (score > best) { best = score; try { localStorage.setItem("sef_best", String(best)); } catch (e) {} bestEl.textContent = best; }
     $("overScore").textContent = score;
-    $("overText").textContent = score > 150 ? "Bu bahçe onaylandı, Şef. Tebrikler 🏗️" : score > 60 ? "Fena değil, mimar gözü belli 😅" : "Isınma turuydu, Şef. Bir daha?";
+    $("overText").textContent = score > 150 ? "Bu bahçe onaylandı, Şef. Tebrikler 🏗️" : score > 60 ? "Fena değil, mimar gözü belli 😅" : "Isınma turuydu. Bir daha?";
     over.hidden = false; burst(40);
   }
   function msg(t) { msgEl.textContent = t; }
@@ -248,9 +248,9 @@
     var d = drag; drag = null;
     if (d.ghost.parentNode) d.ghost.parentNode.removeChild(d.ghost);
     clearPreview();
-    if (!d.moved) { selected = (selected === d.i) ? -1 : d.i; renderTray(); msg(selected >= 0 ? "Şimdi plana dokun, Şef 👇" : ""); return; }
+    if (!d.moved) { selected = (selected === d.i) ? -1 : d.i; renderTray(); msg(selected >= 0 ? "Şimdi plana dokun 👇" : ""); return; }
     var cp = d.cp;
-    if (cp && cp.r >= 0 && cp.c >= 0 && cp.r < N && cp.c < N) place(d.i, cp.r, cp.c); else msg("Plana bırak, Şef");
+    if (cp && cp.r >= 0 && cp.c >= 0 && cp.r < N && cp.c < N) place(d.i, cp.r, cp.c); else msg("Plana bırak");
   }
   trayEl.addEventListener("pointerup", endDrag);
   trayEl.addEventListener("pointercancel", endDrag);

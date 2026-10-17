@@ -261,7 +261,7 @@
     var n = tour.length, t;
     if (ok === n) t = "Tam puan. Turu sen anlatacaksın, ben dinleyeceğim 😅";
     else if (ok >= 10) t = "Mimar seviyesi. Fatih'te rehbere gerek yok, sen varsın 📐";
-    else if (ok >= 7) t = "Gayet iyi, Şef. Kaçan durakları yerinde telafi ederiz ☕";
+    else if (ok >= 7) t = "Gayet iyi. Kaçan durakları yerinde telafi ederiz ☕";
     else if (ok >= 4) t = "Isınma turu sayılır. Gerçeği yerinde görünce oturur 🚶";
     else t = "Sorular zormuş, kabul ediyorum. Çözüm belli: yerinde görmek 🌸";
     if (ok > best) { best = ok; try { localStorage.setItem("fatih_best", best); } catch (e) {} }
