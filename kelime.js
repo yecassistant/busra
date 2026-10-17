@@ -63,6 +63,7 @@
     $("bSecret").hidden = secretRevealed() === 0;
     buildGrid(); buildWheel(); setPill(""); msg(i === 0 ? "Harflerin üstünde parmağını kaydır" : "");
     over.hidden = true; save();
+    if (L.w.every(function (o) { return found[o.w]; })) checkDone();   /* kayıtlı bölüm zaten tamamsa (kesişmelerle açılmış son kelime) kartı hemen göster */
   }
   function buildGrid() {
     cells = {}; gridEl.innerHTML = "";
