@@ -28,14 +28,16 @@
     }
     return '<b class="w">' + html + "</b>";
   }
-  function secretRevealed() { var done = 0; try { if (localStorage.getItem("kb_done") === "1") return SEC_LETTERS.length; done = +localStorage.getItem("kb_lvl") || 0; } catch (e) {} return Math.max(0, Math.min(SEC_LETTERS.length, done - 1)); }   /* kb_lvl = tamamlanan bölüm sayısı; 1. bölüm harf vermez */
+  function secretRevealed() { try { if (localStorage.getItem("kb_done") === "1") return SEC_LETTERS.length; } catch (e) {} return Math.max(0, Math.min(SEC_LETTERS.length, maxLvl - 1)); }   /* kb_lvl = tamamlanan bölüm sayısı; 1. bölüm harf vermez */
   var MSG_DONE = ["Bahçe büyüyor 🌱", "Bölüm bitti, güzel 🌸", "Harfler yerini buldu ✨", "Bir sonraki biraz daha uzun 📏", "Hızlısın, mimar işi 📐", "Kelimeler çiçek açtı 🌷"];
   var TR_UP = function (s) { return s.replace(/i/g, "İ").replace(/ı/g, "I").toUpperCase(); };
   var up = function (s) { try { return s.toLocaleUpperCase("tr-TR"); } catch (e) { return TR_UP(s); } };
 
   var lvl = 0, L = null, found = {}, hinted = {}, bonusFound = {}, bonusTotal = 0, hints = 1, sel = [], cells = {}, letters = [], dragging = false, tapMode = false;
+  var maxLvl = 0;   /* açılmış en ileri bölüm (0 tabanlı); geri dönüp tekrar oynamak ilerlemeyi bozmaz */
   try {
     lvl = Math.min(LEVELS.length - 1, Math.max(0, +localStorage.getItem("kb_lvl") || 0));
+    maxLvl = Math.min(LEVELS.length - 1, Math.max(lvl, +localStorage.getItem("kb_max") || 0));
     bonusTotal = +localStorage.getItem("kb_bonus") || 0;
     var h = localStorage.getItem("kb_hint"); hints = h === null ? 1 : +h;
   } catch (e) {}
@@ -45,7 +47,7 @@
   function burst(n) { if (window.__burst) try { window.__burst(n); } catch (e) {} }
   function save() {
     try {
-      localStorage.setItem("kb_lvl", lvl); localStorage.setItem("kb_bonus", bonusTotal); localStorage.setItem("kb_hint", hints);
+      localStorage.setItem("kb_lvl", lvl); localStorage.setItem("kb_max", maxLvl); localStorage.setItem("kb_bonus", bonusTotal); localStorage.setItem("kb_hint", hints);
       localStorage.setItem("kb_state", JSON.stringify({ lvl: lvl, f: Object.keys(found), h: Object.keys(hinted), b: Object.keys(bonusFound) }));
     } catch (e) {}
   }
@@ -194,15 +196,16 @@
     doneShown = true;
     L.w.forEach(function (o) { found[o.w] = 1; });
     var last = lvl >= LEVELS.length - 1, nb = Object.keys(bonusFound).length;
-    try { if (last) localStorage.setItem("kb_done", "1"); else { localStorage.setItem("kb_lvl", lvl + 1); localStorage.removeItem("kb_state"); } } catch (e) {}
+    if (lvl + 1 > maxLvl) maxLvl = Math.min(LEVELS.length - 1, lvl + 1);
+    try { localStorage.setItem("kb_max", maxLvl); if (last) localStorage.setItem("kb_done", "1"); else { localStorage.setItem("kb_lvl", lvl + 1); localStorage.removeItem("kb_state"); } } catch (e) {}
     $("next").hidden = last;
     try {
       $("overEyebrow").textContent = last ? "bahçe tamam 🌸" : "bölüm " + (lvl + 1) + " tamam 🌸";
       $("overTitle").textContent = up(L.t);
       $("overText").textContent = (M[L.t] ? up(L.t) + ": " + M[L.t] + ". " : "") + (last ? "30 bölümün hepsi bitti. Yeni harfler ekleyince haber ederim 🌱" : MSG_DONE[lvl % MSG_DONE.length]);
       $("overBonus").textContent = nb ? "Bu bölümde " + nb + " bonus kelime · ipucu: " + hints : "İpucu: " + hints;
-      var rev = Math.max(0, Math.min(SEC_LETTERS.length, lvl)), secEl = $("secret");   /* lvl: 0 tabanlı → 2. bölüm (lvl 1) 1. harfi açar */
-      if (rev > 0) { secEl.hidden = false; secEl.innerHTML = secretHtml(rev, rev - 1, last); } else secEl.hidden = true;
+      var rev = secretRevealed(), secEl = $("secret"), fresh = (lvl + 1 === maxLvl);   /* yeni açılan harf yalnızca ilk kez bitirilen bölümde vurgulanır */
+      if (rev > 0) { secEl.hidden = false; secEl.innerHTML = secretHtml(rev, fresh ? rev - 1 : -1, last); } else secEl.hidden = true;
       if (last) $("overText").innerHTML = "Çabuk iyileş! ❤️<br>Suflen seni<br>bekliyor.";
       burst(last ? 120 : 50);
     } catch (e) {}
@@ -225,6 +228,24 @@
     if (v === HINT_PW.replace(/ /g, "")) { $("hintOv").hidden = true; if (pwMode === "skip") skipLevel(); else hint(); }
     else { $("hintPwMsg").textContent = ["Olmadı (:", "Bu değil, bir daha", "Yakın değil 😅", "Hmm, o söz değil"][Math.floor(Math.random() * 4)]; $("hintPw").select(); }
   }
+  /* bölüm seçici: rozet → liste; açılmış bölümler (maxLvl dahil) seçilebilir */
+  function openLevels() {
+    var g = $("lvlGrid"), html = "";
+    for (var i = 0; i < LEVELS.length; i++) {
+      var cls = i === lvl ? "cur" : i < maxLvl ? "done" : i === maxLvl ? "" : "kilit";
+      html += '<button type="button" data-i="' + i + '" class="' + cls + '"' + (i > maxLvl ? ' disabled' : '') + '>' + (i + 1) + "</button>";
+    }
+    g.innerHTML = html; $("lvlOv").hidden = false;
+  }
+  $("lvlBtn").onclick = openLevels;
+  $("lvlClose").onclick = function () { $("lvlOv").hidden = true; };
+  $("lvlGrid").addEventListener("click", function (e) {
+    var b = e.target.closest ? e.target.closest("button") : null; if (!b || b.disabled) return;
+    var i = +b.getAttribute("data-i"); $("lvlOv").hidden = true;
+    if (i === lvl) return;
+    try { localStorage.removeItem("kb_state"); } catch (err) {}
+    over.hidden = true; load(i, false);
+  });
   $("bHint").onclick = askHint;
   $("hintGo").onclick = tryHint;
   $("hintPw").addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); tryHint(); } });
@@ -236,7 +257,8 @@
   function skipLevel() {
     if (lvl >= LEVELS.length - 1) return;
     doneShown = true;
-    try { localStorage.setItem("kb_lvl", lvl + 1); localStorage.removeItem("kb_state"); } catch (e) {}
+    if (lvl + 1 > maxLvl) maxLvl = Math.min(LEVELS.length - 1, lvl + 1);
+    try { localStorage.setItem("kb_max", maxLvl); localStorage.setItem("kb_lvl", lvl + 1); localStorage.removeItem("kb_state"); } catch (e) {}
     over.hidden = true; load(lvl + 1, false); msg("Bölüm atlandı ⏭");
   }
   $("secretClose").onclick = function () { $("secretOv").hidden = true; };
