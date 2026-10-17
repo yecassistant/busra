@@ -82,6 +82,7 @@
     }
     L.w.forEach(function (o) { if (found[o.w]) reveal(o, false); });
     Object.keys(hinted).forEach(function (k) { if (cells[k]) { cells[k].textContent = up(cells[k].dataset.ch); cells[k].classList.add("on", "hint"); } });
+    sweep();
   }
   function wordCells(o) { var a = []; for (var k = 0; k < o.w.length; k++) a.push(cells[(o.d === 0 ? o.x + k : o.x) + "," + (o.d === 0 ? o.y : o.y + k)]); return a; }
   function reveal(o, anim) {
@@ -150,7 +151,7 @@
     var target = null; for (var i = 0; i < L.w.length; i++) if (L.w[i].w === w) target = L.w[i];
     if (target) {
       if (found[w]) { flash("dup", "Onu bulmuştun"); return; }
-      found[w] = 1; reveal(target, true); burst(w.length >= 6 ? 30 : 14); flash("ok", M[w] ? up(w) + " — " + M[w] : ""); save();
+      found[w] = 1; reveal(target, true); burst(w.length >= 6 ? 30 : 14); flash("ok", M[w] ? up(w) + " — " + M[w] : ""); sweep(); save();
       checkDone(); return;
     }
     if (L.b.indexOf(w) >= 0) {
@@ -175,9 +176,11 @@
     hints--; $("hintNo").textContent = hints;
     var key = open[Math.floor(Math.random() * open.length)], c = cells[key];
     hinted[key] = 1; c.textContent = up(c.dataset.ch); c.classList.add("on", "hint", "pop");
-    /* ipuçlarıyla tamamen açılan kelime bulunmuş sayılır */
-    L.w.forEach(function (o) { if (!found[o.w] && wordCells(o).every(function (x) { return x.classList.contains("on"); })) { found[o.w] = 1; } });
-    save(); checkDone();
+    sweep(); save(); checkDone();
+  }
+  /* bütün hücreleri (kesişen kelimeler ya da ipuçlarıyla) açılmış kelime bulunmuş sayılır — yoksa bölüm bitmez */
+  function sweep() {
+    L.w.forEach(function (o) { if (!found[o.w] && wordCells(o).every(function (x) { return x.classList.contains("on"); })) { found[o.w] = 1; wordCells(o).forEach(function (x) { x.classList.remove("hint"); }); } });
   }
   function checkDone() {
     if (!L.w.every(function (o) { return found[o.w]; })) return;
