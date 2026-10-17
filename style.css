@@ -23,7 +23,7 @@
 *{box-sizing:border-box}
 [hidden]{display:none!important}
 html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
-*,*::before,*::after{touch-action:manipulation}
+*,*::before,*::after{touch-action:manipulation;-webkit-tap-highlight-color:rgba(0,0,0,0)}
 button,a,.frame,.opt,.day,.quick,.big{-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none}
 /* iOS'un kendi buton/alan görünümünü kapat (tarih ve saat kutuları hariç) */
 button,input[type="text"],textarea{-webkit-appearance:none;appearance:none;margin:0}
@@ -563,7 +563,8 @@ body[data-page="kase"]{padding-top:max(10px,env(safe-area-inset-top));padding-bo
 .kbest{padding:8px 4px;min-height:58px;display:flex;flex-direction:column;justify-content:center}
 .kbest b{font-family:var(--display);font-size:1.3rem;color:var(--peony-d);line-height:1.1}
 .bowlwrap{position:relative;margin:0 auto;width:100%;max-width:440px;flex:none}
-#bowl{display:block;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;cursor:pointer}
+#bowl{display:block;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;cursor:pointer;-webkit-tap-highlight-color:transparent;-webkit-tap-highlight-color:rgba(0,0,0,0)}
+.bowlwrap,.stage.kase,.khead,.chain,.kmsg{-webkit-tap-highlight-color:transparent;-webkit-tap-highlight-color:rgba(0,0,0,0);-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 .kmsg{text-align:center;font-size:.84rem;color:var(--peony);font-weight:700;margin:0;height:1.3em;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .chain{display:flex;align-items:flex-end;justify-content:center;gap:3px;background:rgba(255,255,255,.85);border-radius:16px;padding:5px 8px;box-shadow:0 0 0 1.5px var(--line)}
 .chain svg{display:block}
