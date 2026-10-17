@@ -635,3 +635,47 @@ body[data-page="kase"]{padding-top:max(10px,env(safe-area-inset-top));padding-bo
 @keyframes heartbeatG{0%,100%{transform:scale(1)}12%{transform:scale(1.09)}24%{transform:scale(1)}36%{transform:scale(1.06)}}
 @-webkit-keyframes giftMsg{from{opacity:0;-webkit-transform:scale(.5) translateY(14px)}to{opacity:1;-webkit-transform:scale(1) translateY(0)}}
 @keyframes giftMsg{from{opacity:0;transform:scale(.5) translateY(14px)}to{opacity:1;transform:scale(1) translateY(0)}}
+
+/* ---- Kelime Bahçesi (harf çarkı + bulmaca) ---- */
+body[data-page="kelime"]{padding-top:max(10px,env(safe-area-inset-top));padding-bottom:max(12px,env(safe-area-inset-bottom))}
+.stage.kelime{justify-content:flex-start;gap:8px;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.gridwrap{flex:none;display:flex;align-items:center;justify-content:center;overflow:hidden;min-height:120px}
+.grid{display:grid;gap:3px}
+.cell{display:flex;align-items:center;justify-content:center;border-radius:7px;background:rgba(255,255,255,.88);box-shadow:0 0 0 1.5px var(--line);font-weight:800;color:var(--ink);line-height:1}
+.cell.empty{visibility:hidden}
+.cell.on{background:#fff;box-shadow:0 0 0 1.5px var(--lavender),0 3px 0 rgba(155,127,209,.35)}
+.cell.hint{background:#fff3c9;box-shadow:0 0 0 1.5px #f3cf6a}
+.cell.pop{-webkit-animation:cellpop .32s cubic-bezier(.2,1.4,.4,1);animation:cellpop .32s cubic-bezier(.2,1.4,.4,1)}
+@-webkit-keyframes cellpop{0%{-webkit-transform:scale(.4);background:var(--peony);color:#fff}100%{-webkit-transform:scale(1)}}
+@keyframes cellpop{0%{transform:scale(.4);background:var(--peony);color:#fff}100%{transform:scale(1)}}
+.wordrow{flex:none;height:46px;display:flex;align-items:center;justify-content:center}
+.wordpill{font:inherit;border:0;cursor:pointer;min-width:72px;min-height:42px;padding:6px 20px;border-radius:999px;background:#fff;box-shadow:0 0 0 1.5px var(--line);font-family:var(--display);font-size:1.25rem;letter-spacing:.14em;color:var(--ink);opacity:0;-webkit-transform:scale(.9);transform:scale(.9);-webkit-transition:opacity .15s,-webkit-transform .15s,background .15s;transition:opacity .15s,transform .15s,background .15s;-webkit-tap-highlight-color:rgba(0,0,0,0)}
+.wordpill.has{opacity:1;-webkit-transform:scale(1);transform:scale(1)}
+.wordpill.ok{opacity:1;background:var(--peony);color:#fff;box-shadow:0 0 0 1.5px var(--peony)}
+.wordpill.bonus{opacity:1;background:#ffe9a8;box-shadow:0 0 0 1.5px #f3cf6a}
+.wordpill.dup{opacity:1;background:var(--lavender-l)}
+.wordpill.no{opacity:1;background:#ffe1e8;-webkit-animation:pillshake .45s;animation:pillshake .45s}
+@-webkit-keyframes pillshake{0%,100%{-webkit-transform:translateX(0)}20%{-webkit-transform:translateX(-7px)}40%{-webkit-transform:translateX(7px)}60%{-webkit-transform:translateX(-5px)}80%{-webkit-transform:translateX(5px)}}
+@keyframes pillshake{0%,100%{transform:translateX(0)}20%{transform:translateX(-7px)}40%{transform:translateX(7px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
+.wheelwrap{flex:none;display:flex;align-items:center;justify-content:center}
+.wheel{position:relative;border-radius:50%;background:rgba(255,255,255,.62);box-shadow:inset 0 0 0 2px rgba(255,255,255,.9),0 0 0 1.5px var(--line),0 18px 36px -24px rgba(61,42,63,.5);touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:rgba(0,0,0,0)}
+.wlines{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none}
+.wlines polyline{fill:none;stroke:var(--peony);stroke-width:11;stroke-linecap:round;stroke-linejoin:round;opacity:.5}
+.lt{position:absolute;border-radius:50%;background:#fff;box-shadow:0 3px 0 var(--line);display:flex;align-items:center;justify-content:center;font-family:var(--display);font-weight:600;color:var(--ink);-webkit-transition:-webkit-transform .12s,background .12s;transition:transform .12s,background .12s;pointer-events:none}
+.lt.sel{background:var(--peony);color:#fff;box-shadow:0 3px 0 var(--peony-d);-webkit-transform:scale(1.1);transform:scale(1.1)}
+.kfoot{flex:none}
+.kfoot .kmsg{flex:1;margin:0;min-height:1.3em;font-size:.84rem}
+.kfoot .tb b{margin-left:3px;color:var(--lavender-d)}
+body[data-page="kelime"] .howto li:before{content:"🌸"}
+.secret{display:flex;flex-wrap:wrap;justify-content:center;gap:4px 9px;padding:2px 0}
+.secret b.w{display:inline-flex;gap:3px;white-space:nowrap}
+.secret b.br{flex-basis:100%;height:0}
+.secret i{font-style:normal;display:inline-flex;align-items:center;justify-content:center;width:19px;height:25px;border-radius:5px;background:rgba(239,231,251,.9);box-shadow:0 0 0 1px var(--line);font-family:var(--display);font-size:.9rem;color:var(--ink)}
+.secret i.gap{width:8px;background:none;box-shadow:none}
+.secret i.sym{background:none;box-shadow:none;color:var(--peony);width:auto;padding:0 1px}
+.secret i.hid{color:var(--soft);font-size:.7rem}
+.secret i.new{background:#ffe9a8;box-shadow:0 0 0 1.5px #f3cf6a;-webkit-animation:cellpop .5s cubic-bezier(.2,1.4,.4,1);animation:cellpop .5s cubic-bezier(.2,1.4,.4,1)}
+.secret i.all{background:var(--peony);color:#fff;box-shadow:0 0 0 1.5px var(--peony)}
+@media (max-width:359px){.secret i{width:16px;height:22px;font-size:.78rem}}
+.hintpw{font:inherit;font-size:16px;font-weight:700;width:100%;max-width:260px;margin:0 auto;padding:11px 14px;border:0;border-radius:14px;background:#fff;box-shadow:0 0 0 1.5px var(--line);color:var(--ink);text-align:center;outline:none}
+.hintpw:focus{box-shadow:0 0 0 2px var(--peony)}

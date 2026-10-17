@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>Kelime Bahçesi</title>
+<meta name="description" content="Çarktaki harfleri birleştir, bulmacayı doldur; 30 bölüm, gitgide zorlaşır.">
+<meta property="og:title" content="Kelime Bahçesi 🌸">
+<meta property="og:description" content="Yatarken canın sıkılırsa: harfleri birleştir, kelimeleri bul.">
+<meta name="color-scheme" content="light">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://yecassistant.github.io/busranur/onizleme.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#9b7fd1">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E%F0%9F%8C%B8%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;1,9..144,600&family=Nunito:wght@600;700;800&family=Caveat:wght@600;700&display=swap">
+<link rel="stylesheet" href="style.css?v=1017g">
+</head>
+<body data-page="kelime" data-tone="lav">
+
+<main class="stage kelime">
+  <div class="gtop">
+    <a class="gback" href="index.html">← Geri</a>
+    <div class="gtitle"><b>Kelime Bahçesi</b><small>harfleri birleştir 🌸</small></div>
+    <div class="gscore"><span>Bölüm <b id="lvlNo">1/30</b></span><span>Bonus <b id="bonusNo">0</b></span></div>
+  </div>
+
+  <div class="gridwrap" id="gridwrap"><div class="grid" id="grid"></div></div>
+
+  <div class="wordrow">
+    <button type="button" class="wordpill" id="pill" aria-live="polite"><span id="pillTxt"></span></button>
+  </div>
+
+  <div class="wheelwrap" id="wheelwrap">
+    <div class="wheel" id="wheel">
+      <svg class="wlines" id="wlines" aria-hidden="true"></svg>
+    </div>
+  </div>
+
+  <div class="gfoot kfoot">
+    <button type="button" class="tb icon" id="bShuffle" title="Karıştır" aria-label="Karıştır">🔀</button>
+    <button type="button" class="tb icon" id="bSecret" title="Gizli cümle" aria-label="Gizli cümle" hidden>✉️</button>
+    <p class="kmsg" id="kmsg"></p>
+    <button type="button" class="tb" id="bHint">💡 İpucu <b id="hintNo">1</b></button>
+  </div>
+</main>
+
+<div class="over" id="over" hidden>
+  <div class="overcard">
+    <div class="eyebrow" id="overEyebrow">bölüm tamam 🌸</div>
+    <h2 id="overTitle">Harika</h2>
+    <p class="lead" id="overText"></p>
+    <p class="small" id="overBonus"></p>
+    <div class="secret" id="secret" hidden></div>
+    <div class="btns"><button type="button" class="btn pink" id="next">Sonraki bölüm →</button><a class="btn ghost" href="index.html">Geri dön</a></div>
+  </div>
+</div>
+
+<div class="over" id="hintOv" hidden>
+  <div class="overcard">
+    <div class="eyebrow">ipucu 💡</div>
+    <p class="lead">İpucu için sihirli sözü yaz (:</p>
+    <input type="text" class="hintpw" id="hintPw" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" placeholder="sihirli söz…" inputmode="text" enterkeyhint="go">
+    <p class="hint" id="hintPwMsg"></p>
+    <div class="btns"><button type="button" class="btn pink" id="hintGo">Aç</button><button type="button" class="btn ghost" id="hintCancel">Vazgeç</button></div>
+  </div>
+</div>
+
+<div class="over" id="secretOv" hidden>
+  <div class="overcard">
+    <div class="eyebrow">gizli cümle ✉️</div>
+    <p class="lead">Her bölüm bir harf veriyor. Şimdilik:</p>
+    <div class="secret" id="secret2"></div>
+    <div class="btns"><button type="button" class="btn pink" id="secretClose">Tamam</button></div>
+  </div>
+</div>
+
+<div class="over intro" id="intro" hidden>
+  <div class="overcard">
+    <div class="eyebrow">yeni oyun 🌸</div>
+    <h2>Kelime <em>Bahçesi</em></h2>
+    <p class="lead">Harfler çarkta, kelimeler bulmacada.</p>
+    <ul class="howto">
+      <li>Çarktaki harflerin üstünde parmağını kaydırarak kelime yaz, bırakınca gönderilir. İstersen harflere tek tek dokunup kelimeye basarak da gönderebilirsin.</li>
+      <li>Bulmacadaki kelimeleri bulunca bölüm biter; 30 bölüm, harfler gitgide artar.</li>
+      <li>Sözlükte olan ama bulmacada olmayan kelimeler bonus sayılır; her 5 bonus bir ipucu kazandırır. İpucu bir harf açar ama sihirli sözü ister (:</li>
+    </ul>
+    <div class="btns"><button type="button" class="btn pink" id="introGo">Başla 🌸</button></div>
+  </div>
+</div>
+
+<script src="app.js?v=1017g"></script>
+<script src="kelime.js?v=1017g"></script>
+</body>
+</html>
