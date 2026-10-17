@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;1,9..144,600&family=Nunito:wght@600;700;800&family=Caveat:wght@600;700&display=swap">
-<link rel="stylesheet" href="style.css?v=1017i">
+<link rel="stylesheet" href="style.css?v=1017l">
 </head>
 <body data-page="kelime" data-tone="lav">
 
@@ -43,7 +43,7 @@
 
   <div class="gfoot kfoot">
     <button type="button" class="tb icon" id="bShuffle" title="Karıştır" aria-label="Karıştır">🔀</button>
-    <button type="button" class="tb icon" id="bSecret" title="Gizli cümle" aria-label="Gizli cümle" hidden>✉️</button>
+    <button type="button" class="tb icon" id="bSecret" title="Gizli cümle" aria-label="Gizli cümle">✉️</button>
     <p class="kmsg" id="kmsg"></p>
     <button type="button" class="tb" id="bHint">💡 İpucu <b id="hintNo">1</b></button>
   </div>
@@ -63,7 +63,7 @@
 <div class="over" id="hintOv" hidden>
   <div class="overcard">
     <div class="eyebrow">ipucu 💡</div>
-    <p class="lead">İpucu için sihirli sözü yaz (:</p>
+    <p class="lead" id="hintLead">İpucu için sihirli sözü yaz (:</p>
     <input type="text" class="hintpw" id="hintPw" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" placeholder="sihirli söz…" inputmode="text" enterkeyhint="go">
     <p class="hint" id="hintPwMsg"></p>
     <div class="btns"><button type="button" class="btn pink" id="hintGo">Aç</button><button type="button" class="btn ghost" id="hintCancel">Vazgeç</button></div>
@@ -73,9 +73,10 @@
 <div class="over" id="secretOv" hidden>
   <div class="overcard">
     <div class="eyebrow">gizli cümle ✉️</div>
-    <p class="lead">Her bölüm bir harf veriyor. Şimdilik:</p>
+    <p class="lead" id="secretLead">Her bölüm bir harf veriyor. Şimdilik:</p>
     <div class="secret" id="secret2"></div>
-    <div class="btns"><button type="button" class="btn pink" id="secretClose">Tamam</button></div>
+    <div class="btns"><button type="button" class="btn pink" id="secretClose">Tamam</button><button type="button" class="btn ghost" id="skipBtn">Bölümü atla ⏭</button></div>
+    <p class="small" id="skipNote">Atlamak sihirli sözü ister; takılırsan diye.</p>
   </div>
 </div>
 
@@ -93,7 +94,7 @@
   </div>
 </div>
 
-<script src="app.js?v=1017i"></script>
-<script src="kelime.js?v=1017i"></script>
+<script src="app.js?v=1017l"></script>
+<script src="kelime.js?v=1017l"></script>
 </body>
 </html>

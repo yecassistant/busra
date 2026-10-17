@@ -52,7 +52,7 @@
 
   /* ---------- bölüm kur ---------- */
   function load(i, restore) {
-    lvl = i; L = LEVELS[i]; found = {}; hinted = {}; bonusFound = {}; sel = []; letters = L.l.split("");
+    lvl = i; L = LEVELS[i]; found = {}; hinted = {}; bonusFound = {}; sel = []; letters = L.l.split(""); doneShown = false;
     if (restore) {
       try {
         var st = JSON.parse(localStorage.getItem("kb_state") || "null");
@@ -60,10 +60,10 @@
       } catch (e) {}
     }
     $("lvlNo").textContent = (i + 1) + "/" + LEVELS.length; $("bonusNo").textContent = bonusTotal; $("hintNo").textContent = hints;
-    $("bSecret").hidden = secretRevealed() === 0;
+    $("skipBtn").hidden = i >= LEVELS.length - 1;
     buildGrid(); buildWheel(); setPill(""); msg(i === 0 ? "Harflerin üstünde parmağını kaydır" : "");
     over.hidden = true; save();
-    if (L.w.every(function (o) { return found[o.w]; })) checkDone();   /* kayıtlı bölüm zaten tamamsa (kesişmelerle açılmış son kelime) kartı hemen göster */
+    checkDone();   /* kayıtlı bölüm zaten tamamsa (kesişmelerle açılmış son kelime) kartı hemen göster */
   }
   function buildGrid() {
     cells = {}; gridEl.innerHTML = "";
@@ -183,41 +183,62 @@
   function sweep() {
     L.w.forEach(function (o) { if (!found[o.w] && wordCells(o).every(function (x) { return x.classList.contains("on"); })) { found[o.w] = 1; wordCells(o).forEach(function (x) { x.classList.remove("hint"); }); } });
   }
+  /* bölüm bitti mi? Hedeflerin hepsi bulunduysa YA DA bulmacadaki her hücre açıldıysa (kesişme/ipucu) bölüm tamamdır.
+     Kart gösterimi her bölümde bir kez; süs kısımları (gizli cümle, anlam) hata verse bile ilerleme kaydı ve kart etkilenmez. */
+  var doneShown = false;
+  function allOn() { return L.w.every(function (o) { return wordCells(o).every(function (c) { return c.classList.contains("on"); }); }); }
   function checkDone() {
-    if (!L.w.every(function (o) { return found[o.w]; })) return;
+    if (!L || doneShown) return;
+    var complete = L.w.every(function (o) { return found[o.w]; }) || allOn();
+    if (!complete) return;
+    doneShown = true;
+    L.w.forEach(function (o) { found[o.w] = 1; });
     var last = lvl >= LEVELS.length - 1, nb = Object.keys(bonusFound).length;
-    $("overEyebrow").textContent = last ? "bahçe tamam 🌸" : "bölüm " + (lvl + 1) + " tamam 🌸";
-    $("overTitle").textContent = up(L.t);
-    $("overText").textContent = (M[L.t] ? up(L.t) + ": " + M[L.t] + ". " : "") + (last ? "30 bölümün hepsi bitti. Yeni harfler ekleyince haber ederim 🌱" : MSG_DONE[lvl % MSG_DONE.length]);
-    $("overBonus").textContent = nb ? "Bu bölümde " + nb + " bonus kelime · ipucu: " + hints : "İpucu: " + hints;
-    $("next").hidden = last;
-    /* gizli cümle: bu bölümün harfi */
-    var rev = Math.max(0, Math.min(SEC_LETTERS.length, lvl)), secEl = $("secret");   /* lvl: 0 tabanlı → 2. bölüm (lvl 1) 1. harfi açar */
-    if (rev > 0) { secEl.hidden = false; secEl.innerHTML = secretHtml(rev, rev - 1, last); } else secEl.hidden = true;
-    if (last) $("overText").innerHTML = "Çabuk iyileş! ❤️<br>Suflen seni<br>bekliyor.";
-    burst(last ? 120 : 50);
-    setTimeout(function () { over.hidden = false; }, 700);
     try { if (last) localStorage.setItem("kb_done", "1"); else { localStorage.setItem("kb_lvl", lvl + 1); localStorage.removeItem("kb_state"); } } catch (e) {}
+    $("next").hidden = last;
+    try {
+      $("overEyebrow").textContent = last ? "bahçe tamam 🌸" : "bölüm " + (lvl + 1) + " tamam 🌸";
+      $("overTitle").textContent = up(L.t);
+      $("overText").textContent = (M[L.t] ? up(L.t) + ": " + M[L.t] + ". " : "") + (last ? "30 bölümün hepsi bitti. Yeni harfler ekleyince haber ederim 🌱" : MSG_DONE[lvl % MSG_DONE.length]);
+      $("overBonus").textContent = nb ? "Bu bölümde " + nb + " bonus kelime · ipucu: " + hints : "İpucu: " + hints;
+      var rev = Math.max(0, Math.min(SEC_LETTERS.length, lvl)), secEl = $("secret");   /* lvl: 0 tabanlı → 2. bölüm (lvl 1) 1. harfi açar */
+      if (rev > 0) { secEl.hidden = false; secEl.innerHTML = secretHtml(rev, rev - 1, last); } else secEl.hidden = true;
+      if (last) $("overText").innerHTML = "Çabuk iyileş! ❤️<br>Suflen seni<br>bekliyor.";
+      burst(last ? 120 : 50);
+    } catch (e) {}
+    setTimeout(function () { over.hidden = false; }, 700);
   }
-  $("next").onclick = function () { over.hidden = true; load(Math.min(LEVELS.length - 1, lvl + 1), false); };
+  /* emniyet: bulmaca tamamen açıkken kart bir şekilde çıkmadıysa 1.5 sn içinde çıkar */
+  setInterval(function () { try { if (L && !doneShown && over.hidden && allOn()) checkDone(); } catch (e) {} }, 1500);
+  $("next").onclick = function () { over.hidden = true; var n = Math.min(LEVELS.length - 1, lvl + 1); try { localStorage.removeItem("kb_state"); } catch (e) {} load(n, false); };
   /* ipucu sihirli sözle açılır: "peki madem" */
   var HINT_PW = "peki madem";
   function askHint() {
     var open = L.w.some(function (o) { return !found[o.w]; }); if (!open) return;
     if (hints <= 0) { msg("İpucu kalmadı; 5 bonus kelime = 1 ipucu"); return; }
+    pwMode = "hint"; $("hintLead").textContent = "İpucu için sihirli sözü yaz (:";
     $("hintPw").value = ""; $("hintPwMsg").textContent = ""; $("hintOv").hidden = false;
     setTimeout(function () { try { $("hintPw").focus(); } catch (e) {} }, 50);
   }
   function tryHint() {
     var v = ($("hintPw").value || "").toLocaleLowerCase("tr-TR").replace(/[^a-zçğıöşü]/g, "");
-    if (v === HINT_PW.replace(/ /g, "")) { $("hintOv").hidden = true; hint(); }
+    if (v === HINT_PW.replace(/ /g, "")) { $("hintOv").hidden = true; if (pwMode === "skip") skipLevel(); else hint(); }
     else { $("hintPwMsg").textContent = ["Olmadı (:", "Bu değil, bir daha", "Yakın değil 😅", "Hmm, o söz değil"][Math.floor(Math.random() * 4)]; $("hintPw").select(); }
   }
   $("bHint").onclick = askHint;
   $("hintGo").onclick = tryHint;
   $("hintPw").addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); tryHint(); } });
   $("hintCancel").onclick = function () { $("hintOv").hidden = true; };
-  $("bSecret").onclick = function () { var r = secretRevealed(); $("secret2").innerHTML = secretHtml(r, -1, r >= SEC_LETTERS.length); $("secretOv").hidden = false; };
+  $("bSecret").onclick = function () { var r = secretRevealed(); $("secretLead").textContent = r ? "Her bölüm bir harf veriyor. Şimdilik:" : "Her bölüm bir harf verecek; ilk harf 2. bölümden sonra."; $("secret2").innerHTML = secretHtml(r, -1, r >= SEC_LETTERS.length); $("secretOv").hidden = false; };
+  /* takılma emniyeti: bölümü atlamak da sihirli sözü ister */
+  var pwMode = "hint";
+  $("skipBtn").onclick = function () { $("secretOv").hidden = true; pwMode = "skip"; $("hintPw").value = ""; $("hintPwMsg").textContent = ""; $("hintLead").textContent = "Bölümü atlamak için sihirli sözü yaz (:"; $("hintOv").hidden = false; setTimeout(function () { try { $("hintPw").focus(); } catch (e) {} }, 50); };
+  function skipLevel() {
+    if (lvl >= LEVELS.length - 1) return;
+    doneShown = true;
+    try { localStorage.setItem("kb_lvl", lvl + 1); localStorage.removeItem("kb_state"); } catch (e) {}
+    over.hidden = true; load(lvl + 1, false); msg("Bölüm atlandı ⏭");
+  }
   $("secretClose").onclick = function () { $("secretOv").hidden = true; };
   $("bShuffle").onclick = function () {
     for (var i = letters.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), t = letters[i]; letters[i] = letters[j]; letters[j] = t; }

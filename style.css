@@ -679,3 +679,14 @@ body[data-page="kelime"] .howto li:before{content:"🌸"}
 @media (max-width:359px){.secret i{width:16px;height:22px;font-size:.78rem}}
 .hintpw{font:inherit;font-size:16px;font-weight:700;width:100%;max-width:260px;margin:0 auto;padding:11px 14px;border:0;border-radius:14px;background:#fff;box-shadow:0 0 0 1.5px var(--line);color:var(--ink);text-align:center;outline:none}
 .hintpw:focus{box-shadow:0 0 0 2px var(--peony)}
+/* ---- Yakında sayfası (filiz) ---- */
+body[data-page="yakinda"]{padding-top:max(10px,env(safe-area-inset-top));padding-bottom:max(12px,env(safe-area-inset-bottom))}
+.filiz{display:block;width:120px;height:auto;margin:0 auto}
+.filizG{-webkit-transform-origin:60px 80px;transform-origin:60px 80px;-webkit-animation:filizBuyu 3.4s ease-in-out infinite;animation:filizBuyu 3.4s ease-in-out infinite}
+.yaprak{-webkit-transform-origin:60px 62px;transform-origin:60px 62px}
+.tomurcuk{-webkit-transform-origin:60px 42px;transform-origin:60px 42px;-webkit-animation:tomurcuk 3.4s ease-in-out infinite;animation:tomurcuk 3.4s ease-in-out infinite}
+@-webkit-keyframes filizBuyu{0%{-webkit-transform:scaleY(.2)}45%,100%{-webkit-transform:scaleY(1)}}
+@keyframes filizBuyu{0%{transform:scaleY(.2)}45%,100%{transform:scaleY(1)}}
+@-webkit-keyframes tomurcuk{0%,55%{-webkit-transform:scale(.2)}80%,100%{-webkit-transform:scale(1)}}
+@keyframes tomurcuk{0%,55%{transform:scale(.2)}80%,100%{transform:scale(1)}}
+@media (prefers-reduced-motion:reduce){.filizG,.tomurcuk{-webkit-animation:none;animation:none}}
