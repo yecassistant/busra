@@ -6,7 +6,7 @@
   "use strict";
   var AC = window.AudioContext || window.webkitAudioContext;
   if (!AC) return;
-  var on = true, ctx = null, master = null, noiseBuf = null, lastSlide = 0, step = 0;
+  var on = true, ctx = null, master = null, noiseBuf = null, lastSlide = -1, step = 0, touched = false;
   try { on = localStorage.getItem("ok_ses") !== "0"; } catch (e) {}
   var VOL = 0.55;                                           /* genel ses seviyesi: kısık-orta */
   var SCALE = [0, 2, 4, 7, 9, 12, 14, 16, 19, 21];          /* pentatonik: art arda notalar hep uyumlu */
@@ -14,14 +14,14 @@
   function init() {
     if (ctx || !on) return;
     try {
-      ctx = new AC();
+      try { ctx = new AC({ latencyHint: "interactive" }); } catch (e1) { ctx = new AC(); }   /* en düşük gecikme */
       var comp = ctx.createDynamicsCompressor(); comp.threshold.value = -18; comp.ratio.value = 6;
       master = ctx.createGain(); master.gain.value = VOL; master.connect(comp); comp.connect(ctx.destination);
       noiseBuf = ctx.createBuffer(1, Math.floor(ctx.sampleRate * 0.5), ctx.sampleRate);
       var d = noiseBuf.getChannelData(0); for (var i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
     } catch (e) { ctx = null; }
   }
-  function ready() { if (!on) return false; init(); if (!ctx) return false; if (ctx.state === "suspended") try { ctx.resume(); } catch (e) {} return true; }
+  function ready() { if (!on || !touched) return false; init(); if (!ctx) return false; if (ctx.state !== "running") { try { ctx.resume(); } catch (e) {} return false; } return true; }
   function rnd(a, b) { return a + Math.random() * (b - a); }
   function env(g, t, a, peak, dec) { g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(peak, t + a); g.gain.exponentialRampToValueAtTime(0.0001, t + a + dec); }
   function tone(type, f0, f1, t, a, peak, dec) {
@@ -67,7 +67,7 @@
     level: function () { step = 0; }                         /* yeni bölümde nota sırası baştan */
   };
   window.OkSes = {
-    play: function (name, o) { if (name === "level") { S.level(); return; } if (!ready() || !S[name]) return; try { S[name](o); } catch (e) {} },
+    play: function (name, o) { if (name === "level") { S.level(); return; } if (!S[name]) return; if (!ready()) { if (on) { pend = { n: name, o: o, t: Date.now() }; retry(); } return; } try { S[name](o); } catch (e) {} },
     on: function () { return on; }
   };
 
@@ -81,11 +81,28 @@
     b.onclick = function () {
       on = !on; try { localStorage.setItem("ok_ses", on ? "1" : "0"); } catch (e) {}
       if (!on && ctx) try { ctx.suspend(); } catch (e) {}
-      draw(); if (on) S && window.OkSes.play("hint");
+      draw(); if (on) { touched = true; window.OkSes.play("hint"); }
     };
     draw(); foot.insertBefore(b, lv);
   }
-  /* ilk dokunuşta ses motorunu hazırla (iOS kullanıcı dokunuşu ister) */
-  document.addEventListener("pointerdown", function () { if (on) { init(); if (ctx && ctx.state === "suspended") try { ctx.resume(); } catch (e) {} } }, { passive: true });
+  /* iPhone'da ses motoru ancak parmak kalkınca (touchend / click) açılır; pointerdown iOS'ta "dokunuş" sayılmaz.
+     Kilit açılırken sessiz tek örnek çalınır (eski iOS'lar için); kilit kapalıyken istenen son ses (ör. ilk dokunuşun sesi) açılır açılmaz çalar. */
+  var pend = null, keep = null;
+  /* iPhone'da ses donanımı boşta "uyuyup" bir sonraki sesi geciktirmesin diye duyulmayacak kadar kısık, çok pes bir ton açık tutulur (sayfa gizlenince durur) */
+  function keepAlive() { if (keep || !ctx) return; try { var o = ctx.createOscillator(), g = ctx.createGain(); o.frequency.value = 30; g.gain.value = 0.0001; o.connect(g); g.connect(ctx.destination); o.start(); keep = o; } catch (e) {} }
+  function unlock() {
+    touched = true;
+    if (!on) return;
+    init(); if (!ctx) return;
+    keepAlive();
+    if (ctx.state !== "running") { try { ctx.resume(); var sb = ctx.createBufferSource(); sb.buffer = ctx.createBuffer(1, 1, 22050); sb.connect(ctx.destination); sb.start(0); } catch (e) {} }
+    if (pend) retry();
+  }
+  function retry() {                                        /* bekleyen sesi, motor açılır açılmaz çal (0.6 sn'den eskiyse çalma) */
+    [40, 150, 350].forEach(function (d) { setTimeout(function () {
+      if (pend && ctx && ctx.state === "running") { var q = pend; pend = null; if (Date.now() - q.t < 600) try { S[q.n](q.o); } catch (e) {} }
+    }, d); });
+  }
+  ["pointerdown", "touchend", "pointerup", "click", "keydown"].forEach(function (ev) { document.addEventListener(ev, unlock, { capture: true, passive: true }); });
   document.addEventListener("visibilitychange", function () { if (document.hidden && ctx) try { ctx.suspend(); } catch (e) {} });
 })();

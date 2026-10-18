@@ -14,12 +14,12 @@
   function init() {
     if (ctx || !on) return;
     try {
-      ctx = new AC();
+      try { ctx = new AC({ latencyHint: "interactive" }); } catch (e1) { ctx = new AC(); }   /* en düşük gecikme */
       var comp = ctx.createDynamicsCompressor(); comp.threshold.value = -18; comp.ratio.value = 6;
       master = ctx.createGain(); master.gain.value = VOL; master.connect(comp); comp.connect(ctx.destination);
     } catch (e) { ctx = null; }
   }
-  function ready() { if (!on || !touched) return false; init(); if (!ctx) return false; if (ctx.state === "suspended") try { ctx.resume(); } catch (e) {} return true; }
+  function ready() { if (!on || !touched) return false; init(); if (!ctx) return false; if (ctx.state !== "running") { try { ctx.resume(); } catch (e) {} return false; } return true; }
   function tone(type, hz, t, a, peak, dec, glide) {
     var o = ctx.createOscillator(), g = ctx.createGain(); o.type = type;
     o.frequency.setValueAtTime(hz, t); if (glide) o.frequency.exponentialRampToValueAtTime(hz * glide, t + a + dec);
@@ -39,7 +39,7 @@
     /* rozet: biraz daha parlak, 4 notalık çan */
     rozet: function () { var t = ctx.currentTime; [0, 4, 7, 12].forEach(function (s, i) { tone("triangle", f(s), t + i * 0.12, 0.006, 0.06, 0.6); tone("sine", f(s) * 2, t + i * 0.12, 0.004, 0.015, 0.35); }); }
   };
-  window.KbSes = { play: function (name) { if (!ready() || !S[name]) return; try { S[name](); } catch (e) {} }, on: function () { return on; } };
+  window.KbSes = { play: function (name) { if (!S[name]) return; if (!ready()) { if (on) { pend = { n: name, t: Date.now() }; retry(); } return; } try { S[name](); } catch (e) {} }, on: function () { return on; } };
 
   /* hoparlör butonu: "Bonus" kutusunun soluna küçük bir buton */
   var bonus = document.getElementById("bonusNo"), span = bonus && bonus.parentNode;
@@ -50,6 +50,24 @@
     b.onclick = function () { on = !on; try { localStorage.setItem("kb_ses", on ? "1" : "0"); } catch (e) {} if (!on && ctx) try { ctx.suspend(); } catch (e) {} draw(); if (on) { touched = true; window.KbSes.play("found"); } };
     span.parentNode.insertBefore(row, span); row.appendChild(b); row.appendChild(span); draw();
   }
-  document.addEventListener("pointerdown", function () { touched = true; if (on) { init(); if (ctx && ctx.state === "suspended") try { ctx.resume(); } catch (e) {} } }, { passive: true });
+  /* iPhone'da ses motoru ancak parmak kalkınca (touchend / click) açılır; pointerdown iOS'ta "dokunuş" sayılmaz.
+     Kilit açılırken sessiz tek örnek çalınır (eski iOS'lar için); kilit kapalıyken istenen son ses (ör. ilk dokunuşun sesi) açılır açılmaz çalar. */
+  var pend = null, keep = null;
+  /* iPhone'da ses donanımı boşta "uyuyup" bir sonraki sesi geciktirmesin diye duyulmayacak kadar kısık, çok pes bir ton açık tutulur (sayfa gizlenince durur) */
+  function keepAlive() { if (keep || !ctx) return; try { var o = ctx.createOscillator(), g = ctx.createGain(); o.frequency.value = 30; g.gain.value = 0.0001; o.connect(g); g.connect(ctx.destination); o.start(); keep = o; } catch (e) {} }
+  function unlock() {
+    touched = true;
+    if (!on) return;
+    init(); if (!ctx) return;
+    keepAlive();
+    if (ctx.state !== "running") { try { ctx.resume(); var sb = ctx.createBufferSource(); sb.buffer = ctx.createBuffer(1, 1, 22050); sb.connect(ctx.destination); sb.start(0); } catch (e) {} }
+    if (pend) retry();
+  }
+  function retry() {                                        /* bekleyen sesi, motor açılır açılmaz çal (0.6 sn'den eskiyse çalma) */
+    [40, 150, 350].forEach(function (d) { setTimeout(function () {
+      if (pend && ctx && ctx.state === "running") { var q = pend; pend = null; if (Date.now() - q.t < 600) try { S[q.n](q.o); } catch (e) {} }
+    }, d); });
+  }
+  ["pointerdown", "touchend", "pointerup", "click", "keydown"].forEach(function (ev) { document.addEventListener(ev, unlock, { capture: true, passive: true }); });
   document.addEventListener("visibilitychange", function () { if (document.hidden && ctx) try { ctx.suspend(); } catch (e) {} });
 })();
