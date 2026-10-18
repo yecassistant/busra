@@ -367,12 +367,22 @@
   /* ---------- sarsıntı / tehlike / rekor (sadece görsel) ---------- */
   function shake(a) { var t = now(), p = (t - shakeT) / 320, cur = p < 1 ? shakeA * (1 - p) * (1 - p) : 0; shakeA = Math.max(a, cur); shakeT = t; }
   function shakeAmt(tn) { var p = (now() - shakeT) / 320; if (!shakeA || p >= 1) return null; var m = shakeA * (1 - p) * (1 - p); return [Math.sin(tn * 0.11) * m, Math.cos(tn * 0.137) * m * 0.6]; }
-  function dangerPulse(tn) {                           /* bir meyve çizginin üstünde beklerken çizgi kırmızı yanıp söner (oyun bitmeden uyarı) */
+  function dangerPulse(tn) {                           /* çizgi uyarısı (sadece görsel): yığın çizgiye yaklaştıkça turuncu yavaş yanar, meyve çizginin üstünde beklerken kırmızı hızlı yanıp söner */
     if (dead) return;
-    var m = 0; for (var i = 0; i < bodies.length; i++) if (bodies[i].over > m) m = bodies[i].over;
-    if (m < 0.12) return;
-    ctx.save(); ctx.globalAlpha = Math.min(1, m / 0.5) * (0.55 + 0.45 * Math.sin(tn / 85));
-    ctx.setLineDash([4, 6]); ctx.lineWidth = 2.6; ctx.strokeStyle = "#e5486f"; ctx.beginPath(); ctx.moveTo(inset + 6, DANGER); ctx.lineTo(W - inset - 6, DANGER); ctx.stroke(); ctx.restore();
+    var m = 0, gap = 1e9, t = now(), i, b, g;
+    for (i = 0; i < bodies.length; i++) {
+      b = bodies[i]; if (b.over > m) m = b.over;
+      if (t - b.born > 900 && Math.abs(b.vy) < 40) { g = b.y - b.r - DANGER; if (g < gap) gap = g; }   /* düşmekte olan meyve sayılmaz, yalnızca yığın */
+    }
+    var near = gap < WARN ? Math.min(1, 1 - gap / WARN) : 0;
+    if (m < 0.12 && near <= 0.02) return;
+    var over = m >= 0.12, k = over ? Math.min(1, m / 0.5) * (0.6 + 0.4 * Math.sin(tn / 85)) : near * (0.75 + 0.25 * Math.sin(tn / 240)), c = over ? "229,72,111" : "240,135,79";
+    ctx.save();
+    var gr = ctx.createLinearGradient(0, DANGER - 2, 0, DANGER + 18);   /* çizginin altında hafif sıcak bir parıltı */
+    gr.addColorStop(0, "rgba(" + c + "," + (0.22 * k).toFixed(3) + ")"); gr.addColorStop(1, "rgba(" + c + ",0)");
+    ctx.fillStyle = gr; ctx.fillRect(inset + 4, DANGER - 2, W - 2 * inset - 8, 20);
+    ctx.globalAlpha = over ? k : 0.3 + 0.65 * k; ctx.setLineDash([4, 6]); ctx.lineWidth = over ? 2.8 : 1.6 + 1.2 * near; ctx.strokeStyle = "rgb(" + c + ")";
+    ctx.beginPath(); ctx.moveTo(inset + 6, DANGER); ctx.lineTo(W - inset - 6, DANGER); ctx.stroke(); ctx.restore();
   }
   function E(p) { return p <= 0 ? 0 : p >= 1 ? 1 : p; }
   function eOut(p) { p = E(p); return 1 - (1 - p) * (1 - p) * (1 - p); }
