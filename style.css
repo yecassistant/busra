@@ -720,3 +720,280 @@ body[data-page="yakinda"]{padding-top:max(10px,env(safe-area-inset-top));padding
 @-webkit-keyframes rozetGel{from{opacity:0;-webkit-transform:scale(.6)}to{opacity:1;-webkit-transform:scale(1)}}
 @keyframes rozetGel{from{opacity:0;transform:scale(.6)}to{opacity:1;transform:scale(1)}}
 @media (prefers-reduced-motion:reduce){.rozetler svg.gizli{-webkit-animation:none;animation:none}}
+.btn.ink{background:#0e1014;color:#ece7df;box-shadow:0 5px 0 #000;font-family:"Space Grotesk",var(--body);letter-spacing:.01em}
+.btn.ink .okglyph{color:#c8ff4d;margin-left:2px}
+.btn.ink:active{transform:translateY(3px);box-shadow:0 2px 0 #000}
+/* ================= Queen Games (ana sayfadaki oyun bölümü) ================= */
+.qg{position:relative;overflow:hidden;border-radius:26px;padding:18px 14px 14px;color:#fff7ec;text-align:center;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='44' viewBox='0 0 44 44'%3E%3Cpath d='M11 6l4 5-4 5-4-5z' fill='%23ffffff' fill-opacity='.07'/%3E%3Cpath d='M33 31.5s-4.5-2.7-4.5-6a2.4 2.4 0 0 1 4.5-1.3 2.4 2.4 0 0 1 4.5 1.3c0 3.3-4.5 6-4.5 6z' fill='%23ffffff' fill-opacity='.07'/%3E%3C/svg%3E"),
+  radial-gradient(120% 70% at 50% 0%,#5a2d78 0%,#3a1a50 55%,#2a1239 100%);
+  box-shadow:0 0 0 2px #f7c948 inset,0 0 0 5px #3a1a50 inset,0 18px 34px -18px rgba(42,18,57,.8)}
+.qglogo{display:flex;flex-direction:column;align-items:center;margin-bottom:12px}
+.qgcrown{width:46px;height:auto;margin-bottom:-6px;position:relative;z-index:1;-webkit-transform:rotate(-8deg);transform:rotate(-8deg)}
+.qg h3{margin:0;font-family:"Lilita One","Nunito",sans-serif;font-weight:400;font-size:2.35rem;line-height:1;letter-spacing:.01em;color:#f7c948;
+  text-shadow:0 2px 0 #e0a024,0 4px 0 #a8641a,0 7px 0 #24102f,0 9px 14px rgba(0,0,0,.35);-webkit-text-stroke:1px #8a4a12;position:relative}
+.qg h3:after{content:"";position:absolute;left:0;top:0;right:0;bottom:0;background:linear-gradient(100deg,transparent 30%,rgba(255,255,255,.75) 46%,transparent 60%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;background-size:250% 100%;background-position:120% 0;-webkit-animation:qgShine 2.2s .6s ease-out 1 both;animation:qgShine 2.2s .6s ease-out 1 both}
+.qg h3:after{content:"Queen Games";-webkit-text-stroke:0}
+@-webkit-keyframes qgShine{to{background-position:-60% 0}}
+@keyframes qgShine{to{background-position:-60% 0}}
+.qgtag{margin:12px 0 0;font-family:var(--hand);font-size:1.35rem;line-height:1;color:#ffb3cf}
+.qggrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;text-align:left}
+.qgt{position:relative;display:flex;flex-direction:column;gap:8px;padding:12px 12px 13px;border-radius:18px;text-decoration:none;color:#fff;min-height:112px;
+  -webkit-tap-highlight-color:transparent;-webkit-transition:-webkit-transform .12s,box-shadow .12s;transition:transform .12s,box-shadow .12s}
+.qgt.wide{grid-column:1/-1;flex-direction:row;align-items:center;min-height:0;gap:12px}
+.qgt:active{-webkit-transform:translateY(3px);transform:translateY(3px)}
+.qgt:focus-visible{outline:3px solid #f7c948;outline-offset:3px}
+.qgi{flex:none;width:44px;height:44px;border-radius:13px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.16)}
+.qgi svg{width:34px;height:34px}
+.qgtx{display:flex;flex-direction:column;gap:3px;min-width:0}
+.qgtx b{font-family:"Lilita One","Nunito",sans-serif;font-weight:400;font-size:1.18rem;line-height:1.05;letter-spacing:.01em}
+.qgtx small{font-size:.8rem;line-height:1.3;font-weight:700;opacity:.86}
+.qg-kelime{background:linear-gradient(160deg,#f48db0,#ec6f9a 60%,#e05d8b);box-shadow:0 5px 0 #b8416c}
+.qg-kelime:active{box-shadow:0 2px 0 #b8416c}
+.qg-ok{background:#262a45;color:#ecebf6;box-shadow:0 5px 0 #151729,inset 0 0 0 1.5px #3a4069}
+.qg-ok:active{box-shadow:0 2px 0 #151729,inset 0 0 0 1.5px #3a4069}
+.qg-ok .qgi{background:#1d2036}
+.qg-ok .qgtx b{font-family:"Outfit",system-ui,sans-serif;font-weight:700;letter-spacing:-.02em}
+.qgnew{position:absolute;top:10px;right:10px;font-style:normal;font-size:.68rem;font-weight:800;color:#2a2340;background:#ffd27a;border-radius:999px;padding:1px 8px;line-height:1.5}
+.qg-kase{background:linear-gradient(160deg,#5cb873,#3f9d5a);box-shadow:0 5px 0 #2a7340}
+.qg-kase:active{box-shadow:0 2px 0 #2a7340}
+.qg-kase .qgi{background:#fff3f4}
+.qg-oda{background:linear-gradient(160deg,#ad94e0,#9b7fd1);box-shadow:0 5px 0 #6e52a8}
+.qg-oda:active{box-shadow:0 2px 0 #6e52a8}
+.qg-plan{background:linear-gradient(160deg,#82b890,#5f9a70);box-shadow:0 5px 0 #437554}
+.qg-plan:active{box-shadow:0 2px 0 #437554}
+.qg-tur{background:linear-gradient(160deg,#2f7f9c,#236780);box-shadow:0 5px 0 #164a5e}
+.qg-tur:active{box-shadow:0 2px 0 #164a5e}
+.qgnote{margin:14px 0 2px;font-size:.84rem;color:#e6d6f0;opacity:.85}
+@media (max-width:350px){.qggrid{grid-template-columns:1fr}.qgt{min-height:0;flex-direction:row;align-items:center}.qg h3{font-size:2rem}}
+@media (prefers-reduced-motion:reduce){.qg h3:after{-webkit-animation:none;animation:none;display:none}}
+/* ================= Oklar (ok.html): gece mavisi zemin, yumuşak renkli oklar ================= */
+body[data-page="ok"]{--o-bg:#1d2036;--o-sf:#262a45;--o-sf2:#2e3354;--o-line:#3a4069;--o-ink:#ecebf6;--o-mute:#9da0c4;--o-acc:#ffd27a;--o-acc-ink:#2a2340;--o-heart:#ff8597;--o-bad:#ff5c78;
+  background:radial-gradient(110% 55% at 50% -5%,#2b3054 0%,var(--o-bg) 62%);background-color:var(--o-bg);color:var(--o-ink);font-family:"Outfit",system-ui,-apple-system,sans-serif;
+  padding:max(10px,env(safe-area-inset-top)) 14px max(12px,env(safe-area-inset-bottom));min-height:100vh;min-height:100dvh;overflow:hidden}
+body[data-page="ok"] .garden,body[data-page="ok"] #petals{display:none}
+.okstage{position:relative;z-index:1;width:100%;max-width:520px;height:100vh;height:100dvh;display:flex;flex-direction:column;gap:10px;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.okbar{flex:none;display:flex;align-items:center;justify-content:space-between;min-height:48px}
+.okback{width:44px;height:44px;display:flex;align-items:center;justify-content:center;border-radius:15px;background:var(--o-sf);box-shadow:inset 0 0 0 1px var(--o-line);-webkit-tap-highlight-color:transparent}
+.okback svg{width:20px;height:20px;fill:none;stroke:var(--o-ink);stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.oklvl{font:inherit;background:none;border:0;color:inherit;display:flex;align-items:baseline;gap:6px;padding:6px 10px;border-radius:14px;cursor:pointer;min-height:44px;-webkit-tap-highlight-color:transparent}
+.oklvl span{font-size:.9rem;color:var(--o-mute);font-weight:500}
+.oklvl b{font-size:1.9rem;font-weight:700;letter-spacing:-.02em;line-height:1;font-variant-numeric:tabular-nums}
+.oklvl i{font-style:normal;font-size:.85rem;color:var(--o-mute);opacity:.7;font-variant-numeric:tabular-nums}
+.oklvl:active{background:var(--o-sf)}
+.okhearts{display:flex;gap:3px;min-width:44px;justify-content:flex-end}
+.okhearts svg{width:21px;height:21px;fill:var(--o-heart);stroke:var(--o-heart);stroke-width:1.2;stroke-linejoin:round}
+.okhearts svg.off{fill:none;stroke:var(--o-line);stroke-width:1.6}
+.okhearts svg.lost{-webkit-animation:okHeart .55s ease-out forwards;animation:okHeart .55s ease-out forwards}
+@-webkit-keyframes okHeart{40%{-webkit-transform:scale(1.35)}100%{-webkit-transform:scale(.6);opacity:.2}}
+@keyframes okHeart{40%{transform:scale(1.35)}100%{transform:scale(.6);opacity:.2}}
+.okmeta{flex:none;display:flex;justify-content:space-between;align-items:center;gap:12px;font-size:.88rem;color:var(--o-mute);min-height:24px;white-space:nowrap}
+.okleft{background:var(--o-sf);border-radius:999px;padding:2px 11px;box-shadow:inset 0 0 0 1px var(--o-line)}
+.okmeta b{color:var(--o-ink);font-weight:600;font-variant-numeric:tabular-nums}
+.okmsg{opacity:0;-webkit-transition:opacity .2s;transition:opacity .2s;color:#ffadb9;overflow:hidden;text-overflow:ellipsis}
+.okmsg.show{opacity:1}
+.okwrap{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;overflow:hidden;touch-action:none;position:relative;
+  padding:10px;border-radius:26px;background:var(--o-sf);box-shadow:inset 0 0 0 1px var(--o-line),inset 0 18px 40px -30px rgba(255,255,255,.12)}
+.okwrap.shake{-webkit-animation:okShake .3s;animation:okShake .3s}
+@-webkit-keyframes okShake{25%{-webkit-transform:translateX(-5px)}50%{-webkit-transform:translateX(4px)}75%{-webkit-transform:translateX(-2px)}}
+@keyframes okShake{25%{transform:translateX(-5px)}50%{transform:translateX(4px)}75%{transform:translateX(-2px)}}
+.okboard{display:block;overflow:visible;touch-action:none;-webkit-tap-highlight-color:transparent}
+.okdots circle{fill:#3a4069}
+.okbody{fill:none;stroke-width:19;stroke-linecap:round;stroke-linejoin:round}
+.okhead{stroke-width:6;stroke-linejoin:round}
+.okbody{stroke:#dfe1ee}.okhead{fill:#dfe1ee;stroke:#dfe1ee}
+.oka.go .okbody{stroke:#ffd27a}.oka.go .okhead{fill:#ffd27a;stroke:#ffd27a}
+.okhead.okheadgo{fill:#fff;stroke:#fff}
+.oka.bad .okbody,.oka.hit .okbody{stroke:var(--o-bad)}.oka.bad .okhead,.oka.hit .okhead{fill:var(--o-bad);stroke:var(--o-bad)}
+.oka.hit{-webkit-animation:okBlink .52s;animation:okBlink .52s}
+@-webkit-keyframes okBlink{0%,50%{opacity:1}25%,75%{opacity:.35}}
+@keyframes okBlink{0%,50%{opacity:1}25%,75%{opacity:.35}}
+.oka.tip .okbody{stroke:#ffd27a}.oka.tip .okhead{fill:#ffd27a;stroke:#ffd27a}
+.oka.tip{-webkit-animation:okTip .8s ease-in-out infinite;animation:okTip .8s ease-in-out infinite}
+@-webkit-keyframes okTip{50%{opacity:.4}}
+@keyframes okTip{50%{opacity:.4}}
+.okheart{fill:rgba(255,133,151,.14);stroke:var(--o-heart);stroke-width:1.1;stroke-linejoin:round;-webkit-transform-origin:12px 13px;transform-origin:12px 13px;-webkit-animation:okHeartIn .35s cubic-bezier(.2,1.5,.4,1) both;animation:okHeartIn .35s cubic-bezier(.2,1.5,.4,1) both}
+.okheart.hit{fill:var(--o-heart);-webkit-animation:okHeartHit .7s ease-out both;animation:okHeartHit .7s ease-out both}
+@-webkit-keyframes okHeartIn{from{-webkit-transform:scale(0);opacity:0}}
+@keyframes okHeartIn{from{transform:scale(0);opacity:0}}
+@-webkit-keyframes okHeartHit{0%{-webkit-transform:scale(1)}30%{-webkit-transform:scale(1.35)}55%{-webkit-transform:scale(.95)}75%{-webkit-transform:scale(1.15)}100%{-webkit-transform:scale(1.05)}}
+@keyframes okHeartHit{0%{transform:scale(1)}30%{transform:scale(1.35)}55%{transform:scale(.95)}75%{transform:scale(1.15)}100%{transform:scale(1.05)}}
+.okfoot{flex:none;display:flex;gap:10px;align-items:center;justify-content:space-between;min-height:56px}
+.okbtn{font:inherit;color:var(--o-ink);background:var(--o-sf);border:0;box-shadow:inset 0 0 0 1px var(--o-line);border-radius:18px;min-height:52px;min-width:52px;display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:0 14px;cursor:pointer;-webkit-tap-highlight-color:transparent;-webkit-transition:-webkit-transform .1s;transition:transform .1s}
+.okbtn svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.okbtn:active{-webkit-transform:scale(.95);transform:scale(.95);background:var(--o-sf2)}
+.okhint{flex:1;max-width:220px;font-weight:600;font-size:1rem}
+.okhint b{background:var(--o-acc);color:var(--o-acc-ink);border-radius:999px;font-size:.8rem;min-width:22px;height:22px;display:inline-flex;align-items:center;justify-content:center;padding:0 6px;font-variant-numeric:tabular-nums}
+.okover{position:fixed;left:0;top:0;right:0;bottom:0;z-index:80;background:rgba(17,19,34,.72);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:20px}
+.okover[hidden]{display:none}
+.okcard{width:100%;max-width:340px;background:var(--o-sf);box-shadow:inset 0 0 0 1px var(--o-line),0 30px 60px -24px rgba(0,0,0,.7);border-radius:28px;padding:24px 20px 20px;display:flex;flex-direction:column;gap:14px;color:var(--o-ink);text-align:left;-webkit-animation:okIn .28s cubic-bezier(.2,.9,.3,1.2);animation:okIn .28s cubic-bezier(.2,.9,.3,1.2)}
+@-webkit-keyframes okIn{from{opacity:0;-webkit-transform:translateY(14px) scale(.97)}}
+@keyframes okIn{from{opacity:0;transform:translateY(14px) scale(.97)}}
+.okcard.wide{max-width:420px;max-height:calc(100vh - 40px);max-height:calc(100dvh - 40px)}
+.okkicker{font-size:.92rem;color:var(--o-mute);font-weight:500}
+body[data-page="ok"] .okcard h2{font-family:"Outfit",system-ui,sans-serif;font-weight:700;font-size:2.05rem;letter-spacing:-.025em;margin:0;text-align:left;line-height:1.08;color:var(--o-ink)}
+body[data-page="ok"] .okcard h2.oksmallh{font-size:1.5rem}
+.oktext{margin:0;color:#c9cbe4;font-size:.98rem;line-height:1.45}
+.oktext:empty{display:none}
+.okintroart{width:100%;height:auto;max-height:96px}
+.okrules{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+.okrules li{position:relative;padding-left:20px;font-size:1rem;line-height:1.42;color:#c9cbe4}
+.okrules li:before{content:"";position:absolute;left:2px;top:.55em;width:9px;height:9px;border-radius:3px;background:#ffd27a}
+.okstars{display:flex;gap:8px}
+.okstars:empty{display:none}
+.okstars svg{width:34px;height:34px;fill:none;stroke:var(--o-line);stroke-width:1.5;stroke-linejoin:round}
+.okstars svg.on{fill:var(--o-acc);stroke:var(--o-acc);-webkit-animation:okStar .45s cubic-bezier(.2,1.6,.4,1) both;animation:okStar .45s cubic-bezier(.2,1.6,.4,1) both}
+.okstars svg.on:nth-child(2){-webkit-animation-delay:.12s;animation-delay:.12s}
+.okstars svg.on:nth-child(3){-webkit-animation-delay:.24s;animation-delay:.24s}
+@-webkit-keyframes okStar{from{-webkit-transform:scale(0) rotate(-40deg)}}
+@keyframes okStar{from{transform:scale(0) rotate(-40deg)}}
+.okstats{display:flex;gap:8px}
+.okstats:empty{display:none}
+.okstats span{flex:1;background:var(--o-sf2);border-radius:16px;padding:10px 12px;min-width:0}
+.okstats small{display:block;font-size:.8rem;color:var(--o-mute);margin-bottom:1px}
+.okstats b{font-size:1.25rem;font-weight:600;font-variant-numeric:tabular-nums}
+.okbtns{display:flex;gap:10px}
+.okprimary{flex:1;font:inherit;font-weight:600;font-size:1.05rem;background:var(--o-acc);color:var(--o-acc-ink);border:0;border-radius:18px;min-height:52px;cursor:pointer;-webkit-tap-highlight-color:transparent;box-shadow:0 4px 0 #c99a3e}
+.okprimary:active{-webkit-transform:translateY(2px);transform:translateY(2px);box-shadow:0 2px 0 #c99a3e}
+.okghost{font:inherit;font-weight:500;background:transparent;color:var(--o-ink);border:0;box-shadow:inset 0 0 0 1px var(--o-line);border-radius:18px;min-height:52px;padding:0 18px;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.oklvlgrid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;overflow:auto;-webkit-overflow-scrolling:touch;max-height:52vh;padding:2px;touch-action:pan-y}
+.oklvlgrid button{font:inherit;color:var(--o-ink);background:var(--o-sf2);border:0;box-shadow:inset 0 0 0 1px var(--o-line);border-radius:14px;min-height:52px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;cursor:pointer;padding:0;-webkit-tap-highlight-color:transparent}
+.oklvlgrid button b{font-size:1rem;font-weight:600;font-variant-numeric:tabular-nums}
+.oklvlgrid button i{display:flex;gap:3px;height:4px}
+.oklvlgrid button u{width:4px;height:4px;border-radius:50%;background:var(--o-line)}
+.oklvlgrid button u.on{background:var(--o-acc)}
+.oklvlgrid button.cur{box-shadow:inset 0 0 0 2px var(--o-acc)}
+.oklvlgrid button.kilit{opacity:.3;cursor:default}
+@media (max-height:600px){.okbar{min-height:44px}.oklvl b{font-size:1.6rem}.okfoot{min-height:50px}.okbtn{min-height:46px;min-width:46px}.okstage{gap:7px}.okwrap{padding:7px;border-radius:22px}}
+@media (prefers-reduced-motion:reduce){.oka.tip,.okstars svg.on,.okcard{-webkit-animation:none;animation:none}}
+/* ================= Oyun menüsü (oyunlar.html) – Queen Games ================= */
+body[data-page="oyunlar"]{background:#211043;color:#fff;padding:max(14px,env(safe-area-inset-top)) 16px max(22px,env(safe-area-inset-bottom));
+  background-image:radial-gradient(90% 45% at 50% 8%,#432079 0%,rgba(67,32,121,0) 70%),radial-gradient(70% 30% at 0% 100%,#2d145a 0%,rgba(45,20,90,0) 70%),radial-gradient(70% 30% at 100% 92%,#2f165e 0%,rgba(47,22,94,0) 70%),linear-gradient(180deg,#2a1350 0%,#1d0d3b 100%);background-repeat:no-repeat;background-size:100% 100%;min-height:100vh;min-height:100dvh}
+body[data-page="oyunlar"] .garden,body[data-page="oyunlar"] #petals{display:none}
+.qm{position:relative;z-index:1;width:100%;max-width:440px;display:flex;flex-direction:column;gap:14px}
+.qmback{position:absolute;left:-4px;top:-2px;z-index:3;width:44px;height:44px;display:flex;align-items:center;justify-content:center;border-radius:14px;color:#cdb8ff;-webkit-tap-highlight-color:transparent}
+.qmback svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.qmback:active{background:rgba(255,255,255,.08)}
+.qmhead{position:relative;display:flex;flex-direction:column;align-items:center;text-align:center;padding:4px 0 10px}
+.qmcrown{width:84px;height:58px;margin-bottom:-2px;filter:drop-shadow(0 4px 10px rgba(242,195,91,.35))}
+.qmlogo{margin:0;display:flex;flex-direction:column;align-items:center;line-height:1;font-family:"Cinzel",Georgia,serif;font-weight:700;color:#f2c35b}
+.qmq{font-size:3.25rem;letter-spacing:.02em;background:linear-gradient(180deg,#fff0bf 0%,#f6cf6e 45%,#d8962f 100%);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 2px 0 rgba(120,60,10,.55)) drop-shadow(0 6px 14px rgba(0,0,0,.35))}
+.qmg{font-size:1.05rem;font-weight:600;letter-spacing:.62em;margin:6px 0 0 .62em;color:#f2c35b}
+.qmtag{margin:12px 0 0;font-family:"Caveat",var(--hand);font-weight:700;font-size:1.65rem;line-height:1;color:#c9b2ff;display:inline-flex;align-items:center;gap:6px}
+.qmtag svg{width:20px;height:20px;fill:none;stroke:#c9b2ff;stroke-width:1.8;stroke-linejoin:round}
+.qmswash{width:180px;height:12px;margin-top:2px}
+.qmdoodle{position:absolute;opacity:.8}
+.qmd-crown{left:6px;top:84px;width:58px;height:44px;-webkit-transform:rotate(-16deg);transform:rotate(-16deg)}
+.qmd-dice{right:6px;top:80px;width:52px;height:52px;-webkit-transform:rotate(10deg);transform:rotate(10deg)}
+.qmsp{position:absolute;width:14px;height:14px;fill:#a98bf0;opacity:.85}
+.qmsp.s1{left:40px;top:28px;fill:#f2c35b;width:18px;height:18px}
+.qmsp.s2{left:12px;top:70px;width:11px;height:11px}
+.qmsp.s3{left:70px;top:138px;width:10px;height:10px}
+.qmsp.s4{right:44px;top:24px;width:12px;height:12px}
+.qmsp.s5{right:16px;top:140px;fill:#f2c35b;width:16px;height:16px}
+.qmsp.s6{right:70px;top:66px;width:15px;height:15px}
+@media (max-width:360px){.qmdoodle{display:none}.qmq{font-size:2.8rem}}
+/* kartlar: cam gibi parlak, renkli gradyan */
+.qmc{position:relative;overflow:hidden;display:flex;text-decoration:none;color:#fff;border-radius:20px;-webkit-tap-highlight-color:transparent;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.35),inset 0 0 0 1px rgba(255,255,255,.14),0 10px 22px -12px rgba(0,0,0,.7);
+  -webkit-transition:-webkit-transform .12s,filter .12s;transition:transform .12s,filter .12s}
+.qmc:before{content:"";position:absolute;left:0;right:0;top:0;height:50%;background:linear-gradient(180deg,rgba(255,255,255,.16),rgba(255,255,255,0));pointer-events:none}
+.qmc:active{-webkit-transform:scale(.975);transform:scale(.975);filter:brightness(1.06)}
+.qmc:focus-visible{outline:3px solid #f2c35b;outline-offset:3px}
+.qmtx{position:relative;z-index:1;display:flex;flex-direction:column;gap:4px;min-width:0}
+.qmtx b{font-family:"Nunito",var(--body);font-weight:800;font-size:1.12rem;white-space:nowrap;line-height:1.12;letter-spacing:-.005em;text-shadow:0 1px 2px rgba(0,0,0,.18)}
+.qmtx small{font-size:.86rem;line-height:1.3;font-weight:600;color:rgba(255,255,255,.86)}
+.qmchev{position:absolute;right:12px;bottom:14px;width:22px;height:22px;color:#fff;z-index:1}
+.qmwm{position:absolute;right:12px;top:10px;width:44px;height:44px;color:rgba(255,255,255,.16);pointer-events:none}
+.qmwm path,.qmwm use{stroke:currentColor}
+.qmstart{align-items:center;gap:14px;padding:16px 46px 16px 16px;min-height:92px;background:linear-gradient(120deg,#8a3fd0 0%,#b158dc 55%,#7d38c8 100%)}
+.qmstart .qmchev{top:50%;bottom:auto;margin-top:-11px}
+.qmico{flex:none;position:relative;z-index:1;width:64px;height:64px;border-radius:16px;display:flex;align-items:center;justify-content:center}
+.qmico-start{background:linear-gradient(160deg,#cf7ee8,#a24fd2);box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 6px 14px -8px rgba(0,0,0,.5)}
+.qmico-start svg{width:42px;height:30px}
+.qmwm-start{width:96px;height:50px;right:38px;top:50%;margin-top:-25px;color:rgba(255,255,255,.15)}
+.qmstart .qmtx,.qmsoon .qmtx{max-width:66%}
+.qmstart .qmtx b{font-size:1.25rem}
+.qmwm-start use{fill:currentColor;stroke:none}
+.qmgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.qmt{flex-direction:column;justify-content:flex-end;gap:6px;padding:12px 14px 14px;min-height:168px}
+.qmt .qmtx{padding-right:22px}
+.qmart{position:relative;z-index:1;display:block;height:56px;margin-bottom:auto}
+.qmart svg{height:56px;width:92px;display:block;filter:drop-shadow(0 4px 6px rgba(0,0,0,.22))}
+.qm-kelime{background:linear-gradient(150deg,#2a2f86 0%,#1f236a 100%)}
+.qm-ok{background:linear-gradient(150deg,#16a586 0%,#0d7f68 100%)}
+.qm-kase{background:linear-gradient(150deg,#ec5a95 0%,#c92f72 100%)}
+.qm-oda{background:linear-gradient(150deg,#a179f2 0%,#7a4fde 100%)}
+.qm-plan{background:linear-gradient(150deg,#1db57f 0%,#0f9063 100%)}
+.qm-tur{background:linear-gradient(150deg,#2f93f2 0%,#1563d4 100%)}
+.qmsky{position:absolute;right:0;bottom:0;width:100%;height:70px;color:rgba(9,40,120,.32);pointer-events:none}
+.qmnew{position:absolute;z-index:2;top:12px;right:12px;font-style:normal;font-size:.68rem;font-weight:800;color:#3a1d06;background:#f2c35b;border-radius:999px;padding:1px 8px;line-height:1.55;box-shadow:0 2px 6px rgba(0,0,0,.25)}
+.qm-ok .qmwm{display:none}
+.qmsoon{align-items:center;gap:14px;padding:14px 46px 14px 14px;min-height:76px;background:linear-gradient(120deg,#3f2283 0%,#341b70 100%)}
+.qmsoon .qmchev{top:50%;bottom:auto;margin-top:-11px;color:#cdb8ff}
+.qmsoon .qmtx b{font-size:1.06rem}
+.qmsoon .qmtx small{color:rgba(225,212,255,.82)}
+.qmplus{flex:none;position:relative;z-index:1;width:50px;height:50px;border-radius:50%;background:linear-gradient(160deg,#8c55e6,#6a35c9);display:flex;align-items:center;justify-content:center;box-shadow:inset 0 1px 0 rgba(255,255,255,.3)}
+.qmplus svg{width:24px;height:24px;fill:none;stroke:#fff;stroke-width:2.8;stroke-linecap:round}
+.qmfoot{display:flex;align-items:center;justify-content:center;gap:12px;margin-top:4px;opacity:.85}
+.qmfoot i{display:block;width:80px;height:2px;border-radius:2px;background:linear-gradient(90deg,rgba(155,127,224,0),#9b7fe0)}
+.qmfoot i:last-child{background:linear-gradient(90deg,#9b7fe0,rgba(155,127,224,0))}
+.qmfoot svg{width:30px;height:22px}
+@media (max-width:370px){.qmtag{font-size:1.3rem}.qmgrid{gap:10px}.qmt{padding:10px 12px 12px;min-height:156px}.qmtx b{font-size:1.02rem;white-space:normal}.qmtx small{font-size:.8rem}.qmstart .qmtx,.qmsoon .qmtx{max-width:none}.qmwm-start{display:none}}
+@media (prefers-reduced-motion:reduce){.qmc{-webkit-transition:none;transition:none}}
+.qgbtn{position:relative;display:flex;align-items:center;justify-content:center;gap:10px;min-height:58px;border-radius:18px;text-decoration:none;color:#fff;
+  font-family:"Nunito",var(--body);font-weight:800;font-size:1.2rem;letter-spacing:.01em;
+  background:linear-gradient(120deg,#5a2a9e 0%,#8a3fd0 55%,#5f2ba6 100%);box-shadow:inset 0 1px 0 rgba(255,255,255,.3),0 5px 0 #3b1a6e,0 14px 24px -14px rgba(59,26,110,.9);-webkit-tap-highlight-color:transparent}
+.qgbtn svg{width:34px;height:24px}
+.qgbtn .qgchev{position:absolute;right:16px;width:20px;height:20px;fill:none;stroke:#fff;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round;opacity:.9}
+.qgbtn:active{transform:translateY(3px);box-shadow:inset 0 1px 0 rgba(255,255,255,.3),0 2px 0 #3b1a6e}
+.qgbtn:focus-visible{outline:3px solid #f2c35b;outline-offset:3px}
+/* Eros'un Oku kartı: ok ucundaki kalp ara sıra göz kırpar */
+.qmeyewink{opacity:0}
+.qmwink .qmeye{-webkit-animation:qmEye 4.2s infinite;animation:qmEye 4.2s infinite}
+.qmwink .qmeyewink{-webkit-animation:qmWink 4.2s infinite;animation:qmWink 4.2s infinite}
+@-webkit-keyframes qmEye{0%,70%,82%,100%{opacity:1}72%,80%{opacity:0}}
+@keyframes qmEye{0%,70%,82%,100%{opacity:1}72%,80%{opacity:0}}
+@-webkit-keyframes qmWink{0%,70%,82%,100%{opacity:0}72%,80%{opacity:1}}
+@keyframes qmWink{0%,70%,82%,100%{opacity:0}72%,80%{opacity:1}}
+@media (prefers-reduced-motion:reduce){.qmwink .qmeye,.qmwink .qmeyewink{-webkit-animation:none;animation:none}}
+.okbtn.oksound.off{color:var(--o-mute);box-shadow:inset 0 0 0 1px var(--o-line)}
+.okbtn.oksound.off svg{opacity:.7}
+@media (max-width:380px){.okfoot{gap:8px}.okfoot .okbtn{min-width:48px;padding:0 10px}.okhint{font-size:.95rem}}
+/* Kelime Bahçesi ses butonu (kelime-ses.js ekler) */
+.ksesrow{display:flex;align-items:center;gap:4px}
+.kses{font:inherit;font-size:.85rem;line-height:1;width:34px;height:34px;margin:-5px 0;padding:0;border:0;border-radius:50%;background:rgba(255,255,255,.9);box-shadow:0 0 0 1.5px var(--line);cursor:pointer;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:rgba(0,0,0,0)}
+.kses.off{opacity:.65}
+/* menü: yakında gelecek oyunlar */
+button.qmc{font:inherit;border:0;padding:0;margin:0;text-align:left;cursor:pointer;width:100%;-webkit-appearance:none;appearance:none}
+button.qmt{padding:12px 14px 14px}
+.qm-gunun{background:linear-gradient(150deg,#f3b03f 0%,#d9771c 100%)}
+.qm-fark{background:linear-gradient(150deg,#22bfd3 0%,#0d86a3 100%)}
+.qmsoonbtn .qmart,.qmsoonbtn .qmtx{opacity:.92}
+.qmsoonpill{position:absolute;z-index:2;right:12px;bottom:14px;font-style:normal;font-size:.7rem;font-weight:800;color:#fff;background:rgba(36,16,70,.45);border-radius:999px;padding:2px 9px;line-height:1.5;box-shadow:inset 0 0 0 1px rgba(255,255,255,.35)}
+.qmsoonbtn .qmtx{padding-right:56px}
+.qmsheet{position:fixed;left:0;top:0;right:0;bottom:0;z-index:90;background:rgba(20,8,40,.7);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:20px}
+.qmsheet[hidden]{display:none}
+.qmsheetcard{position:relative;width:100%;max-width:340px;border-radius:24px;padding:22px 20px 18px;color:#fff;text-align:center;
+  background:linear-gradient(160deg,#4a237f 0%,#2e1559 100%);box-shadow:inset 0 1px 0 rgba(255,255,255,.25),inset 0 0 0 1px rgba(255,255,255,.12),0 30px 60px -20px rgba(0,0,0,.7);
+  display:flex;flex-direction:column;gap:12px;-webkit-animation:qmIn .26s cubic-bezier(.2,.9,.3,1.2);animation:qmIn .26s cubic-bezier(.2,.9,.3,1.2)}
+@-webkit-keyframes qmIn{from{opacity:0;-webkit-transform:translateY(14px) scale(.97)}}
+@keyframes qmIn{from{opacity:0;transform:translateY(14px) scale(.97)}}
+.qmsoonpill.big{position:static;align-self:center;font-size:.78rem;padding:3px 12px;background:#f2c35b;color:#3a1d06;box-shadow:none}
+body[data-page="oyunlar"] .qmsheetcard h2{margin:0;font-family:"Nunito",var(--body);font-weight:800;font-size:1.6rem;color:#fff;letter-spacing:-.01em}
+.qmsheettext p{margin:0 0 8px;color:rgba(235,225,255,.9);font-size:.98rem;line-height:1.45}
+.qmsheettext .qmsoonnote{margin:6px 0 0;font-size:.86rem;color:rgba(235,225,255,.65)}
+.qmsheetart{display:flex;flex-direction:column;align-items:center;gap:6px;padding:4px 0}
+.wrow{display:flex;gap:6px}
+.wt{width:44px;height:48px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:"Nunito",var(--body);font-weight:800;font-size:1.45rem;color:#fff;background:rgba(255,255,255,.14);box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.18)}
+.wt.g{background:#3fb86a;box-shadow:none}
+.wt.y{background:#f2c35b;color:#4a2e05;box-shadow:none}
+.wt.e{background:transparent;box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.2)}
+.wt.sm{width:18px;height:18px;border-radius:5px;flex:none}
+.wlegend{list-style:none;margin:4px auto 0;padding:0;display:flex;flex-direction:column;gap:6px;text-align:left;max-width:240px}
+.wlegend li{display:flex;align-items:center;gap:10px;font-size:.92rem;color:rgba(235,225,255,.9)}
+.fpics{width:100%;max-width:280px;height:auto}
+.qmsheetbtn{font:inherit;font-weight:800;font-size:1.02rem;min-height:50px;border:0;border-radius:16px;color:#3a1d06;background:linear-gradient(180deg,#ffe08a,#f2c35b);box-shadow:0 4px 0 #c8902f;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.qmsheetbtn:active{transform:translateY(2px);box-shadow:0 2px 0 #c8902f}
+@media (max-width:350px){.wt{width:38px;height:42px;font-size:1.25rem}}

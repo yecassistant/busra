@@ -12,18 +12,18 @@
     { id: "kiraz",        ad: "Kiraz",         vc: [50, 54, 44], r: 20, d: 1.0,  c: "#e0484f", pts: 3,  msg: ["Kiraz birleşti 🍒", "Çift kiraz, tek sap"] },
     { id: "cilek",        ad: "Çilek",         vc: [50, 56, 43], r: 26, d: 0.85, c: "#ec4b5f", pts: 6,  msg: ["Sufle yolda 🍓", "Bol çilekli olsun"] },
     { id: "uzum",         ad: "Beyaz üzüm",    vc: [50, 54, 44], r: 33, d: 0.95, c: "#b9d47f", pts: 10, msg: ["Beyaz üzüm, serin serin 🍇", "Beyaz üzüm çıktı"] },
-    { id: "nektarin",     ad: "Nektarin",      vc: [50, 55, 44], r: 41, d: 1.1,  c: "#f28c3b", pts: 15, msg: ["Nektarin: yaz kokusu ☀️", "Nektarin geldi"] },
-    { id: "nar",          ad: "Nar",           vc: [50, 56, 43], r: 50, d: 1.25, c: "#b8324a", pts: 21, msg: ["Fatih'te nar suyu gibi 🕌", "Nar çıktı!"] },
-    { id: "karpuz",       ad: "Karpuz",        vc: [50, 52, 46], r: 62, d: 1.3,  c: "#3f9d5a", pts: 28, msg: ["Karpuz! Peki madem, kase senin 🍉", "Karpuz çıktı; bilet hâlâ geçerli 🎟️"] },
+    { id: "nektarin",     ad: "Nektarin",      vc: [50, 55, 44], r: 40, d: 1.1,  c: "#f28c3b", pts: 15, msg: ["Nektarin: yaz kokusu ☀️", "Nektarin geldi"] },
+    { id: "nar",          ad: "Nar",           vc: [50, 56, 43], r: 46, d: 1.25, c: "#b8324a", pts: 21, msg: ["Fatih'te nar suyu gibi 🕌", "Nar çıktı!"] },
+    { id: "karpuz",       ad: "Karpuz",        vc: [50, 52, 46], r: 52, d: 1.3,  c: "#3f9d5a", pts: 28, msg: ["Karpuz! Peki madem, kase senin 🍉", "Karpuz çıktı; bilet hâlâ geçerli 🎟️"] },
     /* sürpriz son seviye: zincirde altın "?" olarak görünür, iki karpuz birleşince ortaya çıkar */
-    { id: "muffin",       ad: "Yaban mersinli muffin", vc: [50, 56, 44], r: 74, d: 0.7,  c: "#f6c64a", pts: 60, gizli: true, key: "pm_muffin2", msg: ["Sürpriz: yaban mersinli muffin 🧁", "Muffin çıktı! Şef, bu kase artık tarihî 🧁"] },
+    { id: "muffin",       ad: "Yaban mersinli muffin", vc: [50, 56, 44], r: 57, d: 0.7,  c: "#f6c64a", pts: 60, gizli: true, key: "pm_muffin2", msg: ["Sürpriz: yaban mersinli muffin 🧁", "Muffin çıktı! Şef, bu kase artık tarihî 🧁"] },
     /* ikinci sürpriz: iki muffin birleşince atom tost (keşfedilene kadar zincirde "?") */
-    { id: "tost",         ad: "Atom tost",     vc: [50, 50, 45], r: 86, d: 0.6,  c: "#e9b96e", pts: 90, gizli: true, key: "pm_tost2", msg: ["Sürpriz: atom tost 🍞 Şaka değil", "Atom tost çıktı, kase resmen menü oldu 🍞"] },
+    { id: "tost",         ad: "Atom tost",     vc: [50, 50, 45], r: 62, d: 0.6,  c: "#e9b96e", pts: 90, gizli: true, key: "pm_tost2", msg: ["Sürpriz: atom tost 🍞 Şaka değil", "Atom tost çıktı, kase resmen menü oldu 🍞"] },
     /* üçüncü sürpriz: iki atom tost birleşince kalp (keşfedilene kadar zincirde "?"). kalp:true → çizimde hafif atış + ara sıra göz kırpma (sadece görsel) */
-    { id: "kalp",         ad: "Kalp",          vc: [50, 52, 44], r: 96, d: 0.5,  c: "#f0405c", pts: 130, gizli: true, key: "pm_kalp1", kalp: true, msg: ["Kalp çıktı ❤️ Zincirin sonu, en tatlısı", "Kalp! Kase bu kadar tatlı olmamıştı ❤️"] }
+    { id: "kalp",         ad: "Kalp",          vc: [50, 52, 44], r: 67, d: 0.5,  c: "#f0405c", pts: 130, gizli: true, key: "pm_kalp1", kalp: true, msg: ["Kalp çıktı ❤️ Zincirin sonu, en tatlısı", "Kalp! Kase bu kadar tatlı olmamıştı ❤️"] }
   ];
   var seen = {}; FRUITS.forEach(function (f) { if (f.gizli) { try { seen[f.id] = localStorage.getItem(f.key) === "1"; } catch (e) { seen[f.id] = false; } } });
-  var DROP_MAX = 4, DROP_W = [32, 28, 20, 12, 8];  /* bırakılabilen seviyeler ve ağırlıkları */
+  var DROP_MAX = 4, DROP_W = [32, 28, 22, 13, 5];  /* bırakılabilen seviyeler ve ağırlıkları */
   var BASE_W = 360;                                /* yarıçaplar bu kase genişliğine göre; dar ekranda oranla küçülür */
 
   var cv = $("bowl"), ctx = cv.getContext("2d"), wrap = $("bowlwrap"), stageEl = document.querySelector("main");

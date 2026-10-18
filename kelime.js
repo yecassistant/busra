@@ -89,6 +89,7 @@
   /* ---------- bölüm kur ---------- */
   function load(i, restore) {
     lvl = i; L = LEVELS[i]; found = {}; hinted = {}; bonusFound = {}; sel = []; letters = L.l.split(""); doneShown = false;
+    measure();
     if (restore) {
       try {
         var st = JSON.parse(localStorage.getItem("kb_state") || "null");
@@ -136,13 +137,13 @@
   }
   function buildWheel() {
     var old = wheelEl.querySelectorAll(".lt"); for (var i = 0; i < old.length; i++) wheelEl.removeChild(old[i]);
-    var R = wheelEl.clientWidth / 2, n = letters.length, lr = n <= 5 ? 0.19 : n <= 7 ? 0.17 : 0.155, rad = R * (1 - lr - 0.06);
+    var R = wheelEl.clientWidth / 2, n = letters.length, lr = n <= 5 ? 0.215 : n <= 7 ? 0.2 : n <= 9 ? 0.185 : 0.172, rad = R * (1 - lr - 0.06);
     letters.forEach(function (ch, i) {
       var a = -Math.PI / 2 + i * 2 * Math.PI / n, b = document.createElement("div");
       b.className = "lt"; b.textContent = up(ch); b.dataset.i = i;
-      var s = R * lr * 2; b.style.width = b.style.height = s + "px"; b.style.fontSize = Math.round(s * 0.5) + "px";
+      var s = R * lr * 2; b.style.width = b.style.height = s + "px"; b.style.fontSize = Math.round(s * 0.56) + "px";
       b.style.left = (R + rad * Math.cos(a) - s / 2) + "px"; b.style.top = (R + rad * Math.sin(a) - s / 2) + "px";
-      b._cx = R + rad * Math.cos(a); b._cy = R + rad * Math.sin(a); b._r = s / 2;
+      b._cx = R + rad * Math.cos(a); b._cy = R + rad * Math.sin(a); b._r = s / 2; b._hr = Math.min(s / 2 * 1.45, rad * Math.sin(Math.PI / n) * 0.97);   /* dokunma alanı harften geniş, komşuya taşmaz */
       wheelEl.appendChild(b);
     });
     linesEl.setAttribute("viewBox", "0 0 " + (R * 2) + " " + (R * 2)); drawLines();
@@ -159,7 +160,7 @@
   /* ---------- harf seçimi: sürükleme + dokunma ---------- */
   function hit(px, py) {
     var r = wheelEl.getBoundingClientRect(), x = px - r.left, y = py - r.top, els = ltEls();
-    for (var i = 0; i < els.length; i++) { var b = els[i], dx = x - b._cx, dy = y - b._cy; if (dx * dx + dy * dy <= (b._r * 1.1) * (b._r * 1.1)) return i; }
+    for (var i = 0; i < els.length; i++) { var b = els[i], dx = x - b._cx, dy = y - b._cy; if (dx * dx + dy * dy <= b._hr * b._hr) return i; }
     return -1;
   }
   function addSel(i) {
@@ -206,7 +207,10 @@
     }
     flash("no", "Sözlükte yok");
   }
+  /* ses: kelime-ses.js varsa çalar, yoksa hiçbir şey yapmaz */
+  function snd(n) { if (window.KbSes) try { window.KbSes.play(n); } catch (e) {} }
   function flash(kind, t) {
+    if (kind === "ok") snd("found"); else if (kind === "bonus") snd("bonus"); else if (kind === "no") snd("wrong");
     pill.classList.remove("ok", "no", "dup", "bonus"); void pill.offsetWidth; pill.classList.add(kind);
     msg(t);
     setTimeout(function () { setPill(""); pill.classList.remove(kind); }, kind === "no" ? 650 : 450);
@@ -233,7 +237,7 @@
     if (!L || doneShown) return;
     var complete = L.w.every(function (o) { return found[o.w]; }) || allOn();
     if (!complete) return;
-    doneShown = true;
+    doneShown = true; var sesAd = "level";
     L.w.forEach(function (o) { found[o.w] = 1; });
     var last = lvl >= LEVELS.length - 1, nb = Object.keys(bonusFound).length, waiting = !last && lvl + 1 >= avail();   /* sıradaki bölüm henüz açılmadı */
     if (lvl + 1 > maxLvl) maxLvl = Math.min(LEVELS.length - 1, lvl + 1);
@@ -249,14 +253,14 @@
         var R = ROZET[rz - 1], ru = $("rozetWinUse"); ru.setAttribute("href", "#rozet-" + R.id); ru.setAttributeNS("http://www.w3.org/1999/xlink", "xlink:href", "#rozet-" + R.id);
         $("rozetWinAd").textContent = R.ad; $("rozetWinAlt").textContent = R.tur + " rozet kazandın 🏅"; $("rozetWin").hidden = false;
         try { localStorage.setItem("kb_rozet", rz); } catch (e) {}
-        rozetCiz(); setTimeout(function () { burst(90); }, 750);
+        rozetCiz(); setTimeout(function () { burst(90); }, 750); sesAd = "rozet";
       } else $("rozetWin").hidden = true;
       var rev = secretRevealed(), secEl = $("secret"), fresh = (lvl + 1 === maxLvl), full = rev >= SEC_LETTERS.length;   /* gizli cümle 2–30. bölümlerde; 31+ kartlarında gösterilmez */
       if (rev > 0 && lvl <= 29) { secEl.hidden = false; secEl.innerHTML = secretHtml(rev, fresh ? rev - 1 : -1, full); } else secEl.hidden = true;
       if (lvl === 29) $("overText").innerHTML = "Çabuk iyileş! ❤️<br>Suflen seni<br>bekliyor.";
       burst(last ? 120 : 50);
     } catch (e) {}
-    setTimeout(function () { over.hidden = false; }, 700);
+    setTimeout(function () { over.hidden = false; snd(sesAd); }, 700);
   }
   /* emniyet: bulmaca tamamen açıkken kart bir şekilde çıkmadıysa 1.5 sn içinde çıkar */
   setInterval(function () { try { if (L && !doneShown && over.hidden && allOn()) checkDone(); } catch (e) {} }, 1500);
@@ -345,7 +349,8 @@
     used += g * (n - 1);
     var vh = (window.visualViewport && window.visualViewport.height) || innerHeight;   /* Safari'de alt çubuk açıkken görünen alan */
     var free = Math.max(300, vh - used - 10), W = Math.min(st.clientWidth, 440);
-    var wheel = Math.round(Math.min(W * 0.66, Math.max(172, free * 0.44)));
+    var wheel = Math.round(Math.min(W * 0.74, Math.max(186, free * 0.49))), need = L ? L.gh * 21 + 8 : 0;   /* bulmaca hücreleri en az ~18 px kalsın */
+    if (free - wheel < need) wheel = Math.round(Math.max(Math.min(W * 0.66, Math.max(vh < 600 ? 162 : 172, free * 0.44)), free - need));
     ww.style.height = wheel + "px"; wheelEl.style.width = wheelEl.style.height = wheel + "px";
     wrapEl.style.height = Math.max(120, free - wheel) + "px";
   }
