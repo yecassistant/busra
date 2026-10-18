@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>Kelime Bahçesi</title>
-<meta name="description" content="Çarktaki harfleri birleştir, bulmacayı doldur; 60 bölüm, gitgide zorlaşır.">
+<meta name="description" content="Çarktaki harfleri birleştir, bulmacayı doldur; 100 bölüm, sonra her gün yeni bir bölüm.">
 <meta property="og:title" content="Kelime Bahçesi 🌸">
 <meta property="og:description" content="Yatarken canın sıkılırsa: harfleri birleştir, kelimeleri bul.">
 <meta name="color-scheme" content="light">
@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;1,9..144,600&family=Nunito:wght@600;700;800&family=Caveat:wght@600;700&display=swap">
-<link rel="stylesheet" href="style.css?v=1018a">
+<link rel="stylesheet" href="style.css?v=1018b">
 </head>
 <body data-page="kelime" data-tone="lav">
 
@@ -26,7 +26,7 @@
   <div class="gtop">
     <a class="gback" href="index.html">← Geri</a>
     <div class="gtitle"><b>Kelime Bahçesi</b><small>harfleri birleştir 🌸</small></div>
-    <div class="gscore"><button type="button" class="lvlbtn" id="lvlBtn" title="Bölümler">Bölüm <b id="lvlNo">1/60</b> ▾</button><span>Bonus <b id="bonusNo">0</b></span></div>
+    <div class="gscore"><button type="button" class="lvlbtn" id="lvlBtn" title="Bölümler">Bölüm <b id="lvlNo">1/100</b> ▾</button><span>Bonus <b id="bonusNo">0</b></span></div>
   </div>
 
   <div class="gridwrap" id="gridwrap"><div class="grid" id="grid"></div></div>
@@ -56,7 +56,7 @@
     <p class="lead" id="overText"></p>
     <p class="small" id="overBonus"></p>
     <div class="secret" id="secret" hidden></div>
-    <div class="btns"><button type="button" class="btn pink" id="next">Sonraki bölüm →</button><a class="btn ghost" href="index.html">Geri dön</a></div>
+    <div class="btns"><button type="button" class="btn pink" id="next">Sonraki bölüm →</button><button type="button" class="btn ghost" id="overLevels">Bölümler</button><a class="btn ghost" href="index.html">Geri dön</a></div>
   </div>
 </div>
 
@@ -96,14 +96,14 @@
     <p class="lead">Harfler çarkta, kelimeler bulmacada.</p>
     <ul class="howto">
       <li>Çarktaki harflerin üstünde parmağını kaydırarak kelime yaz, bırakınca gönderilir. İstersen harflere tek tek dokunup kelimeye basarak da gönderebilirsin.</li>
-      <li>Bulmacadaki kelimeleri bulunca bölüm biter; 60 bölüm, harfler gitgide artar.</li>
+      <li>Bulmacadaki kelimeleri bulunca bölüm biter; 100 bölüm, harfler gitgide artar. Sonrasında her gün yeni bir bölüm açılır 🌱</li>
       <li>Sözlükte olan ama bulmacada olmayan kelimeler bonus sayılır; her 5 bonus bir ipucu kazandırır. İpucu bir harf açar ama sihirli sözü ister (:</li>
     </ul>
     <div class="btns"><button type="button" class="btn pink" id="introGo">Başla 🌸</button></div>
   </div>
 </div>
 
-<script src="app.js?v=1018a"></script>
-<script src="kelime.js?v=1018a"></script>
+<script src="app.js?v=1018b"></script>
+<script src="kelime.js?v=1018b"></script>
 </body>
 </html>

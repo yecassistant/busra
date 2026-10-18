@@ -698,3 +698,4 @@ body[data-page="yakinda"]{padding-top:max(10px,env(safe-area-inset-top));padding
 .lvlgrid button.done{background:var(--lavender-l);color:var(--lavender-d)}
 .lvlgrid button.cur{background:var(--peony);color:#fff;box-shadow:0 0 0 1.5px var(--peony)}
 .lvlgrid button.kilit{background:#f1ecf9;color:#b9adc9;box-shadow:0 0 0 1.5px #ebe3f6;cursor:default}
+.lvlgrid button small{display:block;font-size:.55rem;font-weight:700;line-height:1;margin-top:1px}
