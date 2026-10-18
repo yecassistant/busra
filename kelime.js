@@ -277,7 +277,7 @@
   }
   /* rozetler: 50. bölüm bronz, 100. bölüm gümüş, 105. bölüm altın. Kazanılana kadar ne olduğu ve nerede geldiği gizli ("?").
      Kazanma, bitirilen en ileri bölüme (maxLvl) göre hesaplanır; ayrı kayıt gerekmez. kb_rozet: gösterilen son rozet sayısı (kutlama bir kez) */
-  var ROZET = [{ at: 50, id: "bronz", ad: "Kelime Avcısı", tur: "Bronz" }, { at: 100, id: "gumus", ad: "Kelime Ustası", tur: "Gümüş" }, { at: 105, id: "altin", ad: "Kelime Canavarım", tur: "Altın" }];
+  var ROZET = [{ at: 50, id: "bronz", ad: "Kelime Avcım", tur: "Bronz" }, { at: 100, id: "gumus", ad: "Kelime Ustam", tur: "Gümüş" }, { at: 105, id: "altin", ad: "Kelime Canavarım", tur: "Altın" }];
   function rozetSay() { var done = maxLvl; try { if (localStorage.getItem("kb_end") === "1") done = LEVELS.length; } catch (e) {} return ROZET.filter(function (r) { return done >= r.at; }).length; }
   function rozetCiz() {
     var n = rozetSay(), svgs = $("rozetBtn").querySelectorAll("svg");
