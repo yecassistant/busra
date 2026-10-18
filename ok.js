@@ -6,14 +6,14 @@
      Ucun önündeki hücrelerden biri başka bir okla doluysa çarpar: 1 kalp gider. 3 kalp; biterse bölüm baştan.
      Bütün bölümler önceden üretildi ve çözülebilir olduğu doğrulandı (oklar.py / açgözlü çözücü).
      Kayıt: ok_lvl (bölüm), ok_max (açılan en yüksek), ok_stars, ok_best (süre), ok_hint, ok_intro, ok_state (yarım bölüm), ok_gun (bugün kaç yeni bölüm).
-     Açılış: pazartesi 08:00'e kadar sadece 3 bölüm (demo); sonra günde 10 yeni bölüm (eskiler hep tekrar oynanır). */
+     Açılış: pazartesi 08:00'e kadar ilk 20 bölüm açık; sonra kalan 80 bölüm, günde 10 yeni bölüm hakkıyla (eskiler hep tekrar oynanır). */
   var $ = function (id) { return document.getElementById(id); };
   var NS = "http://www.w3.org/2000/svg", S = 100, N = LEVELS.length;
   var DIR = { R: [1, 0], L: [-1, 0], D: [0, 1], U: [0, -1] };
   var board = $("board"), wrap = $("wrap"), stage = $("stage");
   var lvl = 0, maxLvl = 0, stars = [], best = [], hints = 3, L = null, A = [], occ = {}, hearts = 3, mistakes = 0, left = 0;
   var tStart = 0, tBefore = 0, finished = false, hintTimer = null, cell = 30, seq = 0;
-  var OPEN_AT = new Date(2026, 9, 19, 8, 0, 0).getTime(), DEMO = 3, DAILY = 10, NCOL = 5;
+  var OPEN_AT = new Date(2026, 9, 19, 8, 0, 0).getTime(), DEMO = 20, DAILY = 10, NCOL = 5;
   function today() { var d = new Date(); return d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate(); }
   function isDemo() { return Date.now() < OPEN_AT; }
   function doneToday() { var g = lsj("ok_gun"); return g && g.d === today() ? g.n | 0 : 0; }
@@ -307,8 +307,8 @@
     var last = lvl >= N - 1, nextOk = !last && canPlay(lvl + 1);
     $("doneText").textContent = "";
     if (!last && !nextOk) {
-      $("doneTitle").textContent = isDemo() ? "Demo bitti." : "Bugünlük bu kadar.";
-      if (isDemo()) $("doneText").textContent = "Demo burada bitiyor. Kalan " + (N - DEMO) + " bölüm pazartesi sabahı açılıyor (" + untilOpen() + " kaldı). Puzzle canavarına 100 bölümü bir anda vermek riskli bulundu :D";
+      $("doneTitle").textContent = isDemo() ? "Şimdilik bu kadar." : "Bugünlük bu kadar.";
+      if (isDemo()) $("doneText").textContent = "Canın sıkıldığı için " + DEMO + " bölüm açtık. Kalan " + (N - DEMO) + " bölüm pazartesi sabahı açılıyor (" + untilOpen() + " kaldı). Puzzle canavarına 100 bölümü bir anda vermek riskli bulundu :D";
       else $("doneText").textContent = "Bugünkü " + DAILY + " bölüm hakkın doldu. Bölümler bir günde bitmesin diye yönetim kontrole aldı :D Yarın " + DAILY + " bölüm daha.";
     } else if (!last && lvl >= DEMO && quotaLeft() <= 3) $("doneText").textContent = "Bugün " + quotaLeft() + " yeni bölüm hakkın kaldı.";
     $("doneNext").textContent = last || !nextOk ? "Bölümler" : "Sonraki"; $("doneNext").dataset.mode = nextOk ? "win" : "end";
@@ -350,7 +350,7 @@
       b.onclick = function () { $("lvlOv").hidden = true; $("done").hidden = true; load(+this.dataset.i, false); };
       g.appendChild(b);
     }
-    $("lvlNote").textContent = isDemo() ? "Şimdilik demo: 3 bölüm. Gerisi pazartesi 08:00'de açılıyor (" + untilOpen() + " kaldı)." : quotaLeft() > 0 ? "Bugün " + quotaLeft() + " yeni bölüm hakkın var. Bitirdiklerini istediğin kadar tekrar oynayabilirsin." : "Bugünkü " + DAILY + " bölüm hakkın doldu, yarın yenilenir. Bitirdiklerini tekrar oynayabilirsin.";
+    $("lvlNote").textContent = isDemo() ? "Şimdilik ilk " + DEMO + " bölüm açık. Kalan " + (N - DEMO) + " bölüm pazartesi 08:00'de açılıyor (" + untilOpen() + " kaldı)." : quotaLeft() > 0 ? "Bugün " + quotaLeft() + " yeni bölüm hakkın var. Bitirdiklerini istediğin kadar tekrar oynayabilirsin." : "Bugünkü " + DAILY + " bölüm hakkın doldu, yarın yenilenir. Bitirdiklerini tekrar oynayabilirsin.";
     $("lvlOv").hidden = false;
     var cur = g.children[lvl]; if (cur && cur.scrollIntoView) try { cur.scrollIntoView({ block: "center" }); } catch (e) {}
   }
@@ -383,12 +383,14 @@
 
   function locked() {
     $("doneKick").textContent = "Bölüm " + pad(Math.min(N, lvl + 2));
-    $("doneTitle").textContent = isDemo() ? "Demo bitti." : "Bugünlük bu kadar.";
+    $("doneTitle").textContent = isDemo() ? "Şimdilik bu kadar." : "Bugünlük bu kadar.";
     $("doneStars").innerHTML = ""; $("doneStats").innerHTML = "";
-    $("doneText").textContent = isDemo() ? "Kalan " + (N - DEMO) + " bölüm pazartesi sabahı açılıyor, " + untilOpen() + " kaldı. Puzzle canavarına 100 bölümü bir anda vermek riskli bulundu :D" : "Bugünkü " + DAILY + " bölüm hakkın doldu. Bölümler bir günde bitmesin diye yönetim kontrole aldı :D Yarın " + DAILY + " bölüm daha.";
+    $("doneText").textContent = isDemo() ? "Canın sıkıldığı için " + DEMO + " bölüm açtık. Kalan " + (N - DEMO) + " bölüm pazartesi sabahı açılıyor, " + untilOpen() + " kaldı. Puzzle canavarına 100 bölümü bir anda vermek riskli bulundu :D" : "Bugünkü " + DAILY + " bölüm hakkın doldu. Bölümler bir günde bitmesin diye yönetim kontrole aldı :D Yarın " + DAILY + " bölüm daha.";
     $("doneNext").textContent = "Bölümler"; $("doneNext").dataset.mode = "end"; $("doneAgain").textContent = "Son bölümü tekrar oyna";
     $("done").hidden = false;
   }
+  /* bitmiş bir bölümde kalınmışsa (ör. kilitliyken açılıp kapandıysa) ve sıradaki ilk oynanmamış bölüm artık açıksa, doğrudan ona geç (yarım bırakılmış tekrar oyunu varsa dokunma) */
+  (function () { var st = lsj("ok_state"); if (stars[lvl] > 0 && lvl + 1 < N && lvl + 1 === maxLvl && canPlay(lvl + 1) && !(st && st.lvl === lvl && st.gone && st.gone.length)) lvl = lvl + 1; })();
   var startLvl = lvl, wasLocked = !canPlay(lvl) || (stars[lvl] > 0 && lvl + 1 < N && !canPlay(lvl + 1) && maxLvl > lvl);
   while (startLvl > 0 && !canPlay(startLvl)) startLvl--;
   if (ls("ok_intro") !== "1") {

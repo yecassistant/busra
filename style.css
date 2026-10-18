@@ -997,3 +997,80 @@ body[data-page="oyunlar"] .qmsheetcard h2{margin:0;font-family:"Nunito",var(--bo
 .qmsheetbtn{font:inherit;font-weight:800;font-size:1.02rem;min-height:50px;border:0;border-radius:16px;color:#3a1d06;background:linear-gradient(180deg,#ffe08a,#f2c35b);box-shadow:0 4px 0 #c8902f;cursor:pointer;-webkit-tap-highlight-color:transparent}
 .qmsheetbtn:active{transform:translateY(2px);box-shadow:0 2px 0 #c8902f}
 @media (max-width:350px){.wt{width:38px;height:42px;font-size:1.25rem}}
+/* ================= 7 Farkı Bul (fark.html) ================= */
+body[data-page="fark"]{--f-bg:#0f2e36;--f-sf:#163c46;--f-sf2:#1c4854;--f-line:#2a5966;--f-acc:#34d1e0;--f-ink:#eafcff;--f-mute:#9cc3ca;--f-bad:#ff6b7d;--f-gold:#ffd27a;
+  background:radial-gradient(110% 50% at 50% -5%,#174652 0%,var(--f-bg) 60%);background-color:var(--f-bg);color:var(--f-ink);font-family:"Nunito",var(--body);
+  padding:max(10px,env(safe-area-inset-top)) 14px max(12px,env(safe-area-inset-bottom));min-height:100vh;min-height:100dvh;overflow:hidden}
+body[data-page="fark"] .garden,body[data-page="fark"] #petals{display:none}
+.fk{position:relative;z-index:1;width:100%;max-width:560px;height:100vh;height:100dvh;display:flex;flex-direction:column;gap:10px;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.fkbar{flex:none;display:flex;align-items:center;gap:10px;min-height:48px}
+.fkback{flex:none;width:44px;height:44px;display:flex;align-items:center;justify-content:center;border-radius:15px;background:var(--f-sf);box-shadow:inset 0 0 0 1px var(--f-line);-webkit-tap-highlight-color:transparent}
+.fkback svg{width:20px;height:20px;fill:none;stroke:var(--f-ink);stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.fktitle{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
+.fktitle b{font-weight:800;font-size:1.15rem;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fkdots{display:flex;gap:4px}
+.fkdots i{width:9px;height:9px;border-radius:50%;background:var(--f-line)}
+.fkdots i.on{background:var(--f-acc);box-shadow:0 0 0 2px rgba(52,209,224,.25)}
+.fkcount{flex:none;font-weight:800;font-variant-numeric:tabular-nums;background:var(--f-sf);border-radius:14px;padding:6px 11px;box-shadow:inset 0 0 0 1px var(--f-line);min-height:40px;display:flex;align-items:center}
+.fkcount b{font-size:1.3rem;color:var(--f-acc)}
+.fkcount i{font-style:normal;color:var(--f-mute);font-size:.95rem;margin-left:1px}
+.fkses{flex:none;width:40px;height:40px;border:0;border-radius:14px;background:var(--f-sf);box-shadow:inset 0 0 0 1px var(--f-line);color:var(--f-ink);display:flex;align-items:center;justify-content:center;cursor:pointer;-webkit-tap-highlight-color:transparent;padding:0}
+.fkses svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.fkses.off{color:var(--f-mute)}
+.fkpics{flex:1;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px}
+.fkpic{position:relative;overflow:hidden;border-radius:14px;background:#0a2026;box-shadow:0 0 0 1px var(--f-line),0 12px 24px -16px rgba(0,0,0,.8);touch-action:none;-webkit-tap-highlight-color:transparent;flex:none}
+.fklayer{position:absolute;left:0;top:0;width:100%;height:100%;-webkit-transform-origin:0 0;transform-origin:0 0;will-change:transform}
+.fklayer img{display:block;width:100%;height:100%;pointer-events:none;-webkit-user-drag:none}
+.fkmarks{position:absolute;left:0;top:0;width:100%;height:100%;overflow:visible;pointer-events:none}
+.fkring ellipse{fill:none;vector-effect:non-scaling-stroke}
+.fkring .o{stroke:rgba(8,32,38,.55);stroke-width:6}
+.fkring .i{stroke:var(--f-acc);stroke-width:3}
+.fkring.pop{-webkit-animation:fkPop .45s cubic-bezier(.2,1.6,.4,1) both;animation:fkPop .45s cubic-bezier(.2,1.6,.4,1) both;transform-box:fill-box;transform-origin:center}
+@-webkit-keyframes fkPop{from{-webkit-transform:scale(.3);opacity:0}}
+@keyframes fkPop{from{transform:scale(.3);opacity:0}}
+.fkmiss path{fill:none;stroke:var(--f-bad);stroke-width:4;stroke-linecap:round;vector-effect:non-scaling-stroke}
+.fkmiss{-webkit-animation:fkMiss .7s ease-out forwards;animation:fkMiss .7s ease-out forwards}
+@-webkit-keyframes fkMiss{70%{opacity:1}100%{opacity:0}}
+@keyframes fkMiss{70%{opacity:1}100%{opacity:0}}
+.fkhintring{fill:rgba(255,210,122,.2);stroke:var(--f-gold);stroke-width:4;stroke-dasharray:12 7;vector-effect:non-scaling-stroke;-webkit-animation:fkHint .9s ease-in-out infinite;animation:fkHint .9s ease-in-out infinite}
+@-webkit-keyframes fkHint{50%{opacity:.45}}
+@keyframes fkHint{50%{opacity:.45}}
+.fkfoot{flex:none;display:flex;align-items:center;gap:10px;min-height:54px}
+.fkmsg{flex:1;min-width:0;margin:0;font-size:.9rem;font-weight:700;color:var(--f-mute);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fkmsg.bad{color:var(--f-bad)}
+.fkbtn{font:inherit;font-weight:800;color:var(--f-ink);background:var(--f-sf);border:0;box-shadow:inset 0 0 0 1px var(--f-line);border-radius:16px;min-height:50px;min-width:50px;display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:0 14px;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.fkbtn svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.fkbtn:active{-webkit-transform:scale(.95);transform:scale(.95)}
+.fkbtn:disabled{opacity:.45}
+.fkhint b{background:var(--f-gold);color:#3a2a06;border-radius:999px;font-size:.8rem;min-width:22px;height:22px;display:inline-flex;align-items:center;justify-content:center;padding:0 6px}
+.fkwait{position:absolute;left:50%;top:50%;-webkit-transform:translate(-50%,-50%);transform:translate(-50%,-50%);z-index:5;display:flex;align-items:center;gap:12px;background:rgba(10,32,38,.92);border-radius:18px;padding:14px 18px;box-shadow:inset 0 0 0 1px var(--f-line),0 20px 40px -16px rgba(0,0,0,.8);font-weight:800}
+.fkwait[hidden]{display:none}
+.fkwait b{font-size:1.6rem;color:var(--f-gold);font-variant-numeric:tabular-nums}
+.fkover{position:fixed;left:0;top:0;right:0;bottom:0;z-index:80;background:rgba(6,22,27,.72);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:20px}
+.fkover[hidden]{display:none}
+.fkcard{width:100%;max-width:340px;background:var(--f-sf);border-radius:24px;padding:22px 20px 18px;box-shadow:inset 0 0 0 1px var(--f-line),0 30px 60px -20px rgba(0,0,0,.75);display:flex;flex-direction:column;gap:12px;text-align:left}
+body[data-page="fark"] .fkcard h2{margin:0;font-family:"Nunito",var(--body);font-weight:800;font-size:1.7rem;line-height:1.1;text-align:left;color:var(--f-ink)}
+.fkcard p{margin:0;color:#c8e6ea;font-size:.98rem;line-height:1.45}
+.fkcard .fksmall{font-size:.86rem;color:var(--f-mute)}
+.fkkick{font-size:.9rem;color:var(--f-mute);font-weight:700}
+.fkintroart{display:flex;gap:8px;height:64px}
+.fkintroart span{flex:1;border-radius:12px;background:url(fark/oda-a.jpg?v=2) center/cover;box-shadow:0 0 0 1px var(--f-line)}
+
+.fkstars{display:flex;gap:8px}
+.fkstars svg{width:32px;height:32px;fill:none;stroke:var(--f-line);stroke-width:1.5;stroke-linejoin:round}
+.fkstars svg.on{fill:var(--f-gold);stroke:var(--f-gold)}
+.fkstats{display:flex;gap:8px}
+.fkstats span{flex:1;background:var(--f-sf2);border-radius:14px;padding:9px 11px;min-width:0}
+.fkstats small{display:block;font-size:.78rem;color:var(--f-mute);font-weight:700}
+.fkstats b{font-size:1.2rem;font-variant-numeric:tabular-nums}
+.fkbtns{display:flex;gap:10px}
+.fkprimary{flex:1;font:inherit;font-weight:800;font-size:1.02rem;min-height:50px;border:0;border-radius:16px;color:#06303a;background:var(--f-acc);box-shadow:0 4px 0 #1b97a4;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.fkprimary:active{transform:translateY(2px);box-shadow:0 2px 0 #1b97a4}
+.fkghost{font:inherit;font-weight:700;min-height:50px;padding:0 18px;border-radius:16px;color:var(--f-ink);text-decoration:none;display:inline-flex;align-items:center;justify-content:center;box-shadow:inset 0 0 0 1px var(--f-line)}
+@media (max-height:600px){.fkbar{min-height:44px}.fkfoot{min-height:48px}.fkbtn{min-height:44px}.fk{gap:7px}.fkpics{gap:7px}}
+/* 7 Farkı Bul demo hâli */
+.fkcount.demo{padding:6px 12px}
+.fkcount.demo b{font-size:.95rem;color:var(--f-gold);letter-spacing:.02em}
+.fkdemo .fkses{display:none}
+.fkdemo .fkdots i{background:var(--f-line)}
+.qmnew.qmdemo{background:rgba(255,255,255,.92);color:#0d6a80}
