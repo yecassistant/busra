@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Caveat:wght@600;700&family=Nunito:wght@600;700;800&display=swap">
-<link rel="stylesheet" href="style.css?v=1019c">
+<link rel="stylesheet" href="style.css?v=1019d">
 </head>
 <body data-page="oyunlar">
 
@@ -118,6 +118,20 @@
       <i class="qmnew">yeni</i>
       <svg class="qmchev" aria-hidden="true"><use href="#qmChev"/></svg>
     </a>
+
+    <a class="qmc qmt qm-hafiza" href="hafiza.html" data-g="hafiza" id="toHafiza">
+      <span class="qmart"><svg viewBox="0 0 92 56" aria-hidden="true"><g transform="rotate(-8 30 30)"><rect x="12" y="8" width="30" height="40" rx="6" fill="#4a2456" stroke="#f3a3c0" stroke-width="1.6"/><path d="M27 18l-9 7 3 11h12l3-11z" fill="none" stroke="#f3a3c0" stroke-width="1.6" stroke-linejoin="round"/></g><g transform="rotate(8 60 30)"><rect x="46" y="8" width="30" height="40" rx="6" fill="#fbf7fd"/><circle cx="61" cy="28" r="9" fill="#ec4b5f"/><path d="M61 19c-3-4-8-5-12-3 4 1 6 3 7 5-4 0-7 1-9 3 4 0 8-1 12-1-1 2-1 5 0 7 1-3 2-4 2-4s1 1 2 4c1-2 1-5 0-7 4 0 8 1 12 1-2-2-5-3-9-3 1-2 3-4 7-5-4-2-9-1-12 3z" fill="#5fa36f"/><circle cx="57" cy="30" r="1.2" fill="#ffe08a"/><circle cx="64" cy="26" r="1.2" fill="#ffe08a"/><circle cx="63" cy="33" r="1.2" fill="#ffe08a"/></g><use href="#qmSpark" x="78" y="4" width="10" height="10" fill="#f3a3c0"/><use href="#qmSpark" x="4" y="40" width="8" height="8" fill="#f3a3c0"/></svg></span>
+      <span class="qmtx"><b>Hafıza Düellosu</b><small id="hafizaSub">İki kişilik: sırayla kart aç, çifti kap.</small></span>
+      <i class="qmnew" id="hafizaBadge">2 kişilik</i>
+      <svg class="qmchev" aria-hidden="true"><use href="#qmChev"/></svg>
+    </a>
+
+    <a class="qmc qmt qm-takvim" href="takvim.html" id="toTakvim">
+      <span class="qmart"><svg viewBox="0 0 92 56" aria-hidden="true"><rect x="18" y="8" width="56" height="44" rx="8" fill="#fbf7fd"/><rect x="18" y="8" width="56" height="13" rx="7" fill="#f2c35b"/><rect x="18" y="15" width="56" height="6" fill="#f2c35b"/><rect x="28" y="3" width="5" height="11" rx="2.5" fill="#3b2a08"/><rect x="59" y="3" width="5" height="11" rx="2.5" fill="#3b2a08"/><g fill="#d9d1e3"><rect x="24" y="26" width="8" height="6" rx="2"/><rect x="36" y="26" width="8" height="6" rx="2"/><rect x="48" y="26" width="8" height="6" rx="2"/><rect x="60" y="26" width="8" height="6" rx="2"/><rect x="24" y="36" width="8" height="6" rx="2"/><rect x="36" y="36" width="8" height="6" rx="2"/><rect x="60" y="36" width="8" height="6" rx="2"/></g><path d="M52 45s-6-3.8-6-7.4a3.1 3.1 0 0 1 6-1.2 3.1 3.1 0 0 1 6 1.2c0 3.6-6 7.4-6 7.4z" fill="#ec4b5f"/><use href="#qmSpark" x="78" y="6" width="10" height="10" fill="#ffe08a"/><use href="#qmSpark" x="4" y="38" width="8" height="8" fill="#ffe08a"/></svg></span>
+      <span class="qmtx"><b>Buluşma Takvimi</b><small id="takvimSub">Müsait olduğun günleri işaretle, ortak günü bul.</small></span>
+      <i class="qmnew" id="takvimBadge">yeni</i>
+      <svg class="qmchev" aria-hidden="true"><use href="#qmChev"/></svg>
+    </a>
   </div>
 
   <a class="qmc qmsoon" href="yakinda.html" id="toYakinda">
@@ -140,8 +154,8 @@
   </div>
 </div>
 
-<script src="app.js?v=1019c"></script>
-<script src="hesap.js?v=1019c"></script>
+<script src="app.js?v=1019d"></script>
+<script src="hesap.js?v=1019d"></script>
 <script>
 /* hesap çubuğu: giriş yoksa "Giriş yap", varsa ad + Skor Tablosu */
 (function () {
@@ -153,10 +167,36 @@
     else { ava.textContent = "?"; ava.className = "hsava a"; nm.textContent = "Giriş yap"; sub.textContent = "İlerlemen her cihazda seninle gelsin."; btn.textContent = "Giriş yap"; box.href = "giris.html"; }
   }
   Hesap.izle(ciz);
+  /* Buluşma Takvimi: ikisinin de boş olduğu en yakın gün */
+  var tkBakti = false;
+  Hesap.izle(function (k) {
+    if (!k || !k.kesin || tkBakti) return; tkBakti = true;
+    Hesap.db().then(function (db) { return db.collection("takvim").get(); }).then(function (snap) {
+      var benim = {}, onun = {}; snap.forEach(function (doc) { var g = doc.data().g || {}; if (doc.id === k.uid) benim = g; else onun = g; });
+      var bugun = new Date(); bugun.setHours(0, 0, 0, 0); var ort = [];
+      for (var d in benim) if (benim[d] && onun[d]) { var p = d.split("-"), t = new Date(+p[0], +p[1] - 1, +p[2]); if (t >= bugun) ort.push(d); }
+      if (!ort.length) return; ort.sort();
+      var p2 = ort[0].split("-"), dt = new Date(+p2[0], +p2[1] - 1, +p2[2]), G7 = ["Pazar", "Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi"], AY = ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"];
+      var n = Math.round((dt - bugun) / 86400000), ne = n === 0 ? "bugün" : n === 1 ? "yarın" : n + " gün sonra";
+      document.getElementById("takvimBadge").textContent = ort.length === 1 ? "ortak gün" : ort.length + " ortak gün"; document.getElementById("takvimBadge").className = "qmnew qmturn";
+      document.getElementById("takvimSub").textContent = G7[dt.getDay()] + " " + dt.getDate() + " " + AY[dt.getMonth()] + " — ikiniz de boşsunuz (" + ne + ")";
+    }).catch(function () {});
+  });
+  /* Hafıza Düellosu: sıra bendeyse kartta "sıra sende" */
+  var hsBakti = false;
+  Hesap.izle(function (k) {
+    if (!k || !k.kesin || hsBakti) return; hsBakti = true;
+    Hesap.db().then(function (db) { return db.collection("hafiza").doc("mac").get(); }).then(function (snap) {
+      var d = snap.exists ? snap.data() : null, badge = document.getElementById("hafizaBadge"), sub = document.getElementById("hafizaSub");
+      if (!d || d.bitti) { if (d && d.bitti) { badge.textContent = "yeni oyun"; sub.textContent = d.kazanan === k.uid ? "Son oyunu sen kazandın. Yeni oyunda ilk hamle onun." : "Son oyunu kaybettin. Yeni oyunda ilk hamle senin."; } return; }
+      if (d.sira === k.uid) { badge.textContent = "sıra sende"; badge.className = "qmnew qmturn"; sub.textContent = "Sıra sende, hamleni bekliyor."; }
+      else { badge.textContent = "sırası onda"; sub.textContent = "Hamlesini yapınca sıra sana geçer."; }
+    }).catch(function () {});
+  });
 })();
 /* Hadi Başlayalım: son oynanan oyuna götürür (yoksa Kelime Bahçesi). Sadece menüye ait küçük bir kayıt: qg_last */
 (function () {
-  var G = { kelime: ["kelime.html", "Kelime Bahçesi"], ok: ["ok.html", "Eros'un Oku"], kase: ["kase.html", "Peki Madem (:"], oda: ["oda.html", "Şefin Odası"], plan: ["oyun.html", "Şefin Planı"], tur: ["fatih.html", "Fatih Turu"], fark: ["fark.html", "7 Farkı Bul"], gunun: ["gunun.html", "Günün Kelimesi"] };
+  var G = { kelime: ["kelime.html", "Kelime Bahçesi"], ok: ["ok.html", "Eros'un Oku"], kase: ["kase.html", "Peki Madem (:"], oda: ["oda.html", "Şefin Odası"], plan: ["oyun.html", "Şefin Planı"], tur: ["fatih.html", "Fatih Turu"], fark: ["fark.html", "7 Farkı Bul"], gunun: ["gunun.html", "Günün Kelimesi"], hafiza: ["hafiza.html", "Hafıza Düellosu"] };
   var last = null; try { last = localStorage.getItem("qg_last"); } catch (e) {}
   if (last && G[last]) { var s = document.getElementById("qmStart"); s.href = G[last][0]; document.getElementById("qmStartSub").textContent = "Kaldığın yerden devam: " + G[last][1]; }
   [].forEach.call(document.querySelectorAll(".qmt[data-g]"), function (a) {

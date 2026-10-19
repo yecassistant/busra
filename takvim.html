@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>Buluşma Takvimi</title>
+<meta name="description" content="Müsait olduğun günleri işaretle; ikinizin de boş olduğu günler öne çıksın.">
+<meta property="og:title" content="Buluşma Takvimi">
+<meta property="og:description" content="Müsait olduğun günleri işaretle; ikinizin de boş olduğu günler öne çıksın.">
+<meta name="color-scheme" content="dark">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://yecassistant.github.io/busranur/onizleme.jpg">
+<meta name="theme-color" content="#16213a">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Crect width=%27100%27 height=%27100%27 rx=%2724%27 fill=%27%2316213a%27/%3E%3Crect x=%2718%27 y=%2726%27 width=%2764%27 height=%2756%27 rx=%2710%27 fill=%27%23f6f2ff%27/%3E%3Crect x=%2718%27 y=%2726%27 width=%2764%27 height=%2716%27 rx=%278%27 fill=%27%23f2c35b%27/%3E%3Cpath d=%27M50 74s-12-8-12-15a6 6 0 0 1 12-2 6 6 0 0 1 12 2c0 7-12 15-12 15z%27 fill=%27%23ec4b5f%27/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@1,9..144,600&family=Nunito:wght@600;700;800;900&display=swap">
+<link rel="stylesheet" href="style.css?v=1019d">
+</head>
+<body data-page="takvim">
+
+<main class="tk" id="stage">
+  <header class="hdbar">
+    <a class="gkbtn" href="oyunlar.html" aria-label="Geri"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 5.5L8 12l6.5 6.5"/></svg></a>
+    <div class="hdtitle"><b>Buluşma Takvimi</b><span id="tkSub">Bağlanıyor…</span></div>
+    <button type="button" class="gkbtn" id="bHelp" aria-label="Nasıl çalışır"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M9.6 9.4a2.5 2.5 0 0 1 4.8.9c0 1.8-2.4 2.1-2.4 3.7"/><path d="M12 16.9v.2"/></svg></button>
+  </header>
+
+  <section class="tkhero" id="hero" aria-live="polite">
+    <svg class="tkheart" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-5.2-9.5-10A5.3 5.3 0 0 1 12 6a5.3 5.3 0 0 1 9.5 5c-2 4.8-9.5 10-9.5 10z"/></svg>
+    <div class="tkherotx"><small id="heroKick">Yaklaşan</small><b id="heroT">Yükleniyor…</b><span id="heroS"></span></div>
+  </section>
+
+  <div class="tkmonth">
+    <button type="button" class="gkbtn" id="geri" aria-label="Önceki ay"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 5.5L8 12l6.5 6.5"/></svg></button>
+    <b id="ay">—</b>
+    <button type="button" class="gkbtn" id="ileri" aria-label="Sonraki ay"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9.5 5.5L16 12l-6.5 6.5"/></svg></button>
+  </div>
+  <div class="tkdow" aria-hidden="true"><span>Pzt</span><span>Sal</span><span>Çar</span><span>Per</span><span>Cum</span><span class="hs">Cmt</span><span class="hs">Paz</span></div>
+  <div class="tkgrid" id="grid" aria-label="Takvim"></div>
+
+  <div class="tklegend"><span class="ben">sen</span><span class="o" id="legO">o</span><span class="ikisi">ikiniz</span></div>
+  <p class="tksayac" id="sayac"></p>
+  <ol class="tklist" id="list" hidden></ol>
+  <p class="hdmsg tkmsg" id="msg" role="status" aria-live="polite"></p>
+</main>
+
+<div class="gkover" id="gate" hidden>
+  <div class="gkcard hdcard">
+    <h2>Buluşma Takvimi</h2>
+    <p>Müsait olduğun günleri işaretlemek için giriş yapman lazım.</p>
+    <a class="hsbtn" href="giris.html?d=takvim.html">Giriş yap</a>
+  </div>
+</div>
+
+<div class="gkover" id="help" hidden>
+  <div class="gkcard hdcard">
+    <h2>Buluşma Takvimi</h2>
+    <p>Müsait olduğun günlere dokun, işaretlensin. Bir daha dokununca kalkar.</p>
+    <p>O da kendi günlerini işaretler. İkinizin de boş olduğu günler altın olur ve en yakını yukarıda görünür.</p>
+    <p class="gksmall">Geçmiş günler kapalıdır. Her şey anında ikinize de yansır.</p>
+    <button type="button" class="gkprimary" id="helpGo">Tamam</button>
+  </div>
+</div>
+
+<script src="app.js?v=1019d"></script>
+<script src="hesap.js?v=1019d"></script>
+<script src="takvim.js?v=1019d"></script>
+<script src="takvim-ses.js?v=1019d"></script>
+</body>
+</html>

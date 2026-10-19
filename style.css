@@ -969,6 +969,12 @@ body[data-page="oyunlar"] .garden,body[data-page="oyunlar"] #petals{display:none
 button.qmc{font:inherit;border:0;padding:0;margin:0;text-align:left;cursor:pointer;width:100%;-webkit-appearance:none;appearance:none}
 button.qmt{padding:12px 14px 14px}
 .qm-gunun{background:linear-gradient(150deg,#f3b03f 0%,#d9771c 100%)}
+.qm-hafiza{background:linear-gradient(150deg,#6a2f7a 0%,#3e1a4a 100%)}
+.qm-takvim{background:linear-gradient(150deg,#2f4a86 0%,#1a2a52 100%)}
+.qm-takvim .qmtx b,.qm-hafiza .qmtx b{font-size:1.02rem;letter-spacing:-.015em}
+.qmnew.qmturn{background:#3fb86a;color:#fff;-webkit-animation:qmturn 1.4s ease-in-out infinite alternate;animation:qmturn 1.4s ease-in-out infinite alternate}
+@-webkit-keyframes qmturn{from{box-shadow:0 2px 6px rgba(0,0,0,.25)}to{box-shadow:0 0 0 4px rgba(63,184,106,.35)}}
+@keyframes qmturn{from{box-shadow:0 2px 6px rgba(0,0,0,.25)}to{box-shadow:0 0 0 4px rgba(63,184,106,.35)}}
 .qm-fark{background:linear-gradient(150deg,#22bfd3 0%,#0d86a3 100%)}
 .qmsoonbtn .qmart,.qmsoonbtn .qmtx{opacity:.92}
 .qmsoonpill{position:absolute;z-index:2;right:12px;bottom:14px;font-style:normal;font-size:.7rem;font-weight:800;color:#fff;background:rgba(36,16,70,.45);border-radius:999px;padding:2px 9px;line-height:1.5;box-shadow:inset 0 0 0 1px rgba(255,255,255,.35)}
@@ -1236,3 +1242,126 @@ body[data-page="giris"] .garden,body[data-page="giris"] #petals,body[data-page="
 .qmacct .qmabtn.ghost{color:#e7dcff;background:transparent;box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.22)}
 .qmacct[hidden]{display:none}
 @media (max-width:350px){.tbplayers{gap:6px}.tbp{padding:10px 6px}.tbc b{font-size:.92rem}.qmacct .qmatx small{display:none}}
+
+/* ---------- Hafıza Düellosu: koyu şakayık teması ---------- */
+body[data-page="hafiza"]{--h-bg:#2a1430;--h-sf:#3a1d42;--h-line:#5a3463;--h-ink:#fbeff5;--h-mute:#d2b6d8;--h-acc:#f3a3c0;--h-gold:#f2c35b;--h-me:#b58cff;--h-ot:#ff9fbd;
+  background:radial-gradient(110% 55% at 50% -8%,#4a2456 0%,var(--h-bg) 62%);background-color:var(--h-bg);color:var(--h-ink);font-family:"Nunito",system-ui,-apple-system,sans-serif;
+  padding:max(10px,env(safe-area-inset-top)) 12px max(10px,env(safe-area-inset-bottom));min-height:100vh;min-height:100dvh;overflow:hidden}
+body[data-page="hafiza"] .garden,body[data-page="hafiza"] #petals{display:none}
+body[data-page="hafiza"] .gkbtn{background:var(--h-sf);box-shadow:inset 0 0 0 1px var(--h-line);color:var(--h-ink)}
+body[data-page="hafiza"] .gkover{background:rgba(26,10,32,.74)}
+body[data-page="hafiza"] .gkcard{background:var(--h-sf);box-shadow:inset 0 0 0 1px var(--h-line),0 30px 60px -24px rgba(0,0,0,.7);color:var(--h-ink)}
+body[data-page="hafiza"] .gkkick{color:var(--h-acc)}
+body[data-page="hafiza"] .gkprimary{background:var(--h-acc);color:#3b1326;box-shadow:0 4px 0 #b86a8a}
+body[data-page="hafiza"] .gkghost{color:var(--h-ink);box-shadow:inset 0 0 0 1px var(--h-line)}
+body[data-page="hafiza"] .gkstats{grid-template-columns:1fr 1fr}
+body[data-page="hafiza"] .gkstats span{color:var(--h-mute)}
+body[data-page="hafiza"] .gkcard p.gksmall{color:var(--h-mute)}
+.hd{position:relative;z-index:1;width:100%;max-width:500px;margin:0 auto;height:100vh;height:100dvh;display:flex;flex-direction:column;gap:10px;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.hdbar{flex:none;display:grid;grid-template-columns:44px 1fr 44px;align-items:center;gap:6px;min-height:48px}
+.hdtitle{min-width:0;text-align:center;line-height:1.15}
+.hdtitle b{display:block;font-family:"Fraunces",Georgia,serif;font-style:italic;font-weight:600;font-size:1.28rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hdtitle span{display:block;font-size:.72rem;font-weight:800;letter-spacing:.02em;color:var(--h-acc);min-height:1em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hdscore{flex:none;display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:stretch;gap:6px}
+.hdscore[hidden]{display:none}
+.hdp{position:relative;display:flex;align-items:center;gap:7px;padding:6px 10px 6px 7px;border-radius:16px;background:rgba(255,255,255,.05);box-shadow:inset 0 0 0 1px rgba(255,255,255,.08);min-width:0}
+.hdp .hsava{width:34px;height:34px;font-size:.95rem;flex:none;position:relative}
+.hdp .hsava.cevrimici::after{content:"";position:absolute;right:-2px;bottom:-2px;width:11px;height:11px;border-radius:50%;background:#3fd37a;box-shadow:0 0 0 2.5px var(--h-sf)}
+.hdp b{font-size:1.35rem;font-weight:900;line-height:1}
+.hdp small{font-size:.74rem;font-weight:700;color:var(--h-mute);white-space:nowrap}
+.hdp.on{box-shadow:inset 0 0 0 1.5px var(--h-acc);background:rgba(243,163,192,.1)}
+#pOther{flex-direction:row-reverse;text-align:right;padding:6px 7px 6px 10px}
+.hdturn{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:5px 8px;border-radius:14px;min-width:0}
+.hdturn b{display:block;font-size:.9rem;font-weight:800;line-height:1.15;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hdturn small{display:block;font-size:.66rem;color:var(--h-mute);line-height:1.2;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hdturn.me{background:rgba(243,163,192,.16);box-shadow:inset 0 0 0 1px rgba(243,163,192,.5)}
+.hdturn.me b{color:var(--h-acc)}
+.hdboardwrap{position:relative;flex:1;min-height:0;display:flex;align-items:center;justify-content:center}
+.hdboard{--hd-k:60px;display:grid;grid-template-columns:repeat(5,var(--hd-k));grid-auto-rows:var(--hd-k);gap:7px;perspective:900px}
+.hdk{position:relative;width:var(--hd-k);height:var(--hd-k);padding:0;border:0;background:transparent;cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.hdk:disabled{cursor:default}
+.hdkin{position:absolute;top:0;left:0;right:0;bottom:0;inset:0;transition:transform .42s cubic-bezier(.3,.9,.3,1),opacity .4s;transform-style:preserve-3d;-webkit-transform-style:preserve-3d}
+.hdk.acik .hdkin{-webkit-transform:rotateY(180deg);transform:rotateY(180deg)}
+.hdkb,.hdkf{position:absolute;top:0;left:0;right:0;bottom:0;inset:0;border-radius:calc(var(--hd-k) * .18);-webkit-backface-visibility:hidden;backface-visibility:hidden;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.hdkb{background:radial-gradient(120% 80% at 18% 0%,rgba(255,255,255,.16),transparent 55%),repeating-linear-gradient(135deg,rgba(255,255,255,.04) 0 3px,transparent 3px 9px),linear-gradient(150deg,#6b3a7c 0%,#3b1f47 100%);box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.14),inset 0 0 0 5px rgba(0,0,0,.1),0 3px 0 rgba(0,0,0,.35);color:var(--h-gold)}
+.hdkb svg{width:44%;height:44%;opacity:.8;filter:drop-shadow(0 1px 0 rgba(0,0,0,.35))}
+.hdk:not(:disabled) .hdkb{box-shadow:inset 0 0 0 1.5px rgba(243,163,192,.55),inset 0 0 0 5px rgba(0,0,0,.1),0 3px 0 rgba(0,0,0,.35),0 0 14px -4px rgba(243,163,192,.5)}
+.hdk:not(:disabled) .hdkb svg{opacity:1}
+.hdk:not(:disabled):active .hdkb{-webkit-transform:scale(.95);transform:scale(.95)}
+.hdkf{background:#fbf7fd;-webkit-transform:rotateY(180deg);transform:rotateY(180deg);box-shadow:inset 0 0 0 2px rgba(0,0,0,.08)}
+.hdkf svg{width:80%;height:80%}
+.hdk.sahip .hdkf{box-shadow:inset 0 0 0 3px var(--h-ot)}
+.hdk.sahip.me .hdkf{box-shadow:inset 0 0 0 3px var(--h-me)}
+.hdk.sahip .hdkin{-webkit-transform:rotateY(180deg) scale(.9);transform:rotateY(180deg) scale(.9)}
+.hdk.sahip .hdkf{background:#eadfef}
+.hdk.sahip .hdkf svg{opacity:.85}
+.hdk.sahip::after{content:attr(data-k);position:absolute;right:-2px;top:-2px;z-index:2;width:17px;height:17px;border-radius:50%;background:var(--h-ot);color:#3b1326;font-size:.62rem;font-weight:900;line-height:17px;text-align:center;box-shadow:0 1px 3px rgba(0,0,0,.4)}
+.hdk.sahip.me::after{background:var(--h-me);color:#2a1046}
+.hdfoot{flex:none;height:54px;display:flex;align-items:center;justify-content:center}
+.hdmsg{margin:0;font-size:.9rem;font-weight:700;color:var(--h-acc);text-align:center;line-height:1.3}
+.hdcap{max-width:100%;max-height:54px;overflow:hidden;background:var(--h-ink);color:#2a1430;font-weight:800;font-size:.84rem;line-height:1.3;padding:7px 14px;border-radius:12px;box-shadow:0 10px 24px -10px rgba(0,0,0,.7);text-align:center}
+.hdcap[hidden]{display:none}
+.hdcap:not([hidden])+.hdmsg{display:none}
+.hdcard .hsbtn{width:100%}
+.hdlink{display:flex;align-items:center;justify-content:center;text-decoration:none}
+@media (max-height:640px){.hdscore .hdp b{font-size:1.15rem}.hdp .hsava{width:30px;height:30px}.hd{gap:7px}}
+@media (max-width:350px){.hdturn{padding:5px 4px}.hdturn b{font-size:.8rem}.hdp{padding:5px 8px 5px 6px}.hdp b{font-size:1.2rem}.hdp small{display:none}}
+.tbg i{font-style:normal;text-transform:none;letter-spacing:0;color:#9ef0b0}
+
+/* ---------- Buluşma Takvimi: gece mavisi + altın ---------- */
+body[data-page="takvim"]{--t-bg:#16213a;--t-sf:#22304f;--t-line:#3a4b70;--t-ink:#f4f1ff;--t-mute:#b8c0dc;--t-acc:#f2c35b;--t-me:#ff8fb0;--t-o:#9d8cff;
+  background:radial-gradient(110% 55% at 50% -8%,#2a3b66 0%,var(--t-bg) 62%);background-color:var(--t-bg);color:var(--t-ink);font-family:"Nunito",system-ui,-apple-system,sans-serif;
+  padding:max(10px,env(safe-area-inset-top)) 12px max(16px,env(safe-area-inset-bottom));min-height:100vh;min-height:100dvh}
+body[data-page="takvim"] .garden,body[data-page="takvim"] #petals{display:none}
+body[data-page="takvim"] .gkbtn{background:var(--t-sf);box-shadow:inset 0 0 0 1px var(--t-line);color:var(--t-ink)}
+body[data-page="takvim"] .gkbtn:disabled{opacity:.35}
+body[data-page="takvim"] .gkover{background:rgba(10,16,32,.74)}
+body[data-page="takvim"] .gkcard{background:var(--t-sf);box-shadow:inset 0 0 0 1px var(--t-line),0 30px 60px -24px rgba(0,0,0,.7);color:var(--t-ink)}
+body[data-page="takvim"] .gkprimary{background:var(--t-acc);color:#3b2a08;box-shadow:0 4px 0 #b88a2a}
+body[data-page="takvim"] .gkcard p.gksmall{color:var(--t-mute)}
+body[data-page="takvim"] .hdtitle span{color:var(--t-acc)}
+.tk{position:relative;z-index:1;width:100%;max-width:460px;margin:0 auto;display:flex;flex-direction:column;gap:12px;-webkit-user-select:none;user-select:none}
+.tkhero{display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:20px;background:rgba(255,255,255,.06);box-shadow:inset 0 0 0 1px rgba(255,255,255,.1);min-height:74px}
+.tkhero.var{background:linear-gradient(135deg,rgba(242,195,91,.24),rgba(242,195,91,.08));box-shadow:inset 0 0 0 1px rgba(242,195,91,.55)}
+.tkheart{width:34px;height:34px;flex:none;fill:rgba(255,255,255,.18)}
+.tkhero.var .tkheart{fill:var(--t-acc);-webkit-animation:tkbeat 1.6s ease-in-out infinite;animation:tkbeat 1.6s ease-in-out infinite}
+@-webkit-keyframes tkbeat{0%,100%{-webkit-transform:scale(1)}30%{-webkit-transform:scale(1.12)}}
+@keyframes tkbeat{0%,100%{transform:scale(1)}30%{transform:scale(1.12)}}
+.tkherotx{min-width:0;display:flex;flex-direction:column;gap:2px}
+.tkherotx small{font-size:.7rem;font-weight:800;letter-spacing:.03em;color:var(--t-mute)}
+.tkhero.var .tkherotx small{color:var(--t-acc)}
+.tkherotx b{font-family:"Fraunces",Georgia,serif;font-style:italic;font-weight:600;font-size:1.22rem;line-height:1.15}
+.tkherotx span{font-size:.8rem;color:var(--t-mute)}
+.tkmonth{display:grid;grid-template-columns:44px 1fr 44px;align-items:center;gap:6px}
+.tkmonth b{text-align:center;font-size:1.05rem;font-weight:900}
+.tkdow{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;text-align:center;font-size:.68rem;font-weight:800;letter-spacing:.03em;color:var(--t-mute)}
+.tkdow .hs{color:var(--t-acc);opacity:.85}
+.tkgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.tkd{position:relative;aspect-ratio:1/1;min-height:40px;border:0;border-radius:14px;background:rgba(255,255,255,.06);box-shadow:inset 0 0 0 1px rgba(255,255,255,.08);color:var(--t-ink);font:inherit;font-weight:800;font-size:.98rem;cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation;padding:0;display:flex;align-items:center;justify-content:center;transition:transform .15s,background .2s,box-shadow .2s}
+.tkd.bos{background:transparent;box-shadow:none;pointer-events:none}
+.tkd.gecmis{opacity:.28;cursor:default}
+.tkd.hs:not(.gecmis){color:#ffe6a6}
+.tkd.bugun{box-shadow:inset 0 0 0 2px rgba(255,255,255,.6)}
+.tkd.ben{background:rgba(255,143,176,.22);box-shadow:inset 0 0 0 2px var(--t-me)}
+.tkd.o{background:rgba(157,140,255,.2);box-shadow:inset 0 0 0 2px var(--t-o)}
+.tkd.ikisi{background:linear-gradient(145deg,#f7d27a,#e9ad2c);color:#3b2a08;box-shadow:0 3px 0 #a9771a}
+.tkd i{font-style:normal;position:relative;z-index:1}
+.tkd svg{position:absolute;right:4px;top:4px;width:11px;height:11px;fill:#c6392f}
+.tkd:not(:disabled):active{-webkit-transform:scale(.92);transform:scale(.92)}
+.tkd.pat{-webkit-animation:tkpat .7s ease-out;animation:tkpat .7s ease-out}
+@-webkit-keyframes tkpat{0%{-webkit-transform:scale(1)}35%{-webkit-transform:scale(1.18)}70%{-webkit-transform:scale(.96)}100%{-webkit-transform:scale(1)}}
+@keyframes tkpat{0%{transform:scale(1)}35%{transform:scale(1.18)}70%{transform:scale(.96)}100%{transform:scale(1)}}
+.tklegend{display:flex;justify-content:center;gap:16px;font-size:.78rem;font-weight:700;color:var(--t-mute)}
+.tklegend span{display:inline-flex;align-items:center;gap:6px}
+.tklegend span::before{content:"";width:12px;height:12px;border-radius:4px;box-shadow:inset 0 0 0 2px var(--t-me);background:rgba(255,143,176,.22)}
+.tklegend .o::before{box-shadow:inset 0 0 0 2px var(--t-o);background:rgba(157,140,255,.2)}
+.tklegend .ikisi::before{box-shadow:none;background:linear-gradient(145deg,#f7d27a,#e9ad2c)}
+.tksayac{margin:-6px 0 0;display:flex;justify-content:center;gap:12px;font-size:.76rem;color:var(--t-mute);flex-wrap:wrap}
+.tksayac .ikisi{color:var(--t-acc);font-weight:800}
+.tklist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.tklist li{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-radius:14px;background:rgba(242,195,91,.1);box-shadow:inset 0 0 0 1px rgba(242,195,91,.35);font-size:.9rem}
+.tklist li b{font-weight:800}
+.tklist li span{font-size:.78rem;color:var(--t-mute)}
+.tklist[hidden]{display:none}
+.tkmsg{min-height:1.3em;color:var(--t-acc)}
+@media (max-width:350px){.tkgrid,.tkdow{gap:4px}.tkd{border-radius:11px;font-size:.9rem}.tklegend{gap:10px}}
