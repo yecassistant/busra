@@ -103,7 +103,7 @@
   /* ---- yeni oyun ---- */
   function deste() { var d = [], i; for (i = 0; i < 15; i++) { d.push(i); d.push(i); } for (i = d.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), t = d[i]; d[i] = d[j]; d[j] = t; } return d; }
   function yeniOyun() {
-    if (!OTHER) { msg("Rakip henüz giriş yapmadı.", true); return; }
+    if (!OTHER) { msg(digerAd + " henüz giriş yapmadı.", true); return; }
     $("startGo").disabled = true; $("doneNew").disabled = true;
     db.runTransaction(function (tx) {
       return tx.get(ref).then(function (snap) {
@@ -157,14 +157,11 @@
   }
   function dinle() {
     seriRef.onSnapshot(function (snap) { seri = snap.exists ? snap.data() : null; altYaz(); }, function () {});
-    if (OTHER) db.collection("oyuncular").doc(OTHER).onSnapshot(function (snap) {
-      var p = snap.exists ? snap.data() : null, t = p && p.son && p.son.t ? Hesap.tms(p.son.t) : 0;
-      $("avaOther").classList.toggle("cevrimici", !!(t && Date.now() - t < 180000 && p.son.o === "hafiza"));
-    }, function () {});
+    if (OTHER) rakipIzle();
     ref.onSnapshot(function (snap) {
       var d = snap.exists ? snap.data() : null;
       altYaz();
-      if (!d) { G = null; $("score").hidden = true; $("start").hidden = false; $("startKick").textContent = "İlk oyun"; $("startTitle").textContent = "Hazır mısın?"; $("startText").textContent = "Kartları sen karıştır, ilk hamle senin."; ciz(); return; }
+      if (!d) { G = null; $("score").hidden = true; $("start").hidden = false; $("startKick").textContent = "İlk oyun"; baslatKarti(); ciz(); return; }
       var ilk = !G || G.n !== d.n;
       G = d; $("score").hidden = false; $("start").hidden = true;
       if (ilk) { acikYerel = []; mesgul = false; tekrarKuyruk = []; tekrarda = false; cap(""); seen = (d.gorulen && d.gorulen[ME]) || 0; bittiGosterildi = -1; $("done").hidden = true; }
@@ -186,12 +183,22 @@
     var ben = (G.skor && G.skor[ME]) || 0, o = (G.skor && G.skor[OTHER]) || 0, kazandim = G.kazanan === ME;
     $("doneKick").textContent = "Oyun " + G.n + " bitti";
     $("doneTitle").textContent = kazandim ? "Kazandın!" : (ADLAR[OTHER] || "Rakip") + " kazandı";
-    $("doneText").textContent = kazandim ? "Yeni oyunda ilk hamle " + (ADLAR[OTHER] ? ekIn(ADLAR[OTHER]) : "onun") + ". Oyunu ikinizden biri kurabilir." : "Yeni oyunda ilk hamle senin.";
+    $("doneText").textContent = kazandim ? "Yeni oyunda ilk hamle " + (ADLAR[OTHER] ? ekIn(ADLAR[OTHER]) : "onun") + ". Oyunu ikimizden biri kurabilir." : "Yeni oyunda ilk hamle senin.";
     $("doneStats").innerHTML = "<div><b>" + ben + "</b><span>" + esc(ADLAR[ME] || "sen") + "</span></div><div><b>" + o + "</b><span>" + esc(ADLAR[OTHER] || "rakip") + "</span></div>";
     $("doneNew").textContent = kazandim ? "Yeni oyunu kur" : "Yeni oyunu başlat";
     $("done").hidden = false; snd(kazandim ? "win" : "lose");
   }
 
+  /* ilk oyun kartı: rakip henüz hiç giriş yapmadıysa düğme kapalı */
+  function baslatKarti() {
+    if (OTHER) { $("startTitle").textContent = "Hazır mısın?"; $("startText").textContent = "Kartları sen karıştır, ilk hamle senin."; $("startGo").disabled = false; }
+    else { $("startTitle").textContent = digerAd + " henüz giriş yapmadı"; $("startText").textContent = "O da bir kere giriş yapınca oyunu buradan başlatabilirsin; girer girmez burası kendini günceller."; $("startGo").disabled = true; }
+  }
+  function rakipGoster() {
+    if (OTHER) { $("avaOther").textContent = (ADLAR[OTHER] || "?").charAt(0).toUpperCase(); $("avaOther").className = "hsava " + (KUL[OTHER] === "bus" ? "a" : "b"); $("adOther").textContent = ADLAR[OTHER]; }
+    else { $("avaOther").textContent = digerAd.charAt(0).toUpperCase(); $("adOther").textContent = digerAd; }
+  }
+  var digerAd = "Rakip", dinliyor = false;
   /* ---- başlat: giriş + rakip + dinleme ---- */
   function basla() {
     var k = Hesap.kim(), ip = null;
@@ -199,17 +206,33 @@
     if (!k) { if (ip && !Hesap._test().sdkHata && !hazirMi) { $("hdSub").textContent = "Bağlanıyor…"; return; } $("gate").hidden = false; $("hdSub").textContent = ""; return; }
     if (!k.kesin || hazirMi) return;
     hazirMi = true; ME = k.uid; ADLAR[ME] = k.ad; KUL[ME] = k.kul; $("gate").hidden = true;
+    digerAd = Hesap.gorunenAd(k.kul === "bus" ? "yec" : "bus");                 /* iki hesap var: öteki kim, baştan belli */
     $("avaMe").textContent = (k.ad || "?").charAt(0).toUpperCase(); $("avaMe").className = "hsava " + (k.kul === "bus" ? "a" : "b"); $("adMe").textContent = k.ad;
+    $("avaOther").className = "hsava " + (k.kul === "bus" ? "b" : "a"); rakipGoster();
     Hesap.db().then(function (d) {
       db = d; ref = db.collection("hafiza").doc("mac"); seriRef = db.collection("hafiza").doc("seri");
-      return db.collection("oyuncular").get();
-    }).then(function (snap) {
-      snap.forEach(function (doc) { var p = doc.data(); if (doc.id !== ME) { OTHER = doc.id; ADLAR[OTHER] = p.ad || Hesap.gorunenAd(p.kul); KUL[OTHER] = p.kul; } });
-      if (OTHER) { $("avaOther").textContent = (ADLAR[OTHER] || "?").charAt(0).toUpperCase(); $("avaOther").className = "hsava " + (KUL[OTHER] === "bus" ? "a" : "b"); $("adOther").textContent = ADLAR[OTHER]; }
-      else { $("adOther").textContent = "rakip yok"; msg("Rakip henüz giriş yapmadı; o da giriş yapınca oyun başlar.", true); }
-      try { if (localStorage.getItem("hd_help") !== "1") $("help").hidden = false; } catch (e) {}
-      dinle();
+      /* rakip: oyuncular koleksiyonunu canlı izle — ilk kez giriş yaptığı an burada belirir */
+      db.collection("oyuncular").onSnapshot(function (snap) {
+        var yeni = null;
+        snap.forEach(function (doc) { var p = doc.data(); if (doc.id !== ME) { yeni = doc.id; ADLAR[yeni] = p.ad || Hesap.gorunenAd(p.kul); KUL[yeni] = p.kul; } });
+        if (yeni && !OTHER) {
+          OTHER = yeni; rakipGoster(); rakipIzle();
+          if (dinliyor) { baslatKarti(); msg(ADLAR[OTHER] + " giriş yaptı, oyun başlayabilir."); ciz(); }
+        }
+        if (!dinliyor) {
+          dinliyor = true;
+          if (!OTHER) msg(digerAd + " henüz giriş yapmadı; o da giriş yapınca oyun başlar.", true);
+          try { if (localStorage.getItem("hd_help") !== "1") $("help").hidden = false; } catch (e) {}
+          dinle();
+        }
+      }, function () { $("hdSub").textContent = "Bağlantı yok"; msg("Bağlantı kurulamadı.", true); });
     }).catch(function () { $("hdSub").textContent = "Bağlantı yok"; msg("Bağlantı kurulamadı.", true); });
+  }
+  function rakipIzle() {
+    db.collection("oyuncular").doc(OTHER).onSnapshot(function (snap) {
+      var p = snap.exists ? snap.data() : null, t = p && p.son && p.son.t ? Hesap.tms(p.son.t) : 0;
+      $("avaOther").classList.toggle("cevrimici", !!(t && Date.now() - t < 180000 && p.son.o === "hafiza"));
+    }, function () {});
   }
   Hesap.izle(function () { basla(); });
   Hesap.hazir(function () { if (!Hesap.kim()) basla(); });

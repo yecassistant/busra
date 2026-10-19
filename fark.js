@@ -1,23 +1,37 @@
-/* 7 Farkı Bul – oda bölümü
-   İki fotoğraf piksel piksel aynı, yalnızca aşağıdaki 7 dikdörtgende farklı (koordinatlar 0–1, resim genişliği/yüksekliğine göre).
+/* 7 Farkı Bul – bölümler: Oda (fark2_*) ve Balat (fark3_*, daha zor)
+   Her bölümde iki fotoğraf piksel piksel aynı, yalnızca D'deki 7 dikdörtgende farklı (koordinatlar 0–1, resim genişliği/yüksekliğine göre).
    Dokunma: üstteki ya da alttaki resim; iki parmakla yakınlaştırma, tek parmakla kaydırma (iki resim birlikte hareket eder).
-   Kayıt: fark2_state (bulunanlar, yanlışlar, ipucu, süre), fark2_best, fark1_intro. (fark1_* ilk, kolay sürümdendi)
-   Resimler: fark/oda-a.jpg (asıl) ve fark/oda-b.jpg (Photoshop'ta 7 fark işlenmiş). D: farkların resim üzerindeki yerleri (0–1 oran).
+   Kayıt: farkN_state (bulunanlar, yanlışlar, ipucu, süre), farkN_best, farkN_done, fark1_intro. (fark1_* ilk, kolay sürümdendi)
+   Yeni bölüm eklemek: LV dizisine resim çifti + 7 dikdörtgen ekle; hesap.js'e farkN_* anahtarlarını yaz.
    DEMO = true yapılırsa oyun yine demo moduna döner (odaya bakılır, fark aranmaz). */
 (function () {
   "use strict";
   var $ = function (id) { return document.getElementById(id); };
   var DEMO = false;
   var NS = "http://www.w3.org/2000/svg", VW = 1000, VH = 805.5, ASPECT = 1600 / 1289, KEY = "fark2_state";
-  var D = [
-    { ad: "Masanın orta ayağı", x0: 0.5369, y0: 0.8681, x1: 0.5825, y1: 0.9387 },
-    { ad: "Kupanın içi", x0: 0.4919, y0: 0.7184, x1: 0.5419, y1: 0.7502 },
-    { ad: "Sağdaki kitabın sırtı", x0: 0.9800, y0: 0.4290, x1: 0.9990, y1: 0.5361 },
-    { ad: "Muffindeki yaban mersini", x0: 0.6625, y0: 0.7642, x1: 0.6869, y1: 0.7936 },
-    { ad: "Saatin ortasındaki yazı", x0: 0.9300, y0: 0.1086, x1: 0.9606, y1: 0.1350 },
-    { ad: "Bileklikteki boncuk", x0: 0.7588, y0: 0.2746, x1: 0.7806, y1: 0.3018 },
-    { ad: "Kedinin sağ gözü", x0: 0.3269, y0: 0.6152, x1: 0.3488, y1: 0.6424 }
+  var LV = [
+    { n: 2, ad: "Oda", alt: "", a: "fark/oda-a.jpg?v=3", b: "fark/oda-b.jpg?v=3", W: 1600, H: 1289, D: [
+      { ad: "Masanın orta ayağı", x0: 0.5369, y0: 0.8681, x1: 0.5825, y1: 0.9387 },
+      { ad: "Kupanın içi", x0: 0.4919, y0: 0.7184, x1: 0.5419, y1: 0.7502 },
+      { ad: "Sağdaki kitabın sırtı", x0: 0.9800, y0: 0.4290, x1: 0.9990, y1: 0.5361 },
+      { ad: "Muffindeki yaban mersini", x0: 0.6625, y0: 0.7642, x1: 0.6869, y1: 0.7936 },
+      { ad: "Saatin ortasındaki yazı", x0: 0.9300, y0: 0.1086, x1: 0.9606, y1: 0.1350 },
+      { ad: "Bileklikteki boncuk", x0: 0.7588, y0: 0.2746, x1: 0.7806, y1: 0.3018 },
+      { ad: "Kedinin sağ gözü", x0: 0.3269, y0: 0.6152, x1: 0.3488, y1: 0.6424 }
+    ] },
+    { n: 3, ad: "Balat", alt: "daha zor", a: "fark/balat-a.jpg?v=1", b: "fark/balat-b.jpg?v=1", W: 1600, H: 1200, D: [
+      { ad: "Çatıdaki martı", x0: 0.0206, y0: 0.1100, x1: 0.0531, y1: 0.1442 },
+      { ad: "Sağdaki evin çatısındaki anten", x0: 0.8594, y0: 0.1725, x1: 0.8756, y1: 0.2083 },
+      { ad: "Terastaki fener", x0: 0.2200, y0: 0.2092, x1: 0.2444, y1: 0.2442 },
+      { ad: "Balkon kapısının kolu", x0: 0.9038, y0: 0.3192, x1: 0.9237, y1: 0.3517 },
+      { ad: "Sarı evdeki melek kabartması", x0: 0.7006, y0: 0.3667, x1: 0.7375, y1: 0.4025 },
+      { ad: "Pencere demirindeki nazar boncuğu", x0: 0.2537, y0: 0.7475, x1: 0.2719, y1: 0.7758 },
+      { ad: "Arabanın tavanındaki yansıma", x0: 0.1862, y0: 0.9642, x1: 0.2169, y1: 0.9892 }
+    ] }
   ];
+  var L = LV[0], D = L.D, lvI = 0;
+  function key(l, s) { return "fark" + l.n + "_" + s; }
+  function bitti(l) { try { return localStorage.getItem(key(l, "done")) === "1"; } catch (e) { return false; } }
   var found = [], wrong = 0, hints = 1, usedHints = 0, tBefore = 0, tStart = Date.now(), done = false, streak = [], waitUntil = 0;
   var picA = $("picA"), picB = $("picB"), pics = [picA, picB], layers = [picA.firstChild, picB.firstChild];
   var marks = [picA.querySelector(".fkmarks"), picB.querySelector(".fkmarks")];
@@ -35,16 +49,33 @@
   /* ---- kayıt ---- */
   function save() { if (DEMO) return; try { localStorage.setItem(KEY, JSON.stringify({ f: found, w: wrong, h: hints, u: usedHints, t: elapsed(), d: done })); } catch (e) {} }
   function elapsed() { return tBefore + (done ? 0 : Date.now() - tStart); }
-  (function load() {
+  function load() {
+    found = []; wrong = 0; hints = 1; usedHints = 0; tBefore = 0; tStart = Date.now(); done = false; streak = []; waitUntil = 0;
     try {
       var st = JSON.parse(localStorage.getItem(KEY) || "null");
       if (st && !st.d) { found = (st.f || []).filter(function (i) { return i >= 0 && i < D.length; }); wrong = st.w | 0; hints = Math.max(0, Math.min(1, st.h === undefined ? 1 : st.h | 0)); usedHints = st.u | 0; tBefore = +st.t || 0; }
     } catch (e) {}
-  })();
+  }
+  /* ---- bölüm seç: resimler, oran, kayıt anahtarları ---- */
+  var imgs = [picA.querySelector("img"), picB.querySelector("img")];
+  function bolum(i, kaydet) {
+    if (kaydet) save();
+    lvI = i; L = LV[i]; D = L.D; KEY = key(L, "state"); ASPECT = L.W / L.H; VH = Math.round(VW * L.H / L.W * 10) / 10;
+    imgs[0].src = L.a; imgs[1].src = L.b;
+    marks.forEach(function (m) { m.setAttribute("viewBox", "0 0 " + VW + " " + VH); m.innerHTML = ""; });
+    load(); Z = { s: 1, tx: 0, ty: 0 }; fit();
+    found.forEach(function (j) { drawFound(j, false); }); drawDots(); bolumCiz(); $("done").hidden = true; $("wait").hidden = true;
+    idleMsg();
+  }
+  function bolumCiz() {
+    $("lv").innerHTML = LV.map(function (l, i) { return '<button type="button" class="fklvb' + (i === lvI ? " on" : "") + (bitti(l) ? " ok" : "") + '" data-i="' + i + '">' + (i + 1) + ". " + l.ad + (l.alt ? " <i>" + l.alt + "</i>" : "") + (bitti(l) ? " ✓" : "") + "</button>"; }).join("");
+  }
+  $("lv").addEventListener("click", function (e) { var b = e.target && e.target.closest ? e.target.closest("button.fklvb") : null; if (b && +b.getAttribute("data-i") !== lvI) { snd("hint"); bolum(+b.getAttribute("data-i"), true); } });
 
   /* ---- yerleşim: iki resim alt alta, ekrana sığacak en büyük boy ---- */
   function fit() {
     var vh = (window.visualViewport && window.visualViewport.height) || innerHeight;
+    if (!$("pics")) return;
     var bs = getComputedStyle(document.body), pt = parseFloat(bs.paddingTop) || 0, pb = parseFloat(bs.paddingBottom) || 0;
     var st = $("stage"); st.style.height = Math.max(380, vh - pt - pb) + "px";
     var box = $("pics"), W = box.clientWidth, H = box.clientHeight, gap = 10;
@@ -170,13 +201,19 @@
   /* ---- bitiş ---- */
   function starSvg(on) { return '<svg viewBox="0 0 24 24" class="' + (on ? "on" : "") + '"><path d="M12 3.5l2.6 5.4 5.9.8-4.3 4.1 1 5.9L12 16.9l-5.2 2.8 1-5.9-4.3-4.1 5.9-.8z"/></svg>'; }
   function win() {
-    done = true; var t = elapsed(); tBefore = t;
-    var stars = Math.max(1, 3 - (wrong > 3 ? 1 : 0) - (usedHints > 0 ? 1 : 0)), best = +ls("fark2_best") || 0;
-    if (!best || t < best) { best = t; ls("fark2_best", t); }
-    save(); try { localStorage.setItem("fark2_done", "1"); } catch (e) {}
-    $("doneTitle").textContent = stars === 3 ? "Hepsini buldun. Kartal göz." : stars === 2 ? "Hepsini buldun." : "Bitti, hem de hepsi.";
+    var t = elapsed(); done = true; tBefore = t;                           /* önce süre, sonra bitti (bitti olunca elapsed sayacı durdurur) */
+    var stars = Math.max(1, 3 - (wrong > 3 ? 1 : 0) - (usedHints > 0 ? 1 : 0)), best = +ls(key(L, "best")) || 0;
+    if (!best || t < best) { best = t; ls(key(L, "best"), t); }
+    save(); try { localStorage.setItem(key(L, "done"), "1"); } catch (e) {}
+    var zor = !!L.alt;
+    $("doneKick").textContent = L.ad + " · 7/7";
+    $("doneTitle").textContent = zor ? (stars === 3 ? "Zor olanı da bitirdin. Kartal göz." : "Zor olanı da bitirdin.") : (stars === 3 ? "Hepsini buldun. Kartal göz." : stars === 2 ? "Hepsini buldun." : "Bitti, hem de hepsi.");
     $("doneStars").innerHTML = starSvg(true) + starSvg(stars >= 2) + starSvg(stars >= 3);
     $("doneStats").innerHTML = "<span><small>Süre</small><b>" + fmt(t) + "</b></span><span><small>En iyi</small><b>" + fmt(best) + "</b></span><span><small>Yanlış</small><b>" + wrong + "</b></span>";
+    var sonraki = -1; for (var i = 0; i < LV.length; i++) if (i !== lvI && !bitti(LV[i])) { sonraki = i; break; }
+    var nb = $("doneNext"); nb.hidden = sonraki < 0;
+    if (sonraki >= 0) { nb.textContent = "Sıradaki: " + LV[sonraki].ad + (LV[sonraki].alt ? " (" + LV[sonraki].alt + ")" : ""); nb.onclick = function () { bolum(sonraki, false); }; }
+    bolumCiz();
     setTimeout(function () { snd("win"); $("done").hidden = false; }, 700);
   }
   function reset() {
@@ -201,8 +238,12 @@
     $("intro").hidden = false;
     $("introGo").onclick = function () { $("intro").hidden = true; };
   } else {
-    found.forEach(function (i) { drawFound(i, false); });
-    drawDots();
+    /* açılış bölümü: ?b=2 gibi istek varsa o; yoksa bitmemiş ilk bölüm; hepsi bittiyse ilk */
+    var ist = +((location.search.match(/[?&]b=(\d)/) || [])[1]) - 1, ilk = 0;
+    if (ist >= 0 && ist < LV.length) ilk = ist; else { for (var li = 0; li < LV.length; li++) if (!bitti(LV[li])) { ilk = li; break; } }
+    bolum(ilk, false);
+    /* öbür bölümün resimlerini arkadan yükle */
+    setTimeout(function () { LV.forEach(function (l, i) { if (i !== lvI) { var x = new Image(); x.src = l.a; var y = new Image(); y.src = l.b; } }); }, 2500);
   }
   addEventListener("resize", fit); addEventListener("orientationchange", function () { setTimeout(fit, 250); });
   if (window.visualViewport) window.visualViewport.addEventListener("resize", fit);
@@ -212,5 +253,5 @@
   fit();
   if (!DEMO && ls("fark1_intro") !== "1") { $("intro").hidden = false; $("introGo").onclick = function () { $("intro").hidden = true; ls("fark1_intro", "1"); tStart = Date.now(); }; }
 
-  if (location.hash === "#test") window.__fk = { D: D, demo: DEMO, state: function () { return { found: found.slice(), wrong: wrong, hints: hints, done: done, Z: Z, dispW: dispW, dispH: dispH, wait: Date.now() < waitUntil }; }, reset: reset };
+  if (location.hash === "#test") window.__fk = { LV: LV, demo: DEMO, bolum: bolum, state: function () { return { lv: lvI, D: D, found: found.slice(), wrong: wrong, hints: hints, done: done, Z: Z, dispW: dispW, dispH: dispH, wait: Date.now() < waitUntil, vh: VH }; }, reset: reset };
 })();

@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Caveat:wght@600;700&family=Nunito:wght@600;700;800&display=swap">
-<link rel="stylesheet" href="style.css?v=1019d">
+<link rel="stylesheet" href="style.css?v=1019f">
 </head>
 <body data-page="oyunlar">
 
@@ -114,7 +114,7 @@
 
     <a class="qmc qmt qm-fark" href="fark.html" data-g="fark" id="toFark">
       <span class="qmart"><svg viewBox="0 0 92 56" aria-hidden="true"><rect x="2" y="6" width="40" height="44" rx="6" fill="#fff7ec"/><rect x="50" y="6" width="40" height="44" rx="6" fill="#fff7ec"/><circle cx="14" cy="18" r="5" fill="#f2c35b"/><circle cx="62" cy="18" r="5" fill="#f2c35b"/><path d="M8 44l10-12 8 8 6-6 8 10z" fill="#5fb37a"/><path d="M56 44l10-12 8 8 6-6 8 10z" fill="#5fb37a"/><path d="M30 14s-4-2.5-4-5.5a2.2 2.2 0 0 1 4-1.3 2.2 2.2 0 0 1 4 1.3c0 3-4 5.5-4 5.5z" fill="#ff8597"/><circle cx="78" cy="10" r="7.5" fill="none" stroke="#ff5c7c" stroke-width="2" stroke-dasharray="3 2"/></svg></span>
-      <span class="qmtx"><b>7 Farkı Bul</b><small>İki resim arasındaki 7 farkı bul.</small></span>
+      <span class="qmtx"><b>7 Farkı Bul</b><small>İki bölüm, 14 fark. Balat daha zor.</small></span>
       <i class="qmnew">yeni</i>
       <svg class="qmchev" aria-hidden="true"><use href="#qmChev"/></svg>
     </a>
@@ -154,8 +154,8 @@
   </div>
 </div>
 
-<script src="app.js?v=1019d"></script>
-<script src="hesap.js?v=1019d"></script>
+<script src="app.js?v=1019f"></script>
+<script src="hesap.js?v=1019f"></script>
 <script>
 /* hesap çubuğu: giriş yoksa "Giriş yap", varsa ad + Skor Tablosu */
 (function () {
@@ -179,7 +179,7 @@
       var p2 = ort[0].split("-"), dt = new Date(+p2[0], +p2[1] - 1, +p2[2]), G7 = ["Pazar", "Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi"], AY = ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"];
       var n = Math.round((dt - bugun) / 86400000), ne = n === 0 ? "bugün" : n === 1 ? "yarın" : n + " gün sonra";
       document.getElementById("takvimBadge").textContent = ort.length === 1 ? "ortak gün" : ort.length + " ortak gün"; document.getElementById("takvimBadge").className = "qmnew qmturn";
-      document.getElementById("takvimSub").textContent = G7[dt.getDay()] + " " + dt.getDate() + " " + AY[dt.getMonth()] + " — ikiniz de boşsunuz (" + ne + ")";
+      document.getElementById("takvimSub").textContent = G7[dt.getDay()] + " " + dt.getDate() + " " + AY[dt.getMonth()] + " — ikimiz de boşuz (" + ne + ")";
     }).catch(function () {});
   });
   /* Hafıza Düellosu: sıra bendeyse kartta "sıra sende" */

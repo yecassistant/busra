@@ -15,7 +15,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800&display=swap">
-<link rel="stylesheet" href="style.css?v=1019d">
+<link rel="stylesheet" href="style.css?v=1019f">
 </head>
 <body data-page="fark">
 
@@ -25,6 +25,8 @@
     <div class="fktitle"><b>7 Farkı Bul</b><span class="fkdots" id="dots" aria-label="Bulunan farklar"></span></div>
     <div class="fkcount"><b id="foundNo">0</b><i>/7</i></div>
   </header>
+
+  <div class="fklv" id="lv" aria-label="Bölümler"></div>
 
   <div class="fkpics" id="pics">
     <div class="fkpic" id="picA"><div class="fklayer"><img src="fark/oda-a.jpg?v=3" alt="Birinci resim" draggable="false"><svg class="fkmarks" viewBox="0 0 1000 805.5" preserveAspectRatio="none"></svg></div></div>
@@ -43,7 +45,7 @@
   <div class="fkcard">
     <div class="fkintroart" aria-hidden="true"><span></span><span></span></div>
     <h2>7 Farkı Bul</h2>
-    <p>İki resim neredeyse aynı. Aralarında 7 fark var.</p>
+    <p>İki resim neredeyse aynı. Aralarında 7 fark var. İki bölüm: Oda ve Balat — Balat'ı daha zor yaptım.</p>
     <p>Farkı gördüğün yere dokun, üstteki ya da alttaki resimde. İnce farklar için iki parmakla yakınlaştır.</p>
     <p class="fksmall">Farklar çok ince, yakınlaştırmadan bulmak zor. Rastgele dokunmak cezalı: üst üste 3 yanlış, 10 saniye bekletir. Tek ipucu hakkın var.</p>
     <button type="button" class="fkprimary" id="introGo">Başla</button>
@@ -52,16 +54,17 @@
 
 <div class="fkover" id="done" hidden>
   <div class="fkcard">
-    <div class="fkkick">Oda · 7/7</div>
+    <div class="fkkick" id="doneKick">Oda · 7/7</div>
     <h2 id="doneTitle">Hepsini buldun.</h2>
     <div class="fkstars" id="doneStars"></div>
     <div class="fkstats" id="doneStats"></div>
-    <div class="fkbtns"><button type="button" class="fkprimary" id="doneAgain">Tekrar oyna</button><a class="fkghost" href="oyunlar.html">Menü</a></div>
+    <button type="button" class="fkprimary" id="doneNext" hidden>Sıradaki bölüm</button>
+    <div class="fkbtns"><button type="button" class="fkghost" id="doneAgain">Tekrar oyna</button><a class="fkghost" href="oyunlar.html">Menü</a></div>
   </div>
 </div>
 
-<script src="app.js?v=1019d"></script>
-<script src="hesap.js?v=1019d"></script>
-<script>(window.Hesap ? Hesap.oyun : function (l) { l.forEach(function (x) { document.write('<script src="' + x + '"><\/script>'); }); })(["fark.js?v=1019d", "fark-ses.js?v=1019d"]);</script>
+<script src="app.js?v=1019f"></script>
+<script src="hesap.js?v=1019f"></script>
+<script>(window.Hesap ? Hesap.oyun : function (l) { l.forEach(function (x) { document.write('<script src="' + x + '"><\/script>'); }); })(["fark.js?v=1019f", "fark-ses.js?v=1019f"]);</script>
 </body>
 </html>

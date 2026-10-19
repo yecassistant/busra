@@ -1365,3 +1365,12 @@ body[data-page="takvim"] .hdtitle span{color:var(--t-acc)}
 .tklist[hidden]{display:none}
 .tkmsg{min-height:1.3em;color:var(--t-acc)}
 @media (max-width:350px){.tkgrid,.tkdow{gap:4px}.tkd{border-radius:11px;font-size:.9rem}.tklegend{gap:10px}}
+
+/* 7 Farkı Bul: bölüm seçici */
+.fklv{flex:none;display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
+.fklvb{border:0;border-radius:999px;padding:5px 11px;background:rgba(255,255,255,.08);box-shadow:inset 0 0 0 1px rgba(255,255,255,.14);color:inherit;font:inherit;font-size:.74rem;font-weight:800;cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.fklvb i{font-style:normal;font-weight:700;opacity:.8}
+.fklvb.on{background:#9ad7ff;color:#0e2233;box-shadow:none}
+.fklvb.ok:not(.on){box-shadow:inset 0 0 0 1px rgba(154,215,255,.7)}
+#doneNext{width:100%;margin-bottom:8px}
+#doneNext[hidden]{display:none}
