@@ -13,7 +13,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Nunito:wght@600;700;800&display=swap">
-<link rel="stylesheet" href="style.css?v=1019a">
+<link rel="stylesheet" href="style.css?v=1019c">
 </head>
 <body data-page="tablo">
 
@@ -35,8 +35,8 @@
   </section>
 </main>
 
-<script src="app.js?v=1019a"></script>
-<script src="hesap.js?v=1019a"></script>
+<script src="app.js?v=1019c"></script>
+<script src="hesap.js?v=1019c"></script>
 <script>
 (function () {
   var $ = function (id) { return document.getElementById(id); };
@@ -69,7 +69,7 @@
       { o: "gunun", ad: "Günün Kelimesi", v: gkSeri * 1000 + num(gs.w), t: bugun && bugun.s === "w" ? bugun.g.length + " tahminde" : bugun && bugun.s === "l" ? "bulamadı" : bugun && bugun.g && bugun.g.length ? bugun.g.length + " tahmin yaptı" : "—", alt: (bugun && bugun.g && bugun.g.length ? "bugün" : "bugün oynamadı") + (gkSeri ? " · " + gkSeri + " günlük seri" : "") + (num(gs.p) ? " · " + num(gs.w) + "/" + num(gs.p) + " kazanma" : "") },
       { o: "tur", ad: "Fatih Turu", v: num(d.fatih_best), t: num(d.fatih_best) ? num(d.fatih_best) + "/12 durak" : "—", alt: "" },
       { o: "plan", ad: "Şefin Planı", v: num(d.sef_best), t: num(d.sef_best) ? num(d.sef_best) + " puan" : "—", alt: "" },
-      { o: "fark", ad: "7 Farkı Bul", v: d.fark2_done === "1" ? 1 : 0, t: d.fark2_done === "1" ? "bitirdi" : "—", alt: "" }
+      { o: "fark", ad: "7 Farkı Bul", v: d.fark2_done === "1" ? (num(d.fark2_best) > 0 ? 1e9 - num(d.fark2_best) : 1) : 0, t: d.fark2_done === "1" ? "7/7 buldu" : "—", alt: num(d.fark2_best) > 0 ? "en iyi süre " + Math.floor(num(d.fark2_best) / 60000) + ":" + pad(Math.round(num(d.fark2_best) / 1000) % 60) : "" }
     ];
   }
 

@@ -2,21 +2,21 @@
    İki fotoğraf piksel piksel aynı, yalnızca aşağıdaki 7 dikdörtgende farklı (koordinatlar 0–1, resim genişliği/yüksekliğine göre).
    Dokunma: üstteki ya da alttaki resim; iki parmakla yakınlaştırma, tek parmakla kaydırma (iki resim birlikte hareket eder).
    Kayıt: fark2_state (bulunanlar, yanlışlar, ipucu, süre), fark2_best, fark1_intro. (fark1_* ilk, kolay sürümdendi)
-   DEMO: asıl resimler (Photoshop) gelene kadar oyun demo. Odaya girilir, yakınlaştırılıp gezilir; fark aranmaz, kayıt tutulmaz.
-   Asıl resimler gelince: DEMO = false, fark.html'de alttaki resim oda-b.jpg olur, D listesi yeni farklarla güncellenir. */
+   Resimler: fark/oda-a.jpg (asıl) ve fark/oda-b.jpg (Photoshop'ta 7 fark işlenmiş). D: farkların resim üzerindeki yerleri (0–1 oran).
+   DEMO = true yapılırsa oyun yine demo moduna döner (odaya bakılır, fark aranmaz). */
 (function () {
   "use strict";
   var $ = function (id) { return document.getElementById(id); };
-  var DEMO = true;
+  var DEMO = false;
   var NS = "http://www.w3.org/2000/svg", VW = 1000, VH = 805.5, ASPECT = 1600 / 1289, KEY = "fark2_state";
   var D = [
-    { ad: "Saatin yelkovanı", x0: 0.9395, y0: 0.0838, x1: 0.966, y1: 0.1453 },
-    { ad: "Penceredeki ince dal", x0: 0.109, y0: 0.1384, x1: 0.123, y1: 0.1688 },
-    { ad: "Lavantanın bir dalı", x0: 0.1215, y0: 0.3563, x1: 0.1375, y1: 0.3942 },
-    { ad: "Kırmızı ve turuncu kitap", x0: 0.896, y0: 0.4327, x1: 0.9215, y1: 0.532 },
-    { ad: "Vazodaki bir çizgi", x0: 0.6245, y0: 0.6611, x1: 0.6305, y1: 0.7778 },
-    { ad: "Alt raftaki kitabın rengi", x0: 0.913, y0: 0.702, x1: 0.935, y1: 0.8094 },
-    { ad: "Muffin kâğıdının ucu", x0: 0.702, y0: 0.7517, x1: 0.7195, y1: 0.7716 }
+    { ad: "Masanın orta ayağı", x0: 0.5369, y0: 0.8681, x1: 0.5825, y1: 0.9387 },
+    { ad: "Kupanın içi", x0: 0.4919, y0: 0.7184, x1: 0.5419, y1: 0.7502 },
+    { ad: "Sağdaki kitabın sırtı", x0: 0.9800, y0: 0.4290, x1: 0.9990, y1: 0.5361 },
+    { ad: "Muffindeki yaban mersini", x0: 0.6625, y0: 0.7642, x1: 0.6869, y1: 0.7936 },
+    { ad: "Saatin ortasındaki yazı", x0: 0.9300, y0: 0.1086, x1: 0.9606, y1: 0.1350 },
+    { ad: "Bileklikteki boncuk", x0: 0.7588, y0: 0.2746, x1: 0.7806, y1: 0.3018 },
+    { ad: "Kedinin sağ gözü", x0: 0.3269, y0: 0.6152, x1: 0.3488, y1: 0.6424 }
   ];
   var found = [], wrong = 0, hints = 1, usedHints = 0, tBefore = 0, tStart = Date.now(), done = false, streak = [], waitUntil = 0;
   var picA = $("picA"), picB = $("picB"), pics = [picA, picB], layers = [picA.firstChild, picB.firstChild];
@@ -153,9 +153,11 @@
   });
   $("bZoom").onclick = function () { Z = { s: 1, tx: 0, ty: 0 }; applyZ(); };
 
-  /* ---- ipucu: yaklaşık bölge (tam yer değil) ---- */
+  /* ---- ipucu: hak görünür ama verilmez; "Bence sana gerek yok :)" (ŞAKA = false yapılırsa gerçek ipucu: yaklaşık bölge) ---- */
+  var SAKA = true, sakaN = 0, SAKA_MSG = ["Bence sana gerek yok :)", "Cidden, sana gerek yok :)", "Puzzle canavarı ipucu mu ister?", "Hakkın duruyor, kullanmana gerek yok :)"];
   $("bHint").onclick = function () {
     if (done || hints <= 0) return;
+    if (SAKA) { snd("hint"); msg(SAKA_MSG[sakaN++ % SAKA_MSG.length]); return; }   /* hak hiç azalmaz, yıldız da gitmez */
     var left = D.map(function (d, i) { return i; }).filter(function (i) { return found.indexOf(i) < 0; });
     if (!left.length) return;
     var i = left[Math.floor(Math.random() * left.length)], c = center(D[i]), R = 120;
