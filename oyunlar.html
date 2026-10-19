@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Caveat:wght@600;700&family=Nunito:wght@600;700;800&display=swap">
-<link rel="stylesheet" href="style.css?v=1018z">
+<link rel="stylesheet" href="style.css?v=1019a">
 </head>
 <body data-page="oyunlar">
 
@@ -47,6 +47,12 @@
     <svg class="qmcrown" aria-hidden="true"><use href="#qmCrown"/></svg>
     <h1 class="qmlogo"><span class="qmq">Queen</span><span class="qmg">Games</span></h1>
   </header>
+
+  <a class="qmacct" id="qmAcct" href="giris.html" hidden>
+    <span class="hsava a" id="qmAva">?</span>
+    <span class="qmatx"><b id="qmAname">Giriş yap</b><small id="qmAsub">İlerlemen her cihazda seninle gelsin.</small></span>
+    <span class="qmabtn" id="qmAbtn">Giriş yap</span>
+  </a>
 
   <a class="qmc qmstart" href="kelime.html" id="qmStart">
     <span class="qmico qmico-start"><svg viewBox="0 0 64 44" aria-hidden="true"><use href="#qmCrown"/></svg></span>
@@ -134,8 +140,20 @@
   </div>
 </div>
 
-<script src="app.js?v=1018z"></script>
+<script src="app.js?v=1019a"></script>
+<script src="hesap.js?v=1019a"></script>
 <script>
+/* hesap çubuğu: giriş yoksa "Giriş yap", varsa ad + Skor Tablosu */
+(function () {
+  var box = document.getElementById("qmAcct"), ava = document.getElementById("qmAva"), nm = document.getElementById("qmAname"), sub = document.getElementById("qmAsub"), btn = document.getElementById("qmAbtn");
+  if (!window.Hesap || !box) return;
+  function ciz(k) {
+    box.hidden = false;
+    if (k) { ava.textContent = (k.ad || "?").charAt(0).toUpperCase(); ava.className = "hsava " + (k.kul === "bus" ? "a" : "b"); nm.textContent = k.ad; sub.textContent = k.kesin ? "İlerlemen hesabında, her cihazdan devam edebilirsin." : "bağlanıyor…"; btn.textContent = "Skor Tablosu"; box.href = "tablo.html"; }
+    else { ava.textContent = "?"; ava.className = "hsava a"; nm.textContent = "Giriş yap"; sub.textContent = "İlerlemen her cihazda seninle gelsin."; btn.textContent = "Giriş yap"; box.href = "giris.html"; }
+  }
+  Hesap.izle(ciz);
+})();
 /* Hadi Başlayalım: son oynanan oyuna götürür (yoksa Kelime Bahçesi). Sadece menüye ait küçük bir kayıt: qg_last */
 (function () {
   var G = { kelime: ["kelime.html", "Kelime Bahçesi"], ok: ["ok.html", "Eros'un Oku"], kase: ["kase.html", "Peki Madem (:"], oda: ["oda.html", "Şefin Odası"], plan: ["oyun.html", "Şefin Planı"], tur: ["fatih.html", "Fatih Turu"], fark: ["fark.html", "7 Farkı Bul"], gunun: ["gunun.html", "Günün Kelimesi"] };

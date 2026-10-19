@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>Giriş · Queen Games</title>
+<meta name="description" content="Queen Games hesabına giriş yap; ilerlemen her cihazda seninle gelsin.">
+<meta name="color-scheme" content="dark">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://yecassistant.github.io/busranur/onizleme.jpg">
+<meta name="theme-color" content="#211043">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Crect width=%27100%27 height=%27100%27 rx=%2724%27 fill=%27%23211043%27/%3E%3Cpath d=%27M20 70L14 30l20 16L50 18l16 28 20-16-6 40z%27 fill=%27%23f2c35b%27/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Nunito:wght@600;700;800&display=swap">
+<link rel="stylesheet" href="style.css?v=1019a">
+</head>
+<body data-page="giris">
+
+<main class="hs">
+  <a class="qmback" href="oyunlar.html" aria-label="Menüye dön"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></a>
+
+  <div class="hslogo" aria-hidden="true">
+    <svg viewBox="0 0 64 44"><path d="M8 38L4 12l14 11L32 4l14 19 14-11-4 26z" fill="none" stroke="#f2c35b" stroke-width="3" stroke-linejoin="round"/><path d="M8 38h48" stroke="#f2c35b" stroke-width="3" stroke-linecap="round"/></svg>
+    <b>Queen Games</b>
+  </div>
+
+  <form class="hscard" id="form" autocomplete="on" novalidate>
+    <h1>Giriş yap</h1>
+    <p class="hslead">Bir kere giriş yap, ilerlemen her cihazda seninle gelsin.</p>
+    <label class="hsfield"><span>Kullanıcı adı</span><input type="text" id="kul" name="username" autocapitalize="none" autocorrect="off" spellcheck="false" autocomplete="username" inputmode="text" placeholder="büş"></label>
+    <label class="hsfield"><span>Şifre</span><span class="hspw"><input type="password" id="sifre" name="password" autocomplete="current-password" placeholder="••••••"><button type="button" class="hseye" id="eye" aria-label="Şifreyi göster">göster</button></span></label>
+    <p class="hserr" id="err" role="alert" hidden></p>
+    <p class="hsnote" id="note" hidden>Bu cihazdaki ilerleme hesabına aktarılacak, hiçbir şey kaybolmaz.</p>
+    <button type="submit" class="hsbtn" id="go">Giriş yap</button>
+  </form>
+
+  <div class="hscard hsdone" id="done" hidden>
+    <div class="hsava" id="doneAva">B</div>
+    <h1 id="doneTitle">Hoş geldin</h1>
+    <p class="hslead" id="doneText">İlerlemen eşitlendi.</p>
+    <a class="hsbtn" href="oyunlar.html" id="doneGo">Oyunlara geç</a>
+    <button type="button" class="hsghost" id="cikis">Çıkış yap</button>
+  </div>
+</main>
+
+<script src="app.js?v=1019a"></script>
+<script src="hesap.js?v=1019a"></script>
+<script>
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  var form = $("form"), done = $("done"), err = $("err"), go = $("go");
+  var geri = (location.search.match(/[?&]d=([a-z0-9_.-]+\.html)/i) || [])[1] || "oyunlar.html";
+  $("doneGo").href = geri;
+  function hata(t) { err.textContent = t; err.hidden = !t; }
+  var girisYapiliyor = false;
+  function goster(k) {
+    if (k && k.kesin && !(girisYapiliyor && !Hesap.senk())) {   /* giriş sırasında: eşitleme bitmeden "hoş geldin" deme */
+      form.hidden = true; done.hidden = false;
+      $("doneAva").textContent = (k.ad || "?").charAt(0).toUpperCase(); $("doneTitle").textContent = "Hoş geldin, " + k.ad;
+      $("doneText").textContent = "Giriş yapıldı. İlerlemen artık bu hesapta.";
+    } else { form.hidden = false; done.hidden = true; }
+  }
+  /* bu cihazda eşitlenecek ilerleme var mı? (ilk giriş notu) */
+  try { var var_ = false; for (var i = 0; i < localStorage.length; i++) if (window.Hesap && Hesap.kural(localStorage.key(i))) { var_ = true; break; } $("note").hidden = !var_ || !!localStorage.getItem("hs_last"); } catch (e) {}
+  if (window.Hesap) Hesap.izle(goster);
+  $("eye").onclick = function () { var p = $("sifre"), s = p.type === "password"; p.type = s ? "text" : "password"; this.textContent = s ? "gizle" : "göster"; };
+  form.onsubmit = function (e) {
+    e.preventDefault(); if (!window.Hesap) { hata("Bağlantı kurulamadı. İnternetini kontrol edip tekrar dene."); return; }
+    var kul = $("kul").value, sifre = $("sifre").value; hata("");
+    if (!kul.trim()) { hata("Kullanıcı adını yaz."); return; }
+    if (!sifre) { hata("Şifreni yaz."); return; }
+    go.disabled = true; go.textContent = "Giriş yapılıyor…"; girisYapiliyor = true;
+    Hesap.giris(kul, sifre).then(function () {
+      go.textContent = "Giriş yap"; go.disabled = false; girisYapiliyor = false; goster(Hesap.kim());
+      $("doneText").textContent = "İlerlemen eşitlendi. Artık hangi cihazdan girersen gir kaldığın yerden devam edersin.";
+    }).catch(function (e) {
+      go.disabled = false; go.textContent = "Giriş yap"; girisYapiliyor = false;
+      var c = (e && e.code) || "";
+      hata(c === "auth/invalid-credential" || c === "auth/wrong-password" || c === "auth/user-not-found" || c === "auth/invalid-email" ? "Kullanıcı adı ya da şifre yanlış." :
+           c === "auth/too-many-requests" ? "Çok fazla deneme oldu, biraz sonra tekrar dene." :
+           c === "auth/network-request-failed" ? "İnternet bağlantısı yok gibi. Tekrar dene." :
+           c === "bos" ? "Kullanıcı adını yaz." : "Giriş yapılamadı, tekrar dene.");
+    });
+  };
+  $("cikis").onclick = function () { this.disabled = true; Hesap.cikis().then(function () { location.reload(); }, function () { location.reload(); }); };
+})();
+</script>
+</body>
+</html>

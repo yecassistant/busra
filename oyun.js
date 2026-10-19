@@ -1,4 +1,4 @@
-/* Şefin Planı – Büşranur'a özel bahçe planı (8×8).
+/* Şefin Planı – Büşra'ya özel bahçe planı (8×8).
    Parçaları yerleştirdikçe çiçekler birbirine sarmaşıkla bağlanır; satır/sütun dolunca "açar" ve temizlenir. */
 (function () {
   "use strict";

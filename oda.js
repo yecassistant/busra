@@ -278,7 +278,7 @@
       x.fillStyle = "#fbfaf7"; x.fillRect(0, 0, c.width, c.height);
       x.drawImage(im, 0, 0, 800 * S, 640 * S);
       x.fillStyle = "#6e52a8"; x.font = "bold " + (22 * S) + "px Nunito, -apple-system, Helvetica, sans-serif"; x.textAlign = "center";
-      x.fillText("Şefin Odası · Büşranur'un odası 🛋️", 400 * S, 678 * S);
+      x.fillText("Şefin Odası · Büşra'nın odası 🛋️", 400 * S, 678 * S);
       try { c.toBlob(function (b) { cb(b, c.toDataURL("image/png")); }, "image/png"); } catch (e) { cb(null, null); }
     };
     im.onerror = function () { cb(null, null); };

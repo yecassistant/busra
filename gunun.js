@@ -1,7 +1,7 @@
-/* Günün Kelimesi – Büşranur için günlük kelime bulmacası.
+/* Günün Kelimesi – Büşra için günlük kelime bulmacası.
    5 harfli kelimeyi 5 tahminde bul: yeşil = harf doğru yerde, sarı = harf var ama başka yerde, renksiz = harf kelimede yok.
    Kelime her gece yarısı değişir. Oyunu ilk açtığı gün 1. gün sayılır (ilk kelime bir iltifat), sonra takvimle ilerler.
-   Kayıt: gk_start (ilk gün, YYYY-AA-GG), gk_g<gün> (o günün tahminleri ve sonucu), gk_stat (istatistik), gk_help (kurallar görüldü).
+   Kayıt: gk_start (ilk gün, YYYY-AA-GG), gk_d<tarih> (o günün tahminleri ve sonucu), gk_stat (istatistik), gk_help (kurallar görüldü).
    Kelime listesi gunun.js'in başında (ANS: sırayla günlerin kelimeleri, MEAN: kısa anlamları, VALID: kabul edilen tahminler). */
 (function () {
   "use strict";
@@ -26,8 +26,10 @@
   var now0 = day0(new Date()), start = ls("gk_start");
   if (!start || !/^\d{4}-\d\d-\d\d$/.test(start)) { start = ymd(now0); ls("gk_start", start); }
   var sp = start.split("-"), startD = new Date(+sp[0], +sp[1] - 1, +sp[2]);
-  var DAY = Math.max(0, Math.round((now0 - startD) / 86400000)), ANSWER = ANS[DAY % ANS.length], KEY = "gk_g" + DAY;
-  var state = lsj(KEY); if (!state || !state.g || state.a !== ANSWER) state = { a: ANSWER, g: [], s: "p" };
+  var DAY = Math.max(0, Math.round((now0 - startD) / 86400000)), ANSWER = ANS[DAY % ANS.length], KEY = "gk_d" + ymd(now0);
+  var state = lsj(KEY);
+  if (!state) { state = lsj("gk_g" + DAY); if (state) { ls(KEY, JSON.stringify(state)); try { localStorage.removeItem("gk_g" + DAY); } catch (e) {} } }   /* eski kayıt biçimi (gün numarası) → tarih */
+  if (!state || !state.g || state.a !== ANSWER) state = { a: ANSWER, g: [], s: "p" };
   var stats = lsj("gk_stat"); if (!stats || !stats.d) stats = { p: 0, w: 0, s: 0, m: 0, d: [0, 0, 0, 0, 0], last: -9 };
   var cur = "", busy = false, row = state.g.length;
   function save() { ls(KEY, JSON.stringify(state)); }

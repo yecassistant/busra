@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>Skor Tablosu</title>
+<meta name="description" content="Queen Games skor tablosu: ikinizin oyunları yan yana, son hareketler.">
+<meta name="color-scheme" content="dark">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://yecassistant.github.io/busranur/onizleme.jpg">
+<meta name="theme-color" content="#211043">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Crect width=%27100%27 height=%27100%27 rx=%2724%27 fill=%27%23211043%27/%3E%3Cpath d=%27M20 70L14 30l20 16L50 18l16 28 20-16-6 40z%27 fill=%27%23f2c35b%27/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Nunito:wght@600;700;800&display=swap">
+<link rel="stylesheet" href="style.css?v=1019a">
+</head>
+<body data-page="tablo">
+
+<main class="tbl">
+  <a class="qmback" href="oyunlar.html" aria-label="Menüye dön"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></a>
+  <header class="tbhead"><b>Skor Tablosu</b><span id="tbSub">bağlanıyor…</span></header>
+
+  <div class="tbgate" id="gate" hidden>
+    <p>Tabloyu görmek için giriş yapman lazım.</p>
+    <a class="hsbtn" href="giris.html?d=tablo.html">Giriş yap</a>
+  </div>
+
+  <section class="tbwrap" id="wrap" hidden>
+    <div class="tbplayers" id="players"></div>
+    <div class="tbgrid" id="grid"></div>
+    <h2 class="tbh2">Son hareketler</h2>
+    <ol class="tbfeed" id="feed"><li class="tbempty">Henüz bir şey yok.</li></ol>
+    <div class="tbtools"><button type="button" class="hsghost" id="yedek">Yedek indir</button><button type="button" class="hsghost" id="cikis">Çıkış yap</button></div>
+  </section>
+</main>
+
+<script src="app.js?v=1019a"></script>
+<script src="hesap.js?v=1019a"></script>
+<script>
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  function num(v) { var n = parseFloat(v); return isNaN(n) ? 0 : n; }
+  function arr(v) { try { var a = JSON.parse(v); return a instanceof Array ? a : []; } catch (e) { return []; } }
+  function obj(v) { try { return JSON.parse(v) || null; } catch (e) { return null; } }
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+  function pad(n) { return n < 10 ? "0" + n : "" + n; }
+  function ymd(d) { return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate()); }
+  var AYLAR = ["Oca", "Şub", "Mar", "Nis", "May", "Haz", "Tem", "Ağu", "Eyl", "Eki", "Kas", "Ara"];
+  function nezaman(ms) {
+    if (!ms) return ""; var d = Date.now() - ms;
+    if (d < 60000) return "az önce"; if (d < 3600000) return Math.round(d / 60000) + " dk önce"; if (d < 86400000) return Math.round(d / 3600000) + " sa önce";
+    var t = new Date(ms); return t.getDate() + " " + AYLAR[t.getMonth()] + " " + pad(t.getHours()) + ":" + pad(t.getMinutes());
+  }
+  var OYUN = { kelime: "Kelime Bahçesi", ok: "Eros'un Oku", kase: "Peki Madem", gunun: "Günün Kelimesi", tur: "Fatih Turu", plan: "Şefin Planı", oda: "Şefin Odası", fark: "7 Farkı Bul", oyunlar: "menüde", tablo: "skor tablosunda", giris: "girişte", index: "ana sayfada" };
+  function yildiz(n) { var s = ""; for (var i = 0; i < 3; i++) s += i < n ? "★" : "☆"; return s; }
+
+  /* ---- bir oyuncunun özeti ---- */
+  function ozet(d) {
+    d = d || {};
+    var st = arr(d.ok_stars), okY = 0, i; for (i = 0; i < st.length; i++) okY += Math.min(3, num(st[i]));
+    var gs = obj(d.gk_stat) || {}, bugun = obj(d["gk_d" + ymd(new Date())]), gkSeri = 0;
+    if (gs.last !== undefined) { var start = d.gk_start, gun = -1; if (start) { var sp = String(start).split("-"), s0 = new Date(+sp[0], +sp[1] - 1, +sp[2]), n0 = new Date(); n0 = new Date(n0.getFullYear(), n0.getMonth(), n0.getDate()); gun = Math.round((n0 - s0) / 86400000); } gkSeri = gs.last === gun || gs.last === gun - 1 ? num(gs.s) : 0; }
+    var kbDone = d.kb_end === "1" ? 105 : num(d.kb_max), roz = d.kb_end === "1" ? 3 : num(d.kb_rozet);
+    return [
+      { o: "kelime", ad: "Kelime Bahçesi", v: kbDone, t: kbDone ? kbDone + ". bölüm" : "—", alt: roz ? roz + " rozet" + (num(d.kb_bonus) ? " · " + num(d.kb_bonus) + " bonus" : "") : (num(d.kb_bonus) ? num(d.kb_bonus) + " bonus kelime" : "") },
+      { o: "ok", ad: "Eros'un Oku", v: num(d.ok_max) * 1000 + okY, t: num(d.ok_max) ? num(d.ok_max) + ". bölüm" : "—", alt: okY ? okY + " yıldız" : "" },
+      { o: "kase", ad: "Peki Madem", v: num(d.pm_best), t: num(d.pm_best) ? num(d.pm_best) + " puan" : "—", alt: (num(d.pm_sufle) ? num(d.pm_sufle) + " sufle" : "") + (d.pm_kalp1 === "1" ? (num(d.pm_sufle) ? " · " : "") + "kalbe ulaştı" : d.pm_tost2 === "1" ? "atom tosta ulaştı" : d.pm_muffin2 === "1" ? "muffine ulaştı" : "") },
+      { o: "gunun", ad: "Günün Kelimesi", v: gkSeri * 1000 + num(gs.w), t: bugun && bugun.s === "w" ? bugun.g.length + " tahminde" : bugun && bugun.s === "l" ? "bulamadı" : bugun && bugun.g && bugun.g.length ? bugun.g.length + " tahmin yaptı" : "—", alt: (bugun && bugun.g && bugun.g.length ? "bugün" : "bugün oynamadı") + (gkSeri ? " · " + gkSeri + " günlük seri" : "") + (num(gs.p) ? " · " + num(gs.w) + "/" + num(gs.p) + " kazanma" : "") },
+      { o: "tur", ad: "Fatih Turu", v: num(d.fatih_best), t: num(d.fatih_best) ? num(d.fatih_best) + "/12 durak" : "—", alt: "" },
+      { o: "plan", ad: "Şefin Planı", v: num(d.sef_best), t: num(d.sef_best) ? num(d.sef_best) + " puan" : "—", alt: "" },
+      { o: "fark", ad: "7 Farkı Bul", v: d.fark2_done === "1" ? 1 : 0, t: d.fark2_done === "1" ? "bitirdi" : "—", alt: "" }
+    ];
+  }
+
+  /* ---- akış metni ---- */
+  function metin(e, ad) {
+    var o = e.o, k = e.k, v = num(e.v);
+    if (o === "hesap") return ad + " hesabına bağlandı, ilerlemesi yüklendi.";
+    if (o === "ok" && k === "bolum") { var L = Math.floor(v / 10), y = v % 10; return ad + " Eros'un Oku'nda " + L + ". bölümü " + (y >= 3 ? "kusursuz geçti " : "geçti ") + yildiz(y); }
+    if (o === "kelime" && k === "bolum") return ad + " Kelime Bahçesi'nde " + v + ". bölümü bitirdi.";
+    if (o === "kelime" && k === "rozet") return ad + " Kelime Bahçesi'nde " + (v === 3 ? "altın" : v === 2 ? "gümüş" : "bronz") + " rozeti kazandı 🏅";
+    if (o === "kase" && k === "rekor") return ad + " Peki Madem'de yeni rekor kırdı: " + v + " puan.";
+    if (o === "kase" && k === "sufle") return ad + " Peki Madem'de büyük boy sufle kazandı 🍫" + (v > 1 ? " (" + v + ". sufle)" : "");
+    if (o === "kase" && k === "pm_muffin2") return ad + " Peki Madem'de sürpriz muffini açtı 🧁";
+    if (o === "kase" && k === "pm_tost2") return ad + " Peki Madem'de atom tosta ulaştı 🍞";
+    if (o === "kase" && k === "pm_kalp1") return ad + " Peki Madem'de kalbe ulaştı ❤️";
+    if (o === "tur") return ad + " Fatih Turu'nda " + v + " durağı bildi.";
+    if (o === "plan") return ad + " Şefin Planı'nda yeni rekor: " + v + " puan.";
+    if (o === "fark") return ad + " 7 Farkı Bul'u bitirdi.";
+    if (o === "gunun") return ad + (k === "buldu" ? " Günün Kelimesi'ni " + v + " tahminde buldu." : " Günün Kelimesi'ni bugün bulamadı.");
+    return ad + " bir şey yaptı.";
+  }
+
+  var oyuncular = {}, ben = null, akis = [];
+  function ciz() {
+    var list = [], uid; for (uid in oyuncular) list.push(oyuncular[uid]);
+    list.sort(function (a, b) { return (a.uid === ben ? 1 : 0) - (b.uid === ben ? 1 : 0) || (a.ad > b.ad ? 1 : -1); });   /* karşı taraf solda, ben sağda */
+    if (!list.length) { $("players").innerHTML = ""; $("grid").innerHTML = '<p class="tbempty">Henüz veri yok. Oyunlardan birini oyna, burada görünsün.</p>'; return; }
+    var now = Date.now();
+    $("players").innerHTML = list.map(function (p) {
+      var t = p.son && p.son.t ? Hesap.tms(p.son.t) : 0, canli = t && now - t < 180000 && p.son.o && OYUN[p.son.o] && ["oyunlar", "tablo", "giris", "index"].indexOf(p.son.o) < 0;
+      var durum = canli ? "şu an " + OYUN[p.son.o] + " oynuyor" : t ? "son görülme " + nezaman(t) : "henüz girmedi";
+      return '<div class="tbp' + (p.uid === ben ? " me" : "") + '"><span class="hsava ' + (p.kul === "bus" ? "a" : "b") + '">' + esc((p.ad || "?").charAt(0).toUpperCase()) + '</span><b>' + esc(p.ad || p.kul || "?") + (p.uid === ben ? ' <i>(sen)</i>' : "") + '</b><small class="' + (canli ? "on" : "") + '">' + esc(durum) + '</small></div>';
+    }).join("");
+    var oz = list.map(function (p) { return ozet(p.d); }), html = "";
+    for (var r = 0; r < oz[0].length; r++) {
+      var best = -1; if (list.length > 1) { var m = Math.max(oz[0][r].v, oz[1][r].v); if (m > 0 && oz[0][r].v !== oz[1][r].v) best = oz[0][r].v > oz[1][r].v ? 0 : 1; }
+      html += '<div class="tbrow"><div class="tbg">' + esc(oz[0][r].ad) + '</div>' + list.map(function (p, i) {
+        var c = oz[i][r]; return '<div class="tbc' + (best === i ? " win" : "") + '"><b>' + esc(c.t) + '</b>' + (c.alt ? '<small>' + esc(c.alt) + '</small>' : "") + '</div>';
+      }).join("") + "</div>";
+    }
+    $("grid").innerHTML = html;
+  }
+  function cizAkis() {
+    if (!akis.length) { $("feed").innerHTML = '<li class="tbempty">Henüz bir şey yok.</li>'; return; }
+    $("feed").innerHTML = akis.map(function (e) {
+      var p = oyuncular[e.uid] || {}, ad = p.ad || (p.kul ? Hesap.gorunenAd(p.kul) : "Biri");
+      return '<li><span class="hsava sm ' + (p.kul === "bus" ? "a" : "b") + '">' + esc(ad.charAt(0).toUpperCase()) + '</span><span class="tbft">' + esc(metin(e, ad)) + '<small>' + esc(nezaman(Hesap.tms(e.t))) + '</small></span></li>';
+    }).join("");
+  }
+  var tik = setInterval(function () { if (!$("wrap").hidden) { ciz(); cizAkis(); } }, 30000);
+
+  var basladi = false;
+  function basla() {
+    var k = Hesap.kim();
+    if (!k) { if (basladi) return; $("tbSub").textContent = ""; $("gate").hidden = false; $("wrap").hidden = true; return; }
+    if (!k.kesin || basladi) return;
+    basladi = true; ben = k.uid; $("gate").hidden = true; $("wrap").hidden = false; $("tbSub").textContent = "canlı";
+    Hesap.db().then(function (db) {
+      db.collection("oyuncular").onSnapshot(function (snap) {
+        oyuncular = {}; snap.forEach(function (doc) { var p = doc.data(); p.uid = doc.id; oyuncular[doc.id] = p; });
+        if (!oyuncular[ben]) oyuncular[ben] = { uid: ben, kul: k.kul, ad: k.ad, d: {} };
+        ciz(); cizAkis();
+      }, function () { $("tbSub").textContent = "bağlantı yok"; });
+      db.collection("akis").orderBy("t", "desc").limit(40).onSnapshot(function (snap) {
+        akis = []; snap.forEach(function (doc) { akis.push(doc.data()); }); cizAkis();
+      }, function () {});
+    }, function () { $("tbSub").textContent = "bağlantı yok"; });
+  }
+  Hesap.izle(function () { basla(); });
+  Hesap.hazir(function () { if (!Hesap.kim()) basla(); });
+  $("cikis").onclick = function () { this.disabled = true; Hesap.cikis().then(function () { location.href = "oyunlar.html"; }, function () { location.href = "oyunlar.html"; }); };
+  $("yedek").onclick = function () {
+    var out = { zaman: new Date().toISOString(), oyuncular: oyuncular, akis: akis }, s = JSON.stringify(out, function (k, v) { return v && typeof v.toMillis === "function" ? v.toMillis() : v; }, 2);
+    try { var b = new Blob([s], { type: "application/json" }), u = URL.createObjectURL(b), a = document.createElement("a"); a.href = u; a.download = "queen-games-yedek-" + ymd(new Date()) + ".json"; document.body.appendChild(a); a.click(); setTimeout(function () { document.body.removeChild(a); URL.revokeObjectURL(u); }, 1500); } catch (e) { alert("Yedek alınamadı."); }
+  };
+})();
+</script>
+</body>
+</html>

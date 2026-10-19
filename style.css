@@ -1166,3 +1166,73 @@ body[data-page="gunun"] .garden,body[data-page="gunun"] #petals{display:none}
 .gkghost{flex:1;font:inherit;font-weight:700;background:transparent;color:var(--k-ink);border:0;box-shadow:inset 0 0 0 1px var(--k-line);border-radius:16px;min-height:50px;cursor:pointer;-webkit-tap-highlight-color:rgba(0,0,0,0)}
 @media (max-width:350px){.gkbar{grid-template-columns:44px 1fr 92px}.gkbtns{gap:4px}.gktitle b{font-size:1.12rem}.gkk{font-size:.95rem}.gkk.wide{font-size:.76rem}}
 @media (max-height:640px){.gkcard{gap:8px;padding:18px 16px 14px}.gkcard h2{font-size:1.38rem}.gkt.sm{--gk-t:36px}.gkstats b{font-size:1.2rem}.gkdist{gap:3px}.gkdrow span{padding:1px 8px}.gkprimary,.gkghost{min-height:46px}}
+
+/* ---------- Hesap: giriş sayfası, skor tablosu, menü hesap çubuğu (Queen Games temasında) ---------- */
+body[data-page="giris"],body[data-page="tablo"]{background:#211043;color:#fff;padding:max(14px,env(safe-area-inset-top)) 16px max(22px,env(safe-area-inset-bottom));
+  background-image:radial-gradient(90% 45% at 50% 8%,#432079 0%,rgba(67,32,121,0) 70%),radial-gradient(70% 30% at 0% 100%,#2d145a 0%,rgba(45,20,90,0) 70%),radial-gradient(70% 30% at 100% 92%,#2f165e 0%,rgba(47,22,94,0) 70%),linear-gradient(180deg,#2a1350 0%,#1d0d3b 100%);background-repeat:no-repeat;background-size:100% 100%;min-height:100vh;min-height:100dvh;font-family:"Nunito",system-ui,-apple-system,sans-serif}
+body[data-page="giris"] .garden,body[data-page="giris"] #petals,body[data-page="tablo"] .garden,body[data-page="tablo"] #petals{display:none}
+.hs,.tbl{position:relative;z-index:1;width:100%;max-width:440px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+.hslogo{display:flex;flex-direction:column;align-items:center;gap:4px;padding:34px 0 6px}
+.hslogo svg{width:54px;height:38px}
+.hslogo b{font-family:"Cinzel",Georgia,serif;font-weight:700;font-size:1.2rem;letter-spacing:.08em;color:#f2c35b}
+.hscard{display:flex;flex-direction:column;gap:12px;background:rgba(255,255,255,.07);border-radius:22px;padding:22px 18px 18px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.12),0 16px 30px -18px rgba(0,0,0,.8)}
+.hscard h1{margin:0;font-size:1.55rem;font-weight:800;letter-spacing:-.01em}
+.hslead{margin:0;font-size:.95rem;line-height:1.45;color:rgba(235,225,255,.85)}
+.hsfield{display:flex;flex-direction:column;gap:6px}
+.hsfield>span:first-child{font-size:.74rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#cdb8ff}
+.hsfield input{width:100%;font:inherit;font-size:17px;font-weight:700;color:#fff;background:rgba(0,0,0,.28);border:0;border-radius:14px;padding:13px 14px;box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.16);outline:none;-webkit-appearance:none;appearance:none}
+.hsfield input:focus{box-shadow:inset 0 0 0 2px #b58cff}
+.hsfield input::placeholder{color:rgba(255,255,255,.35);font-weight:600}
+.hspw{position:relative;display:block}
+.hspw input{padding-right:78px}
+.hseye{position:absolute;right:8px;top:50%;-webkit-transform:translateY(-50%);transform:translateY(-50%);font:inherit;font-size:.8rem;font-weight:800;color:#cdb8ff;background:transparent;border:0;padding:8px 10px;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.hserr{margin:0;font-size:.9rem;font-weight:700;color:#ffb3c1}
+.hsnote{margin:0;font-size:.85rem;line-height:1.4;color:#f2c35b}
+.hsbtn{display:flex;align-items:center;justify-content:center;font:inherit;font-weight:800;font-size:1.05rem;color:#3a1d06;background:linear-gradient(180deg,#ffe08f,#f2c35b);border:0;border-radius:16px;min-height:52px;padding:0 18px;text-decoration:none;cursor:pointer;box-shadow:0 4px 0 #b37514;-webkit-tap-highlight-color:transparent}
+.hsbtn:disabled{opacity:.7}
+.hsbtn:active{-webkit-transform:translateY(2px);transform:translateY(2px);box-shadow:0 2px 0 #b37514}
+.hsghost{font:inherit;font-weight:700;font-size:.95rem;color:#e7dcff;background:transparent;border:0;box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.2);border-radius:14px;min-height:46px;padding:0 16px;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.hsdone{align-items:center;text-align:center}
+.hsava{display:inline-flex;align-items:center;justify-content:center;width:56px;height:56px;border-radius:50%;font-weight:900;font-size:1.5rem;color:#2a1250;background:linear-gradient(135deg,#ffd3e2,#f3a3c0);box-shadow:0 6px 16px -8px rgba(0,0,0,.6),inset 0 0 0 2px rgba(255,255,255,.5)}
+.hsava.b{background:linear-gradient(135deg,#cdb8ff,#8f6fe0);color:#1c0c3a}
+.hsava.sm{width:30px;height:30px;font-size:.9rem;flex:none}
+.tbhead{display:flex;flex-direction:column;align-items:center;gap:2px;padding:10px 0 0;text-align:center}
+.tbhead b{font-family:"Cinzel",Georgia,serif;font-weight:700;font-size:1.45rem;letter-spacing:.06em;color:#f2c35b}
+.tbhead span{font-size:.72rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#cdb8ff;min-height:1em}
+.tbgate{display:flex;flex-direction:column;gap:14px;align-items:center;text-align:center;padding:24px 18px;background:rgba(255,255,255,.07);border-radius:22px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.12)}
+.tbgate p{margin:0;font-size:1rem;color:rgba(235,225,255,.9)}
+.tbgate .hsbtn{width:100%}
+.tbwrap{display:flex;flex-direction:column;gap:14px}
+.tbplayers{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tbp{display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;padding:14px 10px 12px;background:rgba(255,255,255,.07);border-radius:20px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.12)}
+.tbp.me{box-shadow:inset 0 0 0 1.5px rgba(242,195,91,.6)}
+.tbp b{font-size:1.05rem;font-weight:800}
+.tbp b i{font-style:normal;font-weight:600;font-size:.8rem;color:#cdb8ff}
+.tbp small{font-size:.76rem;line-height:1.3;color:rgba(235,225,255,.7);min-height:2.6em}
+.tbp small.on{color:#9ef0b0;font-weight:700}
+.tbgrid{display:flex;flex-direction:column;gap:6px}
+.tbrow{display:grid;grid-template-columns:1fr 1fr;grid-template-areas:"g g" "a b";gap:4px 8px;padding:10px 12px;background:rgba(255,255,255,.06);border-radius:16px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.1)}
+.tbg{grid-area:g;font-size:.72rem;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:#cdb8ff;margin-bottom:2px}
+.tbc{display:flex;flex-direction:column;gap:2px;min-width:0;padding:6px 8px;border-radius:10px}
+.tbc b{font-size:1rem;font-weight:800;line-height:1.2}
+.tbc small{font-size:.74rem;color:rgba(235,225,255,.72);line-height:1.3}
+.tbc.win{background:rgba(242,195,91,.14);box-shadow:inset 0 0 0 1px rgba(242,195,91,.45)}
+.tbc.win b::after{content:" 👑";font-size:.8em}
+.tbh2{margin:6px 0 -6px;font-size:.78rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#cdb8ff}
+.tbfeed{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.tbfeed li{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;background:rgba(255,255,255,.06);border-radius:14px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.1)}
+.tbft{display:flex;flex-direction:column;gap:2px;font-size:.92rem;line-height:1.35}
+.tbft small{font-size:.72rem;color:rgba(235,225,255,.6)}
+.tbempty{margin:0;padding:14px;font-size:.92rem;color:rgba(235,225,255,.65);text-align:center;background:rgba(255,255,255,.05);border-radius:14px}
+.tbtools{display:flex;gap:10px;justify-content:center;padding-top:6px}
+.tbtools .hsghost{flex:1}
+/* menü: hesap çubuğu */
+.qmacct{display:flex;align-items:center;gap:10px;padding:8px 10px 8px 8px;background:rgba(255,255,255,.07);border-radius:18px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.12);text-decoration:none;color:#fff;-webkit-tap-highlight-color:transparent;min-height:54px}
+.qmacct .hsava{width:38px;height:38px;font-size:1.05rem;flex:none}
+.qmacct .qmatx{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
+.qmacct .qmatx b{font-size:.98rem;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.qmacct .qmatx small{font-size:.76rem;color:rgba(235,225,255,.75);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.qmacct .qmabtn{flex:none;font:inherit;font-weight:800;font-size:.84rem;color:#3a1d06;background:linear-gradient(180deg,#ffe08f,#f2c35b);border:0;border-radius:12px;min-height:38px;padding:0 12px;text-decoration:none;display:flex;align-items:center;box-shadow:0 3px 0 #b37514;-webkit-tap-highlight-color:transparent}
+.qmacct .qmabtn.ghost{color:#e7dcff;background:transparent;box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.22)}
+.qmacct[hidden]{display:none}
+@media (max-width:350px){.tbplayers{gap:6px}.tbp{padding:10px 6px}.tbc b{font-size:.92rem}.qmacct .qmatx small{display:none}}

@@ -1,4 +1,4 @@
-/* Peki Madem (: — Büşranur'a özel meyve kasesi.
+/* Peki Madem (: — Büşra'ya özel meyve kasesi.
    Meyveyi kaseye bırak; aynı iki meyve değince bir büyüğüne dönüşür (yaban mersini → … → karpuz).
    Kendi hafif fiziği var (daire–daire, daire–kase duvarı), tuval (canvas) üzerinde çizilir; meyveler SVG'den bir kez rasterlenir. */
 (function () {
@@ -128,7 +128,7 @@
     /* iç parlama */
     x.beginPath(); x.moveTo(inset + 9, RIM + 10); x.lineTo(inset + 9, H - 8 - curveH); x.quadraticCurveTo(inset + 14, H - 24, W / 2 - 30, H - 14);
     x.lineWidth = 5; x.strokeStyle = "rgba(255,255,255,.75)"; x.lineCap = "round"; x.stroke();
-    /* camda lavanta dalı (Büşranur'a özel) */
+    /* camda lavanta dalı (Büşra'ya özel) */
     x.save(); x.globalAlpha = .32; x.translate(W - 44, H - 26); x.rotate(-0.35);
     x.strokeStyle = "#6f9a5a"; x.lineWidth = 2; x.beginPath(); x.moveTo(0, 0); x.lineTo(0, -46); x.stroke();
     x.fillStyle = "#9b7fd1"; for (var k = 0; k < 7; k++) { x.beginPath(); x.ellipse((k % 2 ? 4 : -4), -16 - k * 4.5, 3.2, 2.4, 0, 0, 6.28); x.fill(); }
