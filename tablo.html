@@ -13,7 +13,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Nunito:wght@600;700;800&display=swap">
-<link rel="stylesheet" href="style.css?v=1019n">
+<link rel="stylesheet" href="style.css?v=1019o">
+<script src="kapi.js?v=1019o"></script>
 </head>
 <body data-page="tablo">
 
@@ -35,9 +36,9 @@
   </section>
 </main>
 
-<script src="app.js?v=1019n"></script>
-<script src="hesap.js?v=1019n"></script>
-<script src="deneme.js?v=1019n"></script>
+<script src="app.js?v=1019o"></script>
+<script src="hesap.js?v=1019o"></script>
+<script src="deneme.js?v=1019o"></script>
 <script>
 (function () {
   var $ = function (id) { return document.getElementById(id); };
@@ -72,8 +73,9 @@
       { o: "plan", ad: "Şefin Planı", v: num(d.sef_best), t: num(d.sef_best) ? num(d.sef_best) + " puan" : "—", alt: "" },
       { o: "stilobat", ad: "Stilobat", v: num(d.stb_best), t: num(d.stb_best) ? num(d.stb_best) + " kat" : "—", alt: num(d.stb_oyun) ? num(d.stb_oyun) + " oyun" : "" },
       { o: "fark", ad: "7 Farkı Bul", v: (d.fark2_done === "1" ? 1 : 0) + (d.fark3_done === "1" ? 1 : 0), t: ((d.fark2_done === "1" ? 1 : 0) + (d.fark3_done === "1" ? 1 : 0)) + "/2 bölüm", alt: [num(d.fark2_best) > 0 ? "Oda " + Math.floor(num(d.fark2_best) / 60000) + ":" + pad(Math.round(num(d.fark2_best) / 1000) % 60) : "", num(d.fark3_best) > 0 ? "Balat " + Math.floor(num(d.fark3_best) / 60000) + ":" + pad(Math.round(num(d.fark3_best) / 1000) % 60) : ""].filter(Boolean).join(" · ") }
-    ];
+    ].filter(function (r) { return !kapali(r.o); });   /* kapı: "geliyor" oyunların satırı yok */
   }
+  function kapali(o) { return !!(window.geliyorMu && geliyorMu(o)); }
 
   /* ---- akış metni ---- */
   function rakip(uid) { for (var u in oyuncular) if (u !== uid) return oyuncular[u].ad || "Rakip"; return "Rakip"; }
@@ -110,7 +112,7 @@
     if (!list.length) { $("players").innerHTML = ""; $("grid").innerHTML = '<p class="tbempty">Henüz veri yok. Oyunlardan birini oyna, burada görünsün.</p>'; return; }
     var now = Date.now();
     $("players").innerHTML = list.map(function (p) {
-      var t = p.son && p.son.t ? Hesap.tms(p.son.t) : 0, canli = t && now - t < 180000 && p.son.o && OYUN[p.son.o] && ["oyunlar", "tablo", "giris", "index", "takvim"].indexOf(p.son.o) < 0;
+      var t = p.son && p.son.t ? Hesap.tms(p.son.t) : 0, canli = t && now - t < 180000 && p.son.o && OYUN[p.son.o] && !kapali(p.son.o) && ["oyunlar", "tablo", "giris", "index", "takvim"].indexOf(p.son.o) < 0;
       var durum = canli ? "şu an " + OYUN[p.son.o] + " oynuyor" : t ? "son görülme " + nezaman(t) : "henüz girmedi";
       return '<div class="tbp' + (p.uid === ben ? " me" : "") + '"><span class="hsava ' + (p.kul === "bus" ? "a" : "b") + '">' + esc((p.ad || "?").charAt(0).toUpperCase()) + '</span><b>' + esc(p.ad || p.kul || "?") + (p.uid === ben ? ' <i>(sen)</i>' : "") + '</b><small class="' + (canli ? "on" : "") + '">' + esc(durum) + '</small></div>';
     }).join("");
@@ -132,7 +134,7 @@
       var w = sg[p.uid] || 0; return '<div class="tbc' + (sb === i && (s0 || s1) ? " win" : "") + '"><b>' + w + " galibiyet</b>" + (stSeri && stSeri.oyun ? "<small>" + stSeri.oyun + " oyun" + (stSeri.b ? " · " + stSeri.b + " berabere" : "") + "</small>" : "") + "</div>";
     }).join("") + "</div>";
     /* Sayı Düellosu ve Amiral Battı: galibiyetler + sıra */
-    [["sayi", "Sayı Düellosu"], ["amiral", "Amiral Battı"]].forEach(function (x) {
+    [["sayi", "Sayı Düellosu"], ["amiral", "Amiral Battı"]].filter(function (x) { return !kapali(x[0]); }).forEach(function (x) {
       var se = duSeri[x[0]], mc = duMac[x[0]], gg = (se && se.g) || {}, a0 = gg[list[0].uid] || 0, a1 = list.length > 1 ? (gg[list[1].uid] || 0) : 0, ab = a0 === a1 ? -1 : (a0 > a1 ? 0 : 1);
       var durum = mc && !mc.bitti ? (!mc.hazir || !mc.hazir[ben] ? "hazırlık" : !mc.hazir[mc.a === ben ? mc.b : mc.a] ? "onu bekliyorsun" : mc.sira === ben ? "sıra sende" : "sıra " + ((oyuncular[mc.sira] || {}).ad ? ekDe(oyuncular[mc.sira].ad) : "onda")) : "";
       html += '<div class="tbrow"><div class="tbg">' + x[1] + (durum ? ' · <i>' + esc(durum) + "</i>" : "") + '</div>' + list.map(function (p, i) {
@@ -142,8 +144,9 @@
     $("grid").innerHTML = html;
   }
   function cizAkis() {
-    if (!akis.length) { $("feed").innerHTML = '<li class="tbempty">Henüz bir şey yok.</li>'; return; }
-    $("feed").innerHTML = akis.map(function (e) {
+    var liste = akis.filter(function (e) { return !kapali(e.o); });
+    if (!liste.length) { $("feed").innerHTML = '<li class="tbempty">Henüz bir şey yok.</li>'; return; }
+    $("feed").innerHTML = liste.map(function (e) {
       var p = oyuncular[e.uid] || {}, ad = p.ad || (p.kul ? Hesap.gorunenAd(p.kul) : "Biri");
       return '<li><span class="hsava sm ' + (p.kul === "bus" ? "a" : "b") + '">' + esc(ad.charAt(0).toUpperCase()) + '</span><span class="tbft">' + esc(metin(e, ad)) + '<small>' + esc(nezaman(Hesap.tms(e.t))) + '</small></span></li>';
     }).join("");

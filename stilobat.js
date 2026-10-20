@@ -3,7 +3,7 @@
 (function () {
   "use strict";
   function $(id) { return document.getElementById(id); }
-  var cv = $("cv"), ctx = cv.getContext("2d"), stage = $("stage");
+  var cv = $("cv"), ctx = cv.getContext("2d", { alpha: false }), stage = $("stage");
   var W = 390, H = 700, DPR = 1, SCALE = 110, KX = 0, KY = 0, CX = 0, CY = 0;
   var BH = 0.3, TOL = 0.085, AMP = 1.55, HIZ0 = 1.25, HIZMAX = 2.7, BUYU_SERI = 5, BUYU = 0.12;
   var blocks = [], cur = null, parcalar = [], halkalar = [], tozlar = [], floats = [];
@@ -15,16 +15,22 @@
   function now() { return performance.now(); }
 
   /* ---- ölçü ---- */
+  var fitW = -1, fitH = -1, fitT = 0;
   function fit() {
     var vh = (window.visualViewport && window.visualViewport.height) || innerHeight;
-    W = stage.clientWidth || innerWidth; H = Math.max(320, vh); stage.style.height = H + "px";
-    DPR = Math.min(window.devicePixelRatio || 1, 2);
+    var nW = stage.clientWidth || innerWidth, nH = Math.max(320, Math.round(vh)), nD = Math.min(window.devicePixelRatio || 1, 2);
+    if (nW === fitW && nH === fitH && nD === DPR) return;                 /* boyut aynıysa tuvali yeniden kurma (Safari'de çubuklar oynadıkça sürekli resize gelir) */
+    fitW = nW; fitH = nH;
+    W = nW; H = nH; stage.style.height = H + "px";
+    DPR = nD;
     cv.width = Math.round(W * DPR); cv.height = Math.round(H * DPR); cv.style.width = W + "px"; cv.style.height = H + "px";
     ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
     SCALE = Math.min(W * 0.3, H * 0.19); KX = SCALE * 0.866; KY = SCALE * 0.5; CX = W / 2; CY = H * 0.58;
+    bgCache = null;
   }
-  addEventListener("resize", fit); addEventListener("orientationchange", function () { setTimeout(fit, 250); });
-  if (window.visualViewport) window.visualViewport.addEventListener("resize", fit);
+  function fitSonra() { clearTimeout(fitT); fitT = setTimeout(fit, 80); }
+  addEventListener("resize", fitSonra); addEventListener("orientationchange", function () { setTimeout(fit, 250); });
+  if (window.visualViewport) window.visualViewport.addEventListener("resize", fitSonra);
   fit();
   /* izometrik: x sağ-aşağı, z sol-aşağı, y yukarı */
   function iso(x, y, z) { var s = SCALE * zoom; return [CX + (x - z) * s * 0.866, CY + (x + z) * s * 0.5 - (y - camY) * s]; }
@@ -40,15 +46,24 @@
     return { h: lerpHue(a[0], b[0], tt), s: a[1] + (b[1] - a[1]) * tt, l: a[2] + (b[2] - a[2]) * tt };
   }
   function hsl(c, dl, ds) { return "hsl(" + Math.round(c.h) + "," + Math.max(0, Math.min(100, c.s + (ds || 0))) + "%," + Math.max(0, Math.min(100, c.l + (dl || 0))) + "%)"; }
-  var bgH = 330;
+  var bgH = 330, bgCache = null, bgCacheH = -99;
+  /* arka plan (degrade + vinyet) ayrı tuvale bir kez çizilir; ton belirgin kayınca yenilenir — her karede degrade üretmek telefonu kasıyordu */
+  function arkaplanOlustur() {
+    if (!bgCache) { bgCache = document.createElement("canvas"); bgCache.width = cv.width; bgCache.height = cv.height; }
+    var x = bgCache.getContext("2d"); x.setTransform(DPR, 0, 0, DPR, 0, 0);
+    var g = x.createLinearGradient(0, 0, 0, H);
+    g.addColorStop(0, "hsl(" + Math.round(lerpHue(268, bgH, 0.22)) + ",42%,22%)"); g.addColorStop(0.55, "hsl(" + Math.round(lerpHue(275, bgH, 0.18)) + ",40%,15%)"); g.addColorStop(1, "hsl(" + Math.round(lerpHue(280, bgH, 0.12)) + ",45%,11%)");
+    x.fillStyle = g; x.fillRect(0, 0, W, H);
+    var v = x.createRadialGradient(W / 2, H * 0.45, W * 0.1, W / 2, H * 0.45, Math.max(W, H) * 0.8); v.addColorStop(0, "rgba(255,255,255,.06)"); v.addColorStop(1, "rgba(0,0,0,.22)");
+    x.fillStyle = v; x.fillRect(0, 0, W, H);
+    bgCacheH = bgH;
+  }
   function arkaplan() {
     var top = blocks.length ? blocks[blocks.length - 1].c : renk(0);
     bgH = lerpHue(bgH, top.h, 0.03);
-    var g = ctx.createLinearGradient(0, 0, 0, H);
-    g.addColorStop(0, "hsl(" + Math.round(lerpHue(268, bgH, 0.22)) + ",42%,22%)"); g.addColorStop(0.55, "hsl(" + Math.round(lerpHue(275, bgH, 0.18)) + ",40%,15%)"); g.addColorStop(1, "hsl(" + Math.round(lerpHue(280, bgH, 0.12)) + ",45%,11%)");
-    ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
-    var v = ctx.createRadialGradient(W / 2, H * 0.45, W * 0.1, W / 2, H * 0.45, Math.max(W, H) * 0.8); v.addColorStop(0, "rgba(255,255,255,.06)"); v.addColorStop(1, "rgba(0,0,0,.22)");
-    ctx.fillStyle = v; ctx.fillRect(0, 0, W, H);
+    var fark = Math.abs(((bgH - bgCacheH + 540) % 360) - 180);
+    if (!bgCache || fark > 0.6) arkaplanOlustur();
+    ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.drawImage(bgCache, 0, 0); ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
     /* uzak zerrecikler */
     for (var i = 0; i < tozlar.length; i++) { var p = tozlar[i]; var y = (p.y - camY * 0.25 * SCALE * zoom) % (H + 40); if (y < -20) y += H + 40; ctx.globalAlpha = p.a * 0.5; ctx.fillStyle = "#e9dcff"; ctx.fillRect(p.x, y, p.s, p.s); }
     ctx.globalAlpha = 1;
@@ -210,8 +225,9 @@
     /* uçan yazılar */
     for (var f = floats.length - 1; f >= 0; f--) {
       var fl = floats[f], age = (now() - fl.born) / 900; if (age >= 1) { floats.splice(f, 1); continue; }
-      ctx.save(); ctx.globalAlpha = age < 0.15 ? age / 0.15 : 1 - Math.max(0, age - 0.6) / 0.4; ctx.font = "800 " + Math.round(Math.min(26, W * 0.06)) + "px Nunito, -apple-system, sans-serif"; ctx.textAlign = "center"; ctx.fillStyle = "#f6d98a"; ctx.shadowColor = "rgba(0,0,0,.35)"; ctx.shadowBlur = 8;
-      ctx.fillText(fl.t, W / 2, H * 0.33 - age * 28); ctx.restore();
+      ctx.save(); ctx.globalAlpha = age < 0.15 ? age / 0.15 : 1 - Math.max(0, age - 0.6) / 0.4; ctx.font = "800 " + Math.round(Math.min(26, W * 0.06)) + "px Nunito, -apple-system, sans-serif"; ctx.textAlign = "center";
+      ctx.lineWidth = 4; ctx.strokeStyle = "rgba(20,8,30,.45)"; ctx.lineJoin = "round"; ctx.strokeText(fl.t, W / 2, H * 0.33 - age * 28);   /* gölge yerine ucuz kontur (shadowBlur iOS'ta kasıyor) */
+      ctx.fillStyle = "#f6d98a"; ctx.fillText(fl.t, W / 2, H * 0.33 - age * 28); ctx.restore();
     }
   }
   function loop(t) {

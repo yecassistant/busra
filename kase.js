@@ -395,9 +395,9 @@
     ctx.font = "800 " + fs + "px Nunito, -apple-system, sans-serif"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
     var w = ctx.measureText(txt).width + fs * 1.9, h = fs * 2.05, r = h / 2, g = ctx.createLinearGradient(-w / 2, 0, w / 2, 0);
     g.addColorStop(0, c1); g.addColorStop(1, c2);
-    ctx.shadowColor = "rgba(110,82,168,.28)"; ctx.shadowBlur = 10; ctx.shadowOffsetY = 3;
-    ctx.beginPath(); ctx.moveTo(-w / 2 + r, -h / 2); ctx.lineTo(w / 2 - r, -h / 2); ctx.arc(w / 2 - r, 0, r, -1.5708, 1.5708); ctx.lineTo(-w / 2 + r, h / 2); ctx.arc(-w / 2 + r, 0, r, 1.5708, 4.7124); ctx.closePath();
-    ctx.fillStyle = g; ctx.fill(); ctx.shadowColor = "transparent";
+    function hap(dy) { ctx.beginPath(); ctx.moveTo(-w / 2 + r, -h / 2 + dy); ctx.lineTo(w / 2 - r, -h / 2 + dy); ctx.arc(w / 2 - r, dy, r, -1.5708, 1.5708); ctx.lineTo(-w / 2 + r, h / 2 + dy); ctx.arc(-w / 2 + r, dy, r, 1.5708, 4.7124); ctx.closePath(); }
+    hap(3); ctx.fillStyle = "rgba(110,82,168,.22)"; ctx.fill();                       /* gölge: bulanıklık yerine kaydırılmış hap (shadowBlur iOS'ta pahalı) */
+    hap(0); ctx.fillStyle = g; ctx.fill();
     ctx.lineWidth = 1.5; ctx.strokeStyle = "rgba(255,255,255,.7)"; ctx.stroke();
     ctx.fillStyle = "#fff"; ctx.fillText(txt, 0, fs * 0.06); ctx.restore();
   }
@@ -539,6 +539,7 @@
   /* ---------- döngü ---------- */
   function loop(t) {
     if (!running) return;
+    if (donuk) { lastT = 0; requestAnimationFrame(loop); return; }          /* ekran çevrilmiş: oyun bekler, hiçbir şey ölçeklenmez */
     var dt = lastT ? Math.min(0.033, (t - lastT) / 1000) : 0.016; lastT = t;
     var sub = 3; for (var s = 0; s < sub; s++) step(dt / sub);
     render(t);
@@ -548,13 +549,13 @@
     bodies = []; fx = []; floats = []; score = 0; merges = 0; dead = false; canDrop = true; giftShown = false;
     combo = 0; lastMergeT = 0; best0 = best; recShown = false; recFx = 0; su = null; gameSu = 0; celebUntil = 0; shakeA = 0;
     scoreEl.textContent = 0; mergesEl.textContent = 0; over.hidden = true;
-    cur = randLevel(); nxt = randLevel(); showNext(); hx = W / 2; gameH0 = H; gameSC0 = SC;
+    cur = randLevel(); nxt = randLevel(); showNext(); hx = W / 2; gameH0 = H; gameSC0 = SC; kilitYon = yon();
     msg("Kaseye dokun, meyve düşsün. Aynılar birleşir 🍓");
     if (!running) { running = true; lastT = 0; requestAnimationFrame(loop); }
   }
   function showNext() { nextUse.setAttribute("href", "#f-" + FRUITS[nxt].id); nextUse.setAttributeNS("http://www.w3.org/1999/xlink", "xlink:href", "#f-" + FRUITS[nxt].id); }
   function drop() {
-    if (!canDrop || dead || now() < celebUntil) return;
+    if (donuk || !canDrop || dead || now() < celebUntil) return;
     snd("drop");
     var r = rad(cur), gx = Math.max(inset + r + 2, Math.min(W - inset - r - 2, hx));
     addBody(cur, gx, TOP, 0, 120);
@@ -654,7 +655,38 @@
       if (olcek) buildSprites(function () {});
     }
   }
-  addEventListener("resize", refit); addEventListener("orientationchange", function () { setTimeout(refit, 250); });
+  /* Döndürme yok: telefonda oyun hep dik; tablette oyun hangi yönde başladıysa o yönde kalır. Ekran çevrilince oyun durur,
+     "ekranı geri çevir" kartı çıkar; kase ve meyveler hiç yeniden ölçeklenmez (eski büyüme/kaybolma hataları buradan geliyordu).
+     Masaüstünde pencere boyutu değişince eskisi gibi uyarlanır. */
+  var donuk = false, kilitYon = null, dokunmatik = !!(window.matchMedia && matchMedia("(pointer:coarse)").matches);
+  function yon() { return innerWidth > innerHeight ? "y" : "d"; }
+  function telefon() { return Math.min(screen.width || innerWidth, screen.height || innerHeight) < 520; }
+  function istenen() { if (!dokunmatik) return null; if (telefon()) return "d"; return bodies.length && !dead ? kilitYon : null; }
+  var rotEl = null;
+  function rotKart(ac, hedef) {
+    if (!rotEl) {
+      rotEl = document.createElement("div"); rotEl.className = "pmrot"; rotEl.setAttribute("role", "alert");
+      rotEl.innerHTML = '<div class="pmrotcard"><svg viewBox="0 0 64 64" aria-hidden="true"><rect x="20" y="8" width="24" height="44" rx="5" fill="none" stroke="currentColor" stroke-width="3.4"/><path d="M29 46h6" stroke="currentColor" stroke-width="3.4" stroke-linecap="round"/><path d="M50 22a20 20 0 0 1 2 18M48 42l4-2 1 4" fill="none" stroke="#ec6f9a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg><b></b><span></span></div>';
+      document.body.appendChild(rotEl);
+    }
+    rotEl.querySelector("b").textContent = hedef === "d" ? "Ekranı dik tut" : "Ekranı yan çevir";
+    rotEl.querySelector("span").textContent = bodies.length && !dead ? "Oyun durdu; çevirince kaldığın yerden devam." : "Peki Madem dik ekranda oynanıyor.";
+    rotEl.hidden = !ac;
+  }
+  var olcuT = 0;
+  function boyutDegisti() {
+    clearTimeout(olcuT);
+    olcuT = setTimeout(function () {
+      var ist = istenen();
+      if (ist && yon() !== ist) { donuk = true; ptrDown = false; rotKart(true, ist); return; }
+      if (donuk) { donuk = false; rotKart(false); }
+      if (dokunmatik && bodies.length && !dead && Math.abs(innerWidth - lastFitW) < 2 && Math.abs(innerHeight - lastFitH) < 140) return;   /* adres çubuğu oynaması: ölçeğe dokunma */
+      refit(); lastFitW = innerWidth; lastFitH = innerHeight;
+    }, 120);
+  }
+  var lastFitW = innerWidth, lastFitH = innerHeight;
+  addEventListener("resize", boyutDegisti); addEventListener("orientationchange", function () { setTimeout(boyutDegisti, 250); });
+  if (window.visualViewport) window.visualViewport.addEventListener("resize", boyutDegisti);
 
   /* yapım aşaması anahtarı (kase.html'de): açıkken oyun hiç başlamaz, sadece "olgunlaşıyor" ekranı görünür */
   if (window.PEKI_MADEM_YAPIM) {
@@ -662,7 +694,7 @@
     document.querySelector("main").style.visibility = "hidden";
     return;
   }
-  measure(); buildSufle();
+  measure(); buildSufle(); setTimeout(boyutDegisti, 0);
   buildSprites(function () {
     /* ilk açılışta kısa tanıtım kartı; "başla" deyince oyun başlar */
     var intro = $("intro"), go = $("introGo");

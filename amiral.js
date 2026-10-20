@@ -101,6 +101,7 @@
       var cm = "abc" + (benimH[c] ? " gemi" : "") + (vurOt[c] === 2 ? " vur" : vurOt[c] === 1 ? " iska" : "");
       if (KM[c].className !== cm) KM[c].className = cm;
     }
+    grid.classList.toggle("yerles", a === "yer");
     $("mainLbl").textContent = a === "yer" ? "Gemilerini yerleştir" : a === "bekle" ? "Filon hazır" : (D.adlar[OTHER] ? D.ekIn(D.adlar[OTHER]) : "Rakibin") + " suları";
     $("miniLbl").textContent = a === "oyun" || a === "bitti" ? "Senin filon" : "";
     mini.hidden = !(a === "oyun" || a === "bitti");
@@ -112,7 +113,7 @@
     /* skor ve sıra */
     $("skorMe").textContent = am.filter(function (x) { return x.v; }).length; $("skorOther").textContent = ao.filter(function (x) { return x.v; }).length;
     if (a === "bitti") { $("turnTxt").textContent = G.kazanan === ME ? "Kazandın" : "Kaybettin"; $("turnSub").textContent = "oyun bitti"; }
-    else if (a === "yer") { $("turnTxt").textContent = "Yerleştir"; $("turnSub").textContent = "gemiye dokun: döner"; }
+    else if (a === "yer") { $("turnTxt").textContent = "Yerleştir"; $("turnSub").textContent = "sürükle: taşı · dokun: döndür"; }
     else if (a === "bekle") { $("turnTxt").textContent = (D.adlar[OTHER] || "Rakip") + " bekleniyor"; $("turnSub").textContent = "filosunu diziyor"; }
     else if (oynatiyor) { $("turnTxt").textContent = D.adlar[OTHER] || "Rakip"; $("turnSub").textContent = "atışları gösteriliyor"; }
     else if (G.sira === ME) { $("turnTxt").textContent = "Sıra sende"; $("turnSub").textContent = secili >= 0 ? kareAd(secili) + " nişanda" : (TOPLAM - $("skorMe").textContent) + " kare kaldı"; }
@@ -128,11 +129,56 @@
     $("bResign").hidden = !(a === "oyun" || a === "bekle");
   }
 
-  /* ---- yerleştirme ---- */
+  /* ---- yerleştirme: gemiyi tutup sürükle, bırakınca oturur; kısa dokunuş döndürür ---- */
+  var surukle = null;
+  function hucreAt(x, y) {                                              /* parmağın altındaki kare (ızgara dışıysa en yakın kenar kare) */
+    var r0 = K[0].getBoundingClientRect(), r9 = K[99].getBoundingClientRect(), adim = (r9.left - r0.left) / 9 || r0.width;
+    var c = Math.floor((x - r0.left) / adim), r = Math.floor((y - r0.top) / adim);
+    return { r: r, c: c, ic: x >= r0.left - adim * 0.5 && x <= r9.right + adim * 0.5 && y >= r0.top - adim * 0.5 && y <= r9.bottom + adim * 0.5 };
+  }
+  function hayalTemizle() { for (var i = 0; i < 100; i++) K[i].classList.remove("hayal", "kotu", "kalkti"); }
+  function hayalCiz(g, ok) {
+    hayalTemizle();
+    hucreler(surukle.g).forEach(function (c) { K[c].classList.add("kalkti"); });
+    if (!g) return;
+    hucreler(g).forEach(function (c) { if (c >= 0 && c < 100) K[c].classList.add("hayal"); if (!ok && c >= 0 && c < 100) K[c].classList.add("kotu"); });
+  }
+  grid.addEventListener("pointerdown", function (e) {
+    if (asama() !== "yer" || gonderiyor || (e.pointerType === "mouse" && e.button !== 0)) return;
+    var b = e.target && e.target.closest ? e.target.closest("button.abc") : null; if (!b) return;
+    var c = +b.getAttribute("data-c"), id = gemiHaritasi(yerel)[c]; if (!id) return;
+    var g = null; yerel.forEach(function (x) { if (x.id === id) g = x; });
+    e.preventDefault();
+    surukle = { id: id, g: g, pay: g.d === "h" ? c % 10 - g.c : Math.floor(c / 10) - g.r, x: e.clientX, y: e.clientY, oynadi: false, aday: null, ok: false, pid: e.pointerId, c0: c };
+    try { grid.setPointerCapture(e.pointerId); } catch (er) {}
+  });
+  grid.addEventListener("pointermove", function (e) {
+    if (!surukle || e.pointerId !== surukle.pid) return;
+    e.preventDefault();
+    if (!surukle.oynadi && Math.abs(e.clientX - surukle.x) + Math.abs(e.clientY - surukle.y) < 8) return;
+    if (!surukle.oynadi) { surukle.oynadi = true; grid.classList.add("tasiyor"); }
+    var h = hucreAt(e.clientX, e.clientY), g = surukle.g;
+    if (!h.ic) { surukle.aday = null; hayalCiz(null); return; }
+    var aday = { id: g.id, d: g.d, r: g.d === "h" ? h.r : h.r - surukle.pay, c: g.d === "h" ? h.c - surukle.pay : h.c };
+    var n = gemiN(g.id);                                               /* kenara taşarsa içeri it */
+    if (aday.d === "h") { aday.c = Math.max(0, Math.min(10 - n, aday.c)); aday.r = Math.max(0, Math.min(9, aday.r)); } else { aday.r = Math.max(0, Math.min(10 - n, aday.r)); aday.c = Math.max(0, Math.min(9, aday.c)); }
+    if (surukle.aday && surukle.aday.r === aday.r && surukle.aday.c === aday.c) return;
+    surukle.aday = aday; surukle.ok = sigar(aday, yerel); hayalCiz(aday, surukle.ok);
+  });
+  function birak(e, iptal) {
+    if (!surukle || (e && e.pointerId !== surukle.pid)) return;
+    var s = surukle; surukle = null; grid.classList.remove("tasiyor"); hayalTemizle();
+    if (!s.oynadi) { if (!iptal) dondur(s.c0); return; }
+    if (!iptal && s.aday && s.ok && (s.aday.r !== s.g.r || s.aday.c !== s.g.c)) { yerel = yerel.map(function (x) { return x.id === s.id ? s.aday : x; }); snd("select"); }
+    else if (!iptal && s.aday && !s.ok) D.msg(gemiAd(s.id) + " oraya sığmıyor, başka gemiye değiyor.");
+    ciz();
+  }
+  grid.addEventListener("pointerup", function (e) { birak(e, false); });
+  grid.addEventListener("pointercancel", function (e) { birak(e, true); });
   grid.addEventListener("click", function (e) {
     var b = e.target && e.target.closest ? e.target.closest("button.abc") : null; if (!b || b.disabled) return;
     var c = +b.getAttribute("data-c"), a = asama();
-    if (a === "yer") { dondur(c); return; }
+    if (a === "yer") return;                                            /* yerleştirmede dokunuş/sürükleme pointer olaylarında */
     if (a === "oyun" && G.sira === D.me) { secili = secili === c ? -1 : c; snd("select"); ciz(); }
   });
   function dondur(c) {
@@ -221,5 +267,5 @@
     if (!ilk && oncekiG && oncekiG.hazir && !oncekiG.hazir[OTHER] && d.hazir[OTHER] && d.hazir[ME]) D.msg((D.adlar[OTHER] || "Rakip") + " filosunu dizdi. " + (d.sira === ME ? "İlk atış senin!" : "İlk atış onun."));
     ciz();
   }
-  if (location.hash === "#test") window.__ab = { state: function () { return { G: G, me: D.me, other: D.other, asama: asama(), yerel: yerel, secili: secili, oynatiyor: oynatiyor, benim: G ? dizilis(G, D.me) : null, onun: G ? dizilis(G, D.other) : null }; }, sec: function (c) { secili = c; ciz(); }, ates: function () { $("bFire").onclick(); }, kilit: function () { $("bLock").onclick(); }, yeni: D.yeniOyun, hucreler: hucreler, yerle: function (diz) { yerel = diz; ciz(); } };
+  if (location.hash === "#test") window.__ab = { state: function () { return { G: G, me: D.me, other: D.other, asama: asama(), yerel: yerel, secili: secili, oynatiyor: oynatiyor, benim: G ? dizilis(G, D.me) : null, onun: G ? dizilis(G, D.other) : null }; }, sec: function (c) { secili = c; ciz(); }, yerelKur: function (y) { yerel = y; ciz(); }, ates: function () { $("bFire").onclick(); }, kilit: function () { $("bLock").onclick(); }, yeni: D.yeniOyun, hucreler: hucreler, yerle: function (diz) { yerel = diz; ciz(); } };
 })();
