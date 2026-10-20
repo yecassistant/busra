@@ -999,6 +999,8 @@ button.qmt{padding:12px 14px 14px}
 .qmsec{display:flex;align-items:center;gap:10px;margin:2px 2px -4px;font-family:"Nunito",var(--body);font-weight:800;font-size:.72rem;line-height:1;letter-spacing:.16em;text-transform:uppercase;color:#cdb8ff}
 .qmsec:after{content:"";flex:1;height:1px;background:linear-gradient(90deg,rgba(205,184,255,.5),rgba(205,184,255,0))}
 .qmsec[hidden]{display:none}
+.qmerken{margin:0;padding:10px 14px;border-radius:16px;background:rgba(242,195,91,.1);box-shadow:inset 0 0 0 1px rgba(242,195,91,.35);color:rgba(240,230,255,.9);font-size:.84rem;line-height:1.4;font-weight:600}
+.qmerken b{display:inline-block;margin-right:6px;padding:1px 8px;border-radius:999px;background:#f2c35b;color:#3a1d06;font-size:.68rem;font-weight:800;vertical-align:1px}
 /* geniş kart: Buluşma Takvimi (oyunlardan ayrı, hep üstte) */
 .qmwide{align-items:center;gap:14px;padding:14px 46px 14px 14px;min-height:88px}
 .qmwide .qmchev{top:50%;bottom:auto;margin-top:-11px}

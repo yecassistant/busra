@@ -4,7 +4,7 @@
    Kapı yalnızca deneme modunda (?deneme=1) ya da bu cihaz ?acik=1 ile açılmışsa (?acik=0 kapatır) önceden aşılır.
    SAATİ DEĞİŞTİRMEK İÇİN: ACILIS satırını düzelt. HEMEN AÇMAK İÇİN: GELIYOR listesini boşalt. */
 (function () {
-  var GELIYOR = ["stilobat", "sayi", "amiral"];
+  var GELIYOR = [];                                                    /* 20 Ekim: hepsi erken erişimle açıldı (eski liste: "stilobat", "sayi", "amiral") */
   var ACILIS = Date.parse("2026-10-20T20:00:00+03:00");               /* 20 Ekim 2026, 20:00 (Türkiye saati) */
   var ALIAS = { plan: "oyun", tur: "fatih" };                             /* menü anahtarı → dosya adı */
   var q = location.search, m = /[?&]acik=([01])/.exec(q);
