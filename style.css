@@ -1017,7 +1017,7 @@ button.qmt{padding:12px 14px 14px}
 .qmsoonbtn.qmgenis .qmsoonpill{position:static;flex:none;margin-left:2px}
 /* ---- menü bütünlüğü (1019o): eşit kart boyları, aynı yazı ölçüsü, 2–3 satırlık açıklama, aynı rozet dili ---- */
 .qmgrid{grid-auto-rows:1fr}
-.qmt{min-height:160px;padding:14px 14px 14px}
+.qmt{min-height:196px;padding:14px 14px 14px}
 .qmt .qmtx{padding-right:20px;gap:3px}
 .qmt .qmtx b{font-size:1.04rem;white-space:normal;line-height:1.15}
 .qmt .qmtx small{font-size:.82rem;line-height:1.3}
@@ -1045,7 +1045,7 @@ button.qmt{padding:12px 14px 14px}
 /* geniş kart (tek kalan): yatay düzen, aynı ölçüler */
 .qmt.qmgenis{min-height:0}
 .qmt.qmgenis .qmart svg{width:86px}
-@media (max-width:370px){.qmt{min-height:150px;padding:12px}.qmt .qmtx b{font-size:.98rem}.qmt .qmtx small{font-size:.78rem}.qmt .qmart,.qmt .qmart svg{height:46px}.qmt .qmart svg{width:76px}#qmGeliyor .qmart{width:60px;height:40px}#qmGeliyor .qmart svg{width:56px;height:36px}}
+@media (max-width:370px){.qmt{min-height:196px;padding:12px}.qmt .qmtx b{font-size:.98rem}.qmt .qmtx small{font-size:.78rem}.qmt .qmart,.qmt .qmart svg{height:46px}.qmt .qmart svg{width:76px}#qmGeliyor .qmart{width:60px;height:40px}#qmGeliyor .qmart svg{width:56px;height:36px}}
 .qmsheet{position:fixed;left:0;top:0;right:0;bottom:0;z-index:90;background:rgba(20,8,40,.84);display:flex;align-items:center;justify-content:center;padding:20px}
 .qmsheet[hidden]{display:none}
 .qmsheetcard{position:relative;width:100%;max-width:340px;border-radius:24px;padding:22px 20px 18px;color:#fff;text-align:center;
