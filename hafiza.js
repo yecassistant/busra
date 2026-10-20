@@ -29,7 +29,7 @@
   function fit() {
     var vh = (window.visualViewport && window.visualViewport.height) || innerHeight;
     var bs = getComputedStyle(document.body), pt = parseFloat(bs.paddingTop) || 0, pb = parseFloat(bs.paddingBottom) || 0;
-    stage.style.height = Math.max(420, vh - pt - pb) + "px";
+    stage.style.height = Math.max(330, vh - pt - pb) + "px";
     var w = wrap.clientWidth, h = wrap.clientHeight, gap = 7;
     var s = Math.floor(Math.min((w - gap * (COLS - 1)) / COLS, (h - gap * (ROWS - 1)) / ROWS, 82));
     board.style.setProperty("--hd-k", Math.max(40, s) + "px");
@@ -214,7 +214,7 @@
       /* rakip: oyuncular koleksiyonunu canlı izle — ilk kez giriş yaptığı an burada belirir */
       db.collection("oyuncular").onSnapshot(function (snap) {
         var yeni = null;
-        snap.forEach(function (doc) { var p = doc.data(); if (doc.id !== ME) { yeni = doc.id; ADLAR[yeni] = p.ad || Hesap.gorunenAd(p.kul); KUL[yeni] = p.kul; } });
+        snap.forEach(function (doc) { var p = doc.data(); if (doc.id !== ME) { yeni = doc.id; ADLAR[yeni] = (p.kul && Hesap.gorunenAd(p.kul)) || p.ad || "Rakip"; KUL[yeni] = p.kul; } });
         if (yeni && !OTHER) {
           OTHER = yeni; rakipGoster(); rakipIzle();
           if (dinliyor) { baslatKarti(); msg(ADLAR[OTHER] + " giriş yaptı, oyun başlayabilir."); ciz(); }

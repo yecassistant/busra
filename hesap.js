@@ -7,9 +7,10 @@
    KALDIRMAK İÇİN: sayfalardaki <script src="hesap.js"> satırı silinir, Hesap.oyun([...]) çağrısı yerine scriptler normal eklenir. */
 (function () {
   "use strict";
+  if (/[?&]deneme/.test(location.search)) return;                   /* deneme modu: deneme.js sahte bulutla devreye girer, gerçek hesaba dokunulmaz */
   var CFG = { apiKey: "AIzaSyBVi410cTJGQIUtIxS7vf1737joQn47f9Q", authDomain: "queen-games-2ecc4.firebaseapp.com", projectId: "queen-games-2ecc4", appId: "1:536657592005:web:5983f916df8028ec54baac" };
   var SDK = "https://www.gstatic.com/firebasejs/12.17.1/", ALAN = "@queengames.app";
-  var ADLAR = { bus: "Büşra", yec: "Yec" };                       /* kullanıcı adı → görünen ad */
+  var ADLAR = { bus: "Büşra", yec: "Yunus" };                       /* kullanıcı adı → görünen ad */
   var ZAMAN_ASIMI = 4000, DEBOUNCE = 1800, NABIZ = 90000;
 
   /* ---- eşitlenen anahtarlar ve birleştirme kuralı ----
@@ -21,6 +22,7 @@
     pm_best: "max", pm_sufle: "max", pm_muffin2: "flag", pm_tost2: "flag", pm_kalp1: "flag", pm_hediye1: "flag",
     sef_best: "max", sef_oda: "new", fatih_best: "max",
     fark2_best: "min", fark2_done: "flag", fark2_state: "new", fark3_best: "min", fark3_done: "flag", fark3_state: "new", fark1_intro: "flag",
+    stb_best: "max", stb_oyun: "max",
     gk_start: "min", gk_stat: "new", gk_help: "flag", qg_last: "new"
   };
   function kural(k) { return K[k] || (k.indexOf("gk_d") === 0 ? "new" : null); }   /* gk_d2026-10-19: o günün kelime kaydı */
@@ -130,7 +132,7 @@
   }
   function nabiz() {                                                /* "şu an oynuyor": hangi sayfada, ne zaman */
     if (!user || !db || document.hidden) return Promise.resolve();
-    return db.collection("oyuncular").doc(user.uid).set({ son: { o: oyunKodu, t: firebase.firestore.FieldValue.serverTimestamp() } }, { merge: true }).catch(function () {});
+    return db.collection("oyuncular").doc(user.uid).set({ ad: gorunenAd(kulAdi(user)), son: { o: oyunKodu, t: firebase.firestore.FieldValue.serverTimestamp() } }, { merge: true }).catch(function () {});
   }
   /* akış: iki anlık görüntü arasındaki farktan olaylar */
   function olay(o, k, v) { if (!user || !db) return Promise.resolve(); return db.collection("akis").add({ uid: user.uid, o: o, k: k, v: v, t: firebase.firestore.FieldValue.serverTimestamp() }).catch(function () {}); }
@@ -146,6 +148,7 @@
     if (artti("sef_best")) olay("plan", "rekor", num(b.sef_best));
     if (b.fark2_done === "1" && a.fark2_done !== "1") olay("fark", "bitti", 1);
     if (b.fark3_done === "1" && a.fark3_done !== "1") olay("fark", "bitti", 2);
+    if (num(b.stb_best) > num(a.stb_best) && num(b.stb_best) >= 5) olay("stilobat", "rekor", num(b.stb_best));
     for (var k in b) if (k.indexOf("gk_d") === 0 && b[k] !== a[k]) { try { var g = JSON.parse(b[k]), g0 = a[k] ? JSON.parse(a[k]) : null; if (g && g.s !== "p" && (!g0 || g0.s === "p")) olay("gunun", g.s === "w" ? "buldu" : "bulamadi", g.g ? g.g.length : 0); } catch (e) {} }
   }
 

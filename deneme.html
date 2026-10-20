@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>Deneme modu</title>
+<meta name="robots" content="noindex">
+<meta name="color-scheme" content="dark">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap">
+<style>
+body{margin:0;min-height:100vh;background:#1b1020;color:#f6effa;font-family:Nunito,system-ui,sans-serif;padding:24px 16px 48px;box-sizing:border-box}
+main{max-width:460px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+h1{margin:0;font-size:1.5rem}h1 small{display:block;font-size:.8rem;font-weight:700;color:#f2c35b;letter-spacing:.08em;text-transform:uppercase;margin-bottom:4px}
+p{margin:0;color:#d9c7ea;font-size:.92rem;line-height:1.45}
+.rol{display:flex;gap:8px}.rol button{flex:1;border:0;border-radius:14px;padding:12px;background:rgba(255,255,255,.08);color:#fff;font:800 1rem Nunito,sans-serif;box-shadow:inset 0 0 0 1px rgba(255,255,255,.16);cursor:pointer}.rol button.on{background:#f2c35b;color:#3b2a08;box-shadow:none}
+.list{display:flex;flex-direction:column;gap:8px}.list a{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-radius:16px;background:rgba(255,255,255,.06);box-shadow:inset 0 0 0 1px rgba(255,255,255,.12);color:#fff;text-decoration:none;font-weight:800}.list a small{color:#c9b8d0;font-weight:700;font-size:.78rem}
+.ghost{border:0;border-radius:14px;padding:12px;background:transparent;color:#c9b8d0;font:800 .9rem Nunito,sans-serif;box-shadow:inset 0 0 0 1px rgba(255,255,255,.16);cursor:pointer}
+.note{font-size:.8rem;color:#a995b8}
+</style>
+</head>
+<body>
+<main>
+  <h1><small>Sadece sana</small>İki kişilik oyunları tek başına dene</h1>
+  <p>Burada gerçek hesaba ve buluta dokunulmaz: tarayıcı içinde sahte bir "bulut" ve iki sahte oyuncu (Yunus / Büşra) var. Rolü seç, oyuna gir, hamle yap; sonra alttaki çubuktan öbür role geçip karşı tarafın gördüğünü gör. İki sekmede iki ayrı rolle açarsan hamleler sekmeler arası canlı akar.</p>
+  <div class="rol"><button type="button" id="rYec">Yunus olarak</button><button type="button" id="rBus">Büşra olarak</button></div>
+  <div class="list">
+    <a href="hafiza.html?deneme=1">Hafıza Düellosu <small>kart aç, tekrar izle</small></a>
+    <a href="satranc.html?deneme=1">Satranç <small>hamle, terfi, pes, berabere</small></a>
+    <a href="sayi.html?deneme=1">Sayı Düellosu <small>sayı tut, tahmin</small></a>
+    <a href="amiral.html?deneme=1">Amiral Battı <small>yerleştir, atış, replay</small></a>
+    <a href="takvim.html?deneme=1">Buluşma Takvimi <small>ortak gün</small></a>
+    <a href="tablo.html?deneme=1">Skor Tablosu <small>seri satırları ve akış metinleri</small></a>
+  </div>
+  <button type="button" class="ghost" id="sifirla">Deneme verisini sıfırla</button>
+  <p class="note">Bu sayfa menüde yok; adresi bilen girer. Gerçek oyunlara geçmek için adresten ?deneme=1'i kaldırman ya da menüden normal girmen yeterli.</p>
+</main>
+<script>
+(function () {
+  var rol = "yec"; try { rol = sessionStorage.getItem("dn_rol") === "bus" ? "bus" : "yec"; } catch (e) {}
+  function ciz() { document.getElementById("rYec").className = rol === "yec" ? "on" : ""; document.getElementById("rBus").className = rol === "bus" ? "on" : ""; }
+  document.getElementById("rYec").onclick = function () { rol = "yec"; try { sessionStorage.setItem("dn_rol", "yec"); } catch (e) {} ciz(); };
+  document.getElementById("rBus").onclick = function () { rol = "bus"; try { sessionStorage.setItem("dn_rol", "bus"); } catch (e) {} ciz(); };
+  document.getElementById("sifirla").onclick = function () { if (confirm("Deneme verisi silinsin mi? Gerçek hesaplara dokunmaz.")) { try { localStorage.removeItem("dn_store"); } catch (e) {} alert("Sıfırlandı."); } };
+  ciz();
+})();
+</script>
+</body>
+</html>

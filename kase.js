@@ -32,6 +32,7 @@
   var TOP = 48, DANGER = 100, RIM = 108, WARN = 56; /* bırakma yüksekliği, tehlike çizgisi, kase ağzı, uyarı bandı (sadece surat; yanma sınırı DANGER değişmez) */
   var walls = [];                                   /* kase iç sınırı: parça doğrular */
   var bodies = [], fx = [], floats = [], score = 0, best = 0, merges = 0, cur = 0, nxt = 0, hx = 180, canDrop = true, dead = false, lastT = 0, running = false;
+  var gameH0 = 0, gameSC0 = 0, grace = 0;          /* oyun başladığındaki kase yüksekliği/ölçeği (döndürünce kapasite korunur) ve döndürme sonrası tehlike sayacı için kısa muafiyet */
   var sprites = {};                                 /* sprites[level][face] = canvas */
   try { best = +localStorage.getItem("pm_best") || 0; } catch (e) {}
   bestEl.textContent = best;
@@ -250,7 +251,7 @@
           b.x0 = b.x; b.y0 = b.y; b.win = 0; b.wsp = 0;
         }
       }
-      if (tnow - b.born > 900 && b.y - b.r < DANGER && sp < 40) { b.over += dt; if (b.over > 1.1 && !dead) gameOver(); } else b.over = 0;
+      if (tnow > grace && tnow - b.born > 900 && b.y - b.r < DANGER && sp < 40) { b.over += dt; if (b.over > 1.1 && !dead) gameOver(); } else b.over = 0;
     }
   }
   function ttx2(wnx, wny) { return -wny; }
@@ -547,7 +548,7 @@
     bodies = []; fx = []; floats = []; score = 0; merges = 0; dead = false; canDrop = true; giftShown = false;
     combo = 0; lastMergeT = 0; best0 = best; recShown = false; recFx = 0; su = null; gameSu = 0; celebUntil = 0; shakeA = 0;
     scoreEl.textContent = 0; mergesEl.textContent = 0; over.hidden = true;
-    cur = randLevel(); nxt = randLevel(); showNext(); hx = W / 2;
+    cur = randLevel(); nxt = randLevel(); showNext(); hx = W / 2; gameH0 = H; gameSC0 = SC;
     msg("Kaseye dokun, meyve düşsün. Aynılar birleşir 🍓");
     if (!running) { running = true; lastT = 0; requestAnimationFrame(loop); }
   }
@@ -633,7 +634,26 @@
 
   $("again2").onclick = start;
   document.addEventListener("visibilitychange", function () { if (document.hidden) { running = false; } else if (!running) { running = true; lastT = 0; requestAnimationFrame(loop); } });
-  function refit() { var scale0 = SC; measure(); drawChain(); buildSufle(); if (Math.abs(SC - scale0) > 0.001) { bodies.forEach(function (b) { b.r = rad(b.L); b.mass = FRUITS[b.L].d * b.r * b.r; }); buildSprites(function () {}); } }
+  /* Ekran döndürme / boyut değişimi (tablet yatay-dikey): kase yeniden ölçülür; meyveler kaybolmaz.
+     - Ölçek: oyun ortasında kase alçalırsa meyveler de aynı oranda küçülür (tehlike çizgisine kadar olan kapasite korunur), kase yükselince eski ölçeğe döner.
+     - Konum: her meyvenin tabandan uzaklığı ölçekle, yatay konumu kase genişliğiyle oranlanır; hız sıfırlanır, 1.5 sn tehlike sayacı işlemez (yığın otursun). */
+  function refit() {
+    var W0 = W, H0 = H, SC0 = SC, B0 = H0 - 8;
+    measure();
+    if (bodies.length && gameH0 > DANGER) { var kap = gameSC0 * (H - DANGER) / (gameH0 - DANGER); if (kap < SC) { SC = Math.max(0.3, kap); WARN = Math.round(30 + 30 * SC); } }
+    drawChain(); buildSufle();
+    var olcek = Math.abs(SC - SC0) > 0.001, B = H - 8, k = SC / SC0, kx = (W - 2 * inset) / (W0 - 2 * inset);
+    if (olcek || W !== W0 || H !== H0) {
+      bodies.forEach(function (b) {
+        if (olcek) { b.r = rad(b.L); b.mass = FRUITS[b.L].d * b.r * b.r; }
+        b.x = inset + (b.x - inset) * kx; b.y = B - (B0 - b.y) * k;
+        b.x = Math.max(inset + b.r, Math.min(W - inset - b.r, b.x)); b.y = Math.min(B - b.r, b.y);
+        b.px = b.x; b.py = b.y; b.vx = 0; b.vy = 0; b.w = 0; b.over = 0; b.sleep = false; b.win = 0; b.wsp = 0; b.x0 = b.x; b.y0 = b.y;
+      });
+      grace = now() + 1500;
+      if (olcek) buildSprites(function () {});
+    }
+  }
   addEventListener("resize", refit); addEventListener("orientationchange", function () { setTimeout(refit, 250); });
 
   /* yapım aşaması anahtarı (kase.html'de): açıkken oyun hiç başlamaz, sadece "olgunlaşıyor" ekranı görünür */

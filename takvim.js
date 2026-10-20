@@ -89,7 +89,7 @@
       /* öteki: oyuncular koleksiyonunu canlı izle — ilk girişini yaptığı an günleri de dinlenmeye başlar */
       db.collection("oyuncular").onSnapshot(function (snap) {
         var yeni = null;
-        snap.forEach(function (doc) { var p = doc.data(); if (doc.id !== ME) { yeni = doc.id; ADLAR[yeni] = p.ad || Hesap.gorunenAd(p.kul); KUL[yeni] = p.kul; } });
+        snap.forEach(function (doc) { var p = doc.data(); if (doc.id !== ME) { yeni = doc.id; ADLAR[yeni] = (p.kul && Hesap.gorunenAd(p.kul)) || p.ad || "O"; KUL[yeni] = p.kul; } });
         if (yeni && !OTHER) {
           OTHER = yeni; $("legO").textContent = ADLAR[OTHER] || digerAd;
           onunDinle = db.collection("takvim").doc(OTHER).onSnapshot(function (s) {
