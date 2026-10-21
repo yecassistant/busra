@@ -5,6 +5,10 @@
   "use strict";
   var $ = function (id) { return document.getElementById(id); };
   var page = document.body.dataset.page;
+  /* hızlandırıcı: sayfa geçişlerinde dosyalar telefondan gelsin (ana ekrandan açınca özellikle) – sw.js */
+  if ("serviceWorker" in navigator && (location.protocol === "https:" || /^(localhost|127\.0\.0\.1)$/.test(location.hostname)) && !/[?&]deneme/.test(location.search)) {
+    addEventListener("load", function () { try { navigator.serviceWorker.register("sw.js").catch(function () {}); } catch (e) {} });
+  }
 
   /* iPhone: çift dokunmayla yakınlaşmayı engelle (Safari user-scalable=no'yu dikkate almıyor; touch-action yetmezse JS yedeği).
      Yazı alanlarında devre dışı. Pinch'i de engelle. */

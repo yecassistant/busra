@@ -22,7 +22,7 @@
     pm_best: "max", pm_sufle: "max", pm_muffin2: "flag", pm_tost2: "flag", pm_kalp1: "flag", pm_hediye1: "flag",
     sef_best: "max", sef_oda: "new", fatih_best: "max",
     fark2_best: "min", fark2_done: "flag", fark2_state: "new", fark3_best: "min", fark3_done: "flag", fark3_state: "new", fark1_intro: "flag",
-    stb_best: "max", stb_oyun: "max",
+    stb_best: "max", stb_oyun: "max", yk_best: "max", yk_seviye: "max",
     gk_start: "min", gk_stat: "new", gk_help: "flag", qg_last: "new"
   };
   function kural(k) { return K[k] || (k.indexOf("gk_d") === 0 ? "new" : null); }   /* gk_d2026-10-19: o günün kelime kaydı */
@@ -149,6 +149,7 @@
     if (b.fark2_done === "1" && a.fark2_done !== "1") olay("fark", "bitti", 1);
     if (b.fark3_done === "1" && a.fark3_done !== "1") olay("fark", "bitti", 2);
     if (num(b.stb_best) > num(a.stb_best) && num(b.stb_best) >= 5) olay("stilobat", "rekor", num(b.stb_best));
+    if (num(b.yk_seviye) > num(a.yk_seviye) && num(b.yk_seviye) >= 2) olay("yikim", "seviye", num(b.yk_seviye));
     for (var k in b) if (k.indexOf("gk_d") === 0 && b[k] !== a[k]) { try { var g = JSON.parse(b[k]), g0 = a[k] ? JSON.parse(a[k]) : null; if (g && g.s !== "p" && (!g0 || g0.s === "p")) olay("gunun", g.s === "w" ? "buldu" : "bulamadi", g.g ? g.g.length : 0); } catch (e) {} }
   }
 

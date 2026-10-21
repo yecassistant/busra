@@ -1,7 +1,7 @@
 /* Düello altyapısı – iki kişilik, sıra tabanlı oyunların ortak kısmı (Sayı Düellosu, Amiral Battı …).
    Yapar: giriş kapısı, rakibi bulma (oyuncular koleksiyonu canlı), çevrimiçi noktası, oyun kurma, seri + akış yazımı, bitiş kartı, başlık altı seri yazısı.
    Kullanım: var D = Duello({ kol: "sayi", sayfa: "sayi", yeniDoc: fn(d, ME, OTHER) → yeni oyun dokümanı, onMac: fn(d, ilk), onYok: fn(), bitis: fn(d) → { baslik, metin },
-             seriKod: fn(d) → akış kodu (0–9), benBitirdim: fn(d) → bool, gizle: … });  D.me, D.other, D.adlar, D.db, D.ref, D.seriRef, D.digerAd, D.msg(), D.ekDe(), D.ekIn(), D.esc(), D.gizle(), D.coz() */
+             seriKod: fn(d) → akış kodu (0–99), benBitirdim: fn(d) → bool, eskiMi: fn(d) → eski biçimli doküman mı (yeni oyunla değiştirilir) … });  D.me, D.other, D.adlar, D.db, D.ref, D.seriRef, D.digerAd, D.msg(), D.ekDe(), D.ekIn(), D.esc(), D.gizle(), D.coz() */
 (function () {
   "use strict";
   function $(id) { return document.getElementById(id); }
@@ -45,7 +45,7 @@
       D.db.runTransaction(function (tx) {
         return tx.get(D.ref).then(function (snap) {
           var d = snap.exists ? snap.data() : null;
-          if (d && !d.bitti) return;
+          if (d && !d.bitti && !(o.eskiMi && o.eskiMi(d))) return;              /* eski sürümden kalmış yarım oyun yenisiyle değişebilir */
           var doc = o.yeniDoc(d, D.me, D.other); doc.n = (d && d.n || 0) + 1; doc.v = 1; doc.bitti = false; doc.sonuc = ""; doc.kazanan = null; doc.t = firebase.firestore.FieldValue.serverTimestamp();
           tx.set(D.ref, doc);
         });
@@ -86,7 +86,7 @@
       D.ref.onSnapshot(function (snap) {
         var d = snap.exists ? snap.data() : null;
         D.altYaz();
-        if (!d) { D.G = null; $("start").hidden = false; $("startKick").textContent = "İlk oyun"; D.baslatKarti(); if (o.onYok) o.onYok(); return; }
+        if (!d || (o.eskiMi && o.eskiMi(d))) { D.G = null; $("start").hidden = false; $("startKick").textContent = d ? "Yeni sürüm" : "İlk oyun"; D.baslatKarti(); if (o.onYok) o.onYok(); return; }
         var ilk = !D.G || D.G.n !== d.n;
         D.G = d; $("start").hidden = true;
         if (ilk) { D.bittiGosterildi = -1; D.bitirenBenim = false; $("done").hidden = true; }

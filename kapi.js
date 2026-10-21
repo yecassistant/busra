@@ -6,12 +6,17 @@
 (function () {
   var GELIYOR = [];                                                    /* 20 Ekim: hepsi erken erişimle açıldı (eski liste: "stilobat", "sayi", "amiral") */
   var ACILIS = Date.parse("2026-10-20T20:00:00+03:00");               /* 20 Ekim 2026, 20:00 (Türkiye saati) */
+  var KAPALI = ["asmaca", "tabu", "yikim"];                                             /* saatten bağımsız "yakında": Yunus "aç" diyene kadar (deneme modunda ve ?acik=1 cihazda açık). AÇMAK İÇİN listeden sil. */
   var ALIAS = { plan: "oyun", tur: "fatih" };                             /* menü anahtarı → dosya adı */
   var q = location.search, m = /[?&]acik=([01])/.exec(q);
   if (m) try { if (m[1] === "1") localStorage.setItem("kapi_acik", "1"); else localStorage.removeItem("kapi_acik"); } catch (e) {}
-  var acik = /[?&]deneme/.test(q) || Date.now() >= ACILIS; try { acik = acik || localStorage.getItem("kapi_acik") === "1"; } catch (e) {}
-  window.GELIYOR = GELIYOR; window.kapiAcik = acik; window.kapiSaat = ACILIS;
-  window.geliyorMu = function (o) { return !acik && (GELIYOR.indexOf(o) >= 0 || GELIYOR.indexOf(ALIAS[o] || "") >= 0); };
+  var cihaz = /[?&]deneme/.test(q); try { cihaz = cihaz || localStorage.getItem("kapi_acik") === "1"; } catch (e) {}
+  var acik = cihaz || Date.now() >= ACILIS;
+  window.GELIYOR = GELIYOR.concat(KAPALI); window.kapiAcik = acik; window.kapiSaat = ACILIS;
+  function listede(L, o) { return L.indexOf(o) >= 0 || L.indexOf(ALIAS[o] || "") >= 0; }
+  window.geliyorMu = function (o) { return (!acik && listede(GELIYOR, o)) || (!cihaz && listede(KAPALI, o)); };
+  /* menüdeki rozet: saatli olanlarda "20:00'de", saatsizlerde "yakında" */
+  window.kapiEtiket = function (o) { return listede(KAPALI, o) ? "yakında" : window.kapiMetin() + "'de"; };
   /* "20:00'de açılıyor" / "yarın 20:00" gibi kısa metin */
   window.kapiMetin = function () {
     var d = new Date(ACILIS), n = new Date(), hh = ("0" + d.getHours()).slice(-2) + ":" + ("0" + d.getMinutes()).slice(-2);
