@@ -18,8 +18,14 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Caveat:wght@600;700&family=Nunito:wght@600;700;800&display=swap">
-<link rel="stylesheet" href="style.css?v=1019o">
-<script src="kapi.js?v=1019o"></script>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Queen Games">
+<link rel="apple-touch-icon" href="ikon/app-180.png">
+<link rel="stylesheet" href="style.css?v=1019r">
+<script src="kapi.js?v=1019r"></script>
 </head>
 <body data-page="oyunlar">
 
@@ -54,6 +60,12 @@
     <span class="qmatx"><b id="qmAname">Giriş yap</b><small id="qmAsub">İlerlemen her cihazda seninle gelsin.</small></span>
     <span class="qmabtn" id="qmAbtn">Giriş yap</span>
   </a>
+
+  <button type="button" class="qmtam" id="qmTam" hidden>
+    <span class="qmtamico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></span>
+    <span class="qmtamtx"><b>Tam ekran oyna</b><small id="qmTamSub">Adres çubuğu gitsin, ekranın hepsi oyunun olsun.</small></span>
+    <span class="qmtamx" id="qmTamX" role="button" aria-label="Gizle">×</span>
+  </button>
 
   <a class="qmc qmwide qm-takvim" href="takvim.html" id="toTakvim">
     <span class="qmico qmico-takvim"><svg viewBox="0 0 92 56" aria-hidden="true"><rect x="18" y="8" width="56" height="44" rx="8" fill="#fbf7fd"/><rect x="18" y="8" width="56" height="13" rx="7" fill="#f2c35b"/><rect x="18" y="15" width="56" height="6" fill="#f2c35b"/><rect x="28" y="3" width="5" height="11" rx="2.5" fill="#3b2a08"/><rect x="59" y="3" width="5" height="11" rx="2.5" fill="#3b2a08"/><g fill="#d9d1e3"><rect x="24" y="26" width="8" height="6" rx="2"/><rect x="36" y="26" width="8" height="6" rx="2"/><rect x="48" y="26" width="8" height="6" rx="2"/><rect x="60" y="26" width="8" height="6" rx="2"/><rect x="24" y="36" width="8" height="6" rx="2"/><rect x="36" y="36" width="8" height="6" rx="2"/><rect x="60" y="36" width="8" height="6" rx="2"/></g><path d="M52 45s-6-3.8-6-7.4a3.1 3.1 0 0 1 6-1.2 3.1 3.1 0 0 1 6 1.2c0 3.6-6 7.4-6 7.4z" fill="#ec4b5f"/><use href="#qmSpark" x="78" y="6" width="10" height="10" fill="#ffe08a"/><use href="#qmSpark" x="4" y="38" width="8" height="8" fill="#ffe08a"/></svg></span>
@@ -186,8 +198,8 @@
   </div>
 </div>
 
-<script src="app.js?v=1019o"></script>
-<script src="hesap.js?v=1019o"></script>
+<script src="app.js?v=1019r"></script>
+<script src="hesap.js?v=1019r"></script>
 <script>
 /* hesap çubuğu: giriş yoksa "Giriş yap", varsa ad + Skor Tablosu */
 (function () {
@@ -255,6 +267,38 @@
       else { badge.textContent = "sırası onda"; sub.textContent = "Hamlesini yapınca sıra sana geçer."; }
     }).catch(function () {});
   });
+})();
+/* Tam ekran: iPhone'da tarayıcı oyunu tam ekran yapamıyor; tek yol siteyi ana ekrana eklemek (uygulama gibi açılır, adres çubuğu olmaz).
+   Android'de "Yükle" penceresi açılır. Zaten ana ekrandan açıldıysa kart görünmez. */
+(function () {
+  var kart = document.getElementById("qmTam"); if (!kart) return;
+  var ua = navigator.userAgent, ios = /iPhone|iPad|iPod/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1), ig = /Instagram|FBAN|FBAV/.test(ua);
+  var android = /Android/.test(ua), tel = ios || android || matchMedia("(pointer:coarse)").matches;
+  var uygulama = navigator.standalone === true || matchMedia("(display-mode: standalone)").matches || matchMedia("(display-mode: fullscreen)").matches;
+  var gizli = false; try { gizli = localStorage.getItem("qg_tam_gizle") === "1"; } catch (e) {}
+  if (uygulama || !tel || gizli) return;
+  var istem = null;
+  addEventListener("beforeinstallprompt", function (e) { e.preventDefault(); istem = e; });
+  kart.hidden = false;
+  document.getElementById("qmTamX").addEventListener("click", function (e) { e.stopPropagation(); kart.hidden = true; try { localStorage.setItem("qg_tam_gizle", "1"); } catch (er) {} });
+  function sheet(html) {
+    var s = document.createElement("div"); s.className = "qmsheet"; s.innerHTML = '<div class="qmsheetcard" role="dialog" aria-modal="true"><span class="qmsoonpill big">tam ekran</span><h2>Uygulama gibi aç</h2><div class="qmsheettext qmtamadim">' + html + '</div><button type="button" class="qmsheetbtn">Tamam</button></div>';
+    document.body.appendChild(s);
+    function kapat() { if (s.parentNode) s.parentNode.removeChild(s); }
+    s.querySelector(".qmsheetbtn").onclick = kapat; s.addEventListener("click", function (e) { if (e.target === s) kapat(); });
+  }
+  var paylas = '<svg class="qmpay" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V3M8 7l4-4 4 4M6 11H5v10h14V11h-1"/></svg>';
+  kart.addEventListener("click", function () {
+    if (istem) { istem.prompt(); istem.userChoice.then(function () { istem = null; }); return; }
+    if (ig) sheet('<ol><li>Sağ üstteki <b>⋯</b> menüsüne dokun, <b>Tarayıcıda aç</b>' + (ios ? " (Safari)" : "") + ' de.</li><li>' + (ios ? 'Safari\'de alttaki ' + paylas + ' <b>Paylaş</b> düğmesine, sonra <b>Ana Ekrana Ekle</b>\'ye dokun.' : 'Chrome menüsünden <b>Ana ekrana ekle</b> / <b>Uygulamayı yükle</b>\'yi seç.') + '</li><li>Ana ekrandaki <b>Queen Games</b> simgesinden açınca adres çubuğu olmadan, tam ekran açılır.</li></ol><p class="qmsoonnote">İlk açılışta bir kez giriş yapman yeter; ilerlemen hesabından gelir.</p>');
+    else if (ios) sheet('<ol><li>Alttaki ' + paylas + ' <b>Paylaş</b> düğmesine dokun.</li><li>Aşağı kaydırıp <b>Ana Ekrana Ekle</b>\'yi seç, <b>Ekle</b> de.</li><li>Ana ekrandaki <b>Queen Games</b> simgesinden açınca adres çubuğu olmadan, tam ekran açılır.</li></ol><p class="qmsoonnote">İlk açılışta bir kez giriş yapman yeter; ilerlemen hesabından gelir.</p>');
+    else sheet('<ol><li>Tarayıcı menüsünden (<b>⋮</b>) <b>Ana ekrana ekle</b> ya da <b>Uygulamayı yükle</b>\'yi seç.</li><li>Ana ekrandaki <b>Queen Games</b> simgesinden açınca tam ekran açılır.</li></ol><p class="qmsoonnote">İlk açılışta bir kez giriş yapman yeter; ilerlemen hesabından gelir.</p>');
+  });
+})();
+/* Özel ikonlar: Yunus'un tasarladığı SVG'ler ikon/oyun-<ad>.svg olarak eklenince adını bu listeye yaz (ör. "kelime"). Kartın resim alanına (92×56 oranında) oturur. */
+(function () {
+  var OZEL = [];
+  OZEL.forEach(function (g) { var k = document.querySelector('.qmt[data-g="' + g + '"] .qmart'); if (!k) return; var im = new Image(); im.alt = ""; im.decoding = "async"; im.onload = function () { k.innerHTML = ""; k.appendChild(im); k.classList.add("ozel"); }; im.src = "ikon/oyun-" + g + ".svg?v=1"; });
 })();
 /* Stilobat kartı: rekor varsa rozet "rekor N" */
 (function () { var b = 0; try { b = +localStorage.getItem("stb_best") || 0; } catch (e) {} if (b > 0) document.getElementById("stilobatBadge").textContent = "rekor " + b; })();

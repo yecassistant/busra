@@ -13,6 +13,17 @@
   function tone(type, hz, t, a, peak, dec, glide) { var o = ctx.createOscillator(), g = ctx.createGain(); o.type = type; o.frequency.setValueAtTime(hz, t); if (glide) o.frequency.exponentialRampToValueAtTime(hz * glide, t + a + dec); g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(peak, t + a); g.gain.exponentialRampToValueAtTime(0.0001, t + a + dec); o.connect(g); g.connect(master); o.start(t); o.stop(t + a + dec + 0.05); }
   function nota(hz, t, peak, dec) { tone("sine", hz, t, 0.004, peak, dec); tone("triangle", hz * 2, t, 0.004, peak * 0.25, dec * 0.6); tone("sine", hz * 3, t, 0.003, peak * 0.08, dec * 0.35); }   /* ksilofon benzeri */
   var PENTA = [0, 2, 4, 7, 9, 12, 14, 16, 19, 21, 24, 26, 28, 31, 33, 36];
+  /* Sol (G4=392 Hz) referanslı yarım ton dizileri: her akor için 8 notalık arpej (yukarı, tepede küçük dönüş) */
+  var MELODI = [
+    [5, 9, 12, 17, 21, 17, 24, 21],    /* Do */
+    [2, 5, 9, 14, 17, 14, 21, 17],     /* La minör */
+    [-2, 2, 5, 10, 14, 10, 17, 14],    /* Fa */
+    [0, 4, 7, 12, 16, 12, 19, 16],     /* Sol */
+    [5, 9, 12, 17, 21, 24, 21, 17],    /* Do */
+    [-2, 2, 5, 10, 14, 17, 14, 10],    /* Fa */
+    [0, 4, 7, 12, 16, 19, 16, 12],     /* Sol */
+    [5, 12, 9, 17, 12, 21, 17, 24]     /* Do (kapanış) */
+  ];
   function rnd(a, b) { return a + Math.random() * (b - a); }
   /* marimba/ksilofon çubuğu: temel + 4. kısmi (kısa) + tokmak dokunuşu (sinüs, gürültü yok) → yumuşak, "tatlı" tın */
   function cubuk(hz, t, peak, dec, parlak) {
@@ -31,7 +42,19 @@
       tone("sine", 82 * det, t, 0.004, 0.05 + kes * 0.04, 0.12 + kes * 0.06);  /* hafif gövde "tump" */
     },
     /* tam oturtma: parlak çan, seri arttıkça pentatonik yukarı (ses yükselmez, sadece tizleşir) */
-    perfect: function (combo) { var t = ctx.currentTime, i = Math.min(PENTA.length - 1, Math.max(0, (combo || 1) - 1)), hz = 523.25 * Math.pow(2, PENTA[i] / 12); cubuk(hz, t, 0.1, 0.6, true); if ((combo || 1) >= 4) tone("sine", hz * 2, t + 0.03, 0.01, 0.025, 0.5); },
+    /* tam oturtma: bitmeyen melodi. Oyundaki her "mükemmel" bir sonraki notayı çalar: akorlar sırayla değişir
+       (Do – La minör – Fa – Sol – Do – Fa – Sol – Do), her akorda 8 notalık yükselen arpej; 64 notada bir ton yükselir,
+       üç turda bir başa döner. Seri büyüdükçe altta yumuşak akor tabanı ve parlak üst ses eklenir. */
+    perfect: function (o) {
+      o = typeof o === "object" && o ? o : { combo: o || 1, n: o || 1 };
+      var t = ctx.currentTime, n = Math.max(0, (o.n || 1) - 1), combo = o.combo || 1;
+      var faz = Math.floor(n / 8) % MELODI.length, adim = n % 8, tur = Math.floor(n / 64) % 3, ton = [0, -3, 2][tur];
+      var yari = MELODI[faz][adim] + ton, hz = 392 * Math.pow(2, yari / 12);
+      cubuk(hz, t, 0.095, 0.6, true);
+      if (adim === 0 || combo >= 3) cubuk(98 * Math.pow(2, (MELODI[faz][0] + ton) / 12), t, 0.05, 0.9, false);   /* akor kökü, pes */
+      if (combo >= 5) tone("sine", hz * 2, t + 0.03, 0.01, 0.022, 0.5);
+      if (combo >= 8 && adim % 2 === 0) cubuk(hz * 1.5, t + 0.09, 0.035, 0.4, true);
+    },
     grow: function () { var t = ctx.currentTime; [0, 4, 7, 12].forEach(function (s, i) { cubuk(659.25 * Math.pow(2, s / 12), t + i * 0.06, 0.06, 0.4, true); }); },
     record: function () { var t = ctx.currentTime; cubuk(1046.5, t, 0.07, 0.5, true); cubuk(1318.5, t + 0.12, 0.07, 0.6, true); cubuk(1568, t + 0.24, 0.07, 0.9, true); },
     over: function () { var t = ctx.currentTime; tone("sine", 110, t, 0.006, 0.12, 0.35, 0.8); cubuk(196, t + 0.05, 0.06, 0.5, false); cubuk(146.83, t + 0.3, 0.05, 0.8, false); }
