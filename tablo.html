@@ -21,6 +21,7 @@
 <link rel="apple-touch-icon" href="ikon/app-180.png">
 <link rel="stylesheet" href="style.css?v=1020o">
 <script src="kapi.js?v=1020o"></script>
+<style>/* taç vitrini */.tbvs{align-items:start}.tbvs .tbskor{margin-top:10px}.tbskor{flex-wrap:wrap;justify-content:center}.tbskor small{flex-basis:100%;text-align:center;font-family:inherit;font-size:.7rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#f2c35b;opacity:.8}.tbtl{display:flex;flex-wrap:wrap;justify-content:center;gap:2px;max-width:120px;font-size:.95rem;line-height:1.2}.tbtl.bos{font-size:.66rem;font-weight:700;color:rgba(255,255,255,.5)}</style>
 </head>
 <body data-page="tablo">
 
@@ -154,16 +155,20 @@
     var L = liste();
     if (!L.length) { $("players").innerHTML = ""; $("grid").innerHTML = '<p class="tbempty">Henüz veri yok. Oyunlardan birini oyna, burada görünsün.</p>'; return; }
     var o = karsi(), now = Date.now();
-    /* 1) vitrin: bütün iki kişilik oyunlarda toplam galibiyet */
-    var top = {}, oyunTop = 0, ber = 0; top[ben] = 0; if (o) top[o] = 0;
-    DUEL.forEach(function (k) { if (kapali(k)) return; var se = seriOf(k); if (!se) return; var g = se.g || {}; for (var u in g) top[u] = (top[u] || 0) + (g[u] || 0); oyunTop += se.oyun || 0; ber += se.b || 0; });
-    var sol = o || ben, sag = ben, a = top[sol] || 0, b = top[sag] || 0, toplam = a + b, oran = toplam ? a / toplam : 0.5;
-    var onde = a === b ? null : a > b ? sol : sag;
-    $("vitrin").innerHTML = '<div class="tbvs"><div class="tbvk ' + sinif(sol) + (onde === sol ? " onde" : "") + '"><span class="hsava ' + sinif(sol) + '">' + esc(adOf(sol).charAt(0)) + '</span>' + (onde === sol ? '<i class="tbtac">👑</i>' : "") + '<b>' + esc(adOf(sol)) + '</b></div>' +
-      '<div class="tbskor"><b>' + a + '</b><span>–</span><b>' + b + '</b></div>' +
-      '<div class="tbvk ' + sinif(sag) + (onde === sag ? " onde" : "") + '"><span class="hsava ' + sinif(sag) + '">' + esc(adOf(sag).charAt(0)) + '</span>' + (onde === sag ? '<i class="tbtac">👑</i>' : "") + '<b>' + esc(adOf(sag))+'</b></div></div>' +
+    /* 1) vitrin: her oyun bir taç — düelloda önde olan, rekorda iyi olan o oyunun tacını alır */
+    var sol = o || ben, sag = ben, taclar = {}; taclar[sol] = []; taclar[sag] = [];
+    var oyunTop = 0;
+    DUEL.forEach(function (k) { if (kapali(k)) return; var se = seriOf(k); if (!se) return; oyunTop += se.oyun || 0; var g = se.g || {}, wa = g[sol] || 0, wb = g[sag] || 0; if (o && wa !== wb) taclar[wa > wb ? sol : sag].push(k); });
+    if (o) { var ozS = ozet((oyuncular[sol] || {}).d), ozG = ozet((oyuncular[sag] || {}).d);
+      ozS.forEach(function (z, i) { var y = ozG[i]; if (Math.max(z.v, y.v) > 0 && z.v !== y.v) taclar[z.v > y.v ? sol : sag].push(z.o); }); }
+    var a = taclar[sol].length, b = taclar[sag].length, toplam = a + b, oran = toplam ? a / toplam : 0.5;
+    var onde = !o || a === b ? null : a > b ? sol : sag;
+    function tacListe(u) { return taclar[u].length ? '<div class="tbtl">' + taclar[u].map(function (k) { return '<span title="' + esc(OYUN[k] || k) + '">' + (IK[k] || "") + "</span>"; }).join("") + "</div>" : '<div class="tbtl bos">henüz taç yok</div>'; }
+    function kisi(u) { return '<div class="tbvk ' + sinif(u) + (onde === u ? " onde" : "") + '"><span class="hsava ' + sinif(u) + '">' + esc(adOf(u).charAt(0)) + '</span>' + (onde === u ? '<i class="tbtac">👑</i>' : "") + '<b>' + esc(adOf(u)) + '</b>' + tacListe(u) + "</div>"; }
+    $("vitrin").innerHTML = '<div class="tbvs">' + kisi(sol) +
+      '<div class="tbskor"><b>' + a + '</b><span>–</span><b>' + b + '</b><small>taç</small></div>' + kisi(sag) + '</div>' +
       '<div class="tbterazi"><i class="' + sinif(sol) + '" style="width:' + (oran * 100).toFixed(1) + '%"></i><i class="' + sinif(sag) + '" style="width:' + ((1 - oran) * 100).toFixed(1) + '%"></i></div>' +
-      '<p class="tbvalt">' + (oyunTop ? oyunTop + " düello" + (ber ? " · " + ber + " berabere" : "") + (onde ? " · taç şu an " + esc(ekDe(adOf(onde))) : " · başa baş") : "Henüz düello yok; ilk tacı kim kapacak?") + "</p>";
+      '<p class="tbvalt">' + (toplam ? (onde ? "Büyük taç şu an " + esc(ekDe(adOf(onde))) + " · " : "Taçlar başa baş · ") + "her oyunun tacı, o oyunda önde olana" : "Henüz kimse taç almadı; ilk tacı kim kapacak?") + (oyunTop ? " · " + oyunTop + " düello" : "") + "</p>";
     /* 2) haftalık özet (akıştan) */
     var hafta = now - 7 * 86400000, hs = { n: 0, g: {}, o: {} };
     akis.forEach(function (e) { var t = Hesap.tms(e.t); if (!t || t < hafta || DUEL.indexOf(e.o) < 0) return; if (["kazandi", "kaybetti", "berabere"].indexOf(e.k) < 0) return; hs.n++; hs.o[e.o] = (hs.o[e.o] || 0) + 1; var w = e.k === "kazandi" ? e.uid : e.k === "kaybetti" ? (e.uid === ben ? o : ben) : null; if (w) hs.g[w] = (hs.g[w] || 0) + 1; });
@@ -190,7 +195,7 @@
       var noktalar = son.map(function (x) { return '<i class="tbn ' + (x.k ? sinif(x.k) : "e") + '" title="' + (x.k ? esc(adOf(x.k)) : "berabere") + '"></i>'; }).join("") || '<small class="tbsoluk">henüz oyun yok</small>';
       var seriYazi = sr.n >= 2 ? esc(adOf(sr.k)) + " " + sr.n + " maçtır kazanıyor 🔥" : (se && se.oyun ? se.oyun + " oyun" + (se.b ? " · " + se.b + " berabere" : "") : "");
       return '<a class="tbkart qm-' + k + '" href="' + LINK[k] + '"><div class="tbkust"><span class="tbkik">' + IK[k] + '</span><b>' + esc(OYUN[k]) + "</b>" + (d ? '<i class="tbdurum' + (d.ben ? " ben" : "") + '">' + esc(d.t) + "</i>" : "") + '</div>' +
-        '<div class="tbksk"><span class="' + sinif(sol) + (wa > wb ? " lider" : "") + '"><small>' + esc(adOf(sol)) + "</small><b>" + wa + '</b></span><span class="tbnok">' + noktalar + '</span><span class="' + sinif(sag) + (wb > wa ? " lider" : "") + '"><small>' + esc(adOf(sag)) + "</small><b>" + wb + "</b></span></div>" +
+        '<div class="tbksk"><span class="' + sinif(sol) + (wa > wb ? " lider" : "") + '"><small>' + (wa > wb ? "👑 " : "") + esc(adOf(sol)) + "</small><b>" + wa + '</b></span><span class="tbnok">' + noktalar + '</span><span class="' + sinif(sag) + (wb > wa ? " lider" : "") + '"><small>' + (wb > wa ? "👑 " : "") + esc(adOf(sag)) + "</small><b>" + wb + "</b></span></div>" +
         (seriYazi ? '<small class="tbkalt">' + seriYazi + "</small>" : "") + "</a>";
     }).join("");
     /* 5) rozetler */
