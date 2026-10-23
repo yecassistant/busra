@@ -21,7 +21,20 @@
 <link rel="apple-touch-icon" href="ikon/app-180.png">
 <link rel="stylesheet" href="style.css?v=1020o">
 <script src="kapi.js?v=1020o"></script>
-<style>/* taç vitrini */.tbvs{align-items:start}.tbvs .tbskor{margin-top:10px}.tbskor{flex-wrap:wrap;justify-content:center}.tbskor small{flex-basis:100%;text-align:center;font-family:inherit;font-size:.7rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#f2c35b;opacity:.8}.tbtl{display:flex;flex-wrap:wrap;justify-content:center;gap:2px;max-width:120px;font-size:.95rem;line-height:1.2}.tbtl.bos{font-size:.66rem;font-weight:700;color:rgba(255,255,255,.5)}</style>
+<style>
+.tbmin{gap:12px}
+.tbmin .tbvitrin{padding:16px 12px 12px;background:rgba(255,255,255,.06);box-shadow:inset 0 0 0 1px rgba(255,255,255,.12)}
+.tbmin .tbvs{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:6px}
+.tbmin .tbvk{display:flex;flex-direction:column;align-items:center;gap:4px;min-width:0;position:relative}
+.tbmin .tbvk .hsava{width:46px;height:46px;font-size:1.2rem}
+.tbmin .tbvk b{font-size:.95rem}
+.tbmin .tbvk small{font-size:.68rem;color:rgba(235,225,255,.6);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.tbmin .tbvk small.on{color:#9ef0b0;font-weight:700}
+.tbmin .tbskor{display:flex;flex-wrap:wrap;justify-content:center;align-items:baseline;gap:6px}
+.tbmin .tbskor b{font-size:2.2rem}
+.tbmin .tbskor small{flex-basis:100%;text-align:center;font-size:.64rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:rgba(242,195,91,.8)}
+.tbmin .tbvalt{margin:10px 0 0;font-size:.78rem}
+</style>
 </head>
 <body data-page="tablo">
 
@@ -34,19 +47,10 @@
     <a class="hsbtn" href="giris.html?d=tablo.html">Giriş yap</a>
   </div>
 
-  <section class="tbwrap" id="wrap" hidden>
+  <section class="tbwrap tbmin" id="wrap" hidden>
     <div class="tbvitrin" id="vitrin"></div>
-    <div class="tbhafta" id="hafta" hidden></div>
-    <div class="tbsira" id="siraSende" hidden></div>
-    <div class="tbplayers" id="players"></div>
-    <h2 class="tbh2">İkimizin oyunları</h2>
-    <div class="tbkartlar" id="grid"></div>
-    <h2 class="tbh2">Rozetler</h2>
-    <div class="tbrozet" id="rozet"></div>
-    <h2 class="tbh2">Rekorlar</h2>
-    <div class="tbrekor" id="rekor"></div>
+    <div class="tbgrid" id="grid"></div>
     <h2 class="tbh2">Son hareketler</h2>
-    <div class="tbfiltre" id="filtre"></div>
     <ol class="tbfeed" id="feed"><li class="tbempty">Henüz bir şey yok.</li></ol>
     <div class="tbtools"><button type="button" class="hsghost" id="yedek">Yedek indir</button><button type="button" class="hsghost" id="cikis">Çıkış yap</button></div>
   </section>
@@ -152,106 +156,43 @@
     return mc.sira === ben ? { ben: true, t: "sıra sende" } : { ben: false, t: "sıra " + (oyuncular[mc.sira] ? ekDe(adOf(mc.sira)) : "onda") };
   }
   function ciz() {
-    var L = liste();
-    if (!L.length) { $("players").innerHTML = ""; $("grid").innerHTML = '<p class="tbempty">Henüz veri yok. Oyunlardan birini oyna, burada görünsün.</p>'; return; }
-    var o = karsi(), now = Date.now();
-    /* 1) vitrin: her oyun bir taç — düelloda önde olan, rekorda iyi olan o oyunun tacını alır */
-    var sol = o || ben, sag = ben, taclar = {}; taclar[sol] = []; taclar[sag] = [];
-    var oyunTop = 0;
-    DUEL.forEach(function (k) { if (kapali(k)) return; var se = seriOf(k); if (!se) return; oyunTop += se.oyun || 0; var g = se.g || {}, wa = g[sol] || 0, wb = g[sag] || 0; if (o && wa !== wb) taclar[wa > wb ? sol : sag].push(k); });
-    if (o) { var ozS = ozet((oyuncular[sol] || {}).d), ozG = ozet((oyuncular[sag] || {}).d);
-      ozS.forEach(function (z, i) { var y = ozG[i]; if (Math.max(z.v, y.v) > 0 && z.v !== y.v) taclar[z.v > y.v ? sol : sag].push(z.o); }); }
-    var a = taclar[sol].length, b = taclar[sag].length, toplam = a + b, oran = toplam ? a / toplam : 0.5;
-    var onde = !o || a === b ? null : a > b ? sol : sag;
-    function tacListe(u) { return taclar[u].length ? '<div class="tbtl">' + taclar[u].map(function (k) { return '<span title="' + esc(OYUN[k] || k) + '">' + (IK[k] || "") + "</span>"; }).join("") + "</div>" : '<div class="tbtl bos">henüz taç yok</div>'; }
-    function kisi(u) { return '<div class="tbvk ' + sinif(u) + (onde === u ? " onde" : "") + '"><span class="hsava ' + sinif(u) + '">' + esc(adOf(u).charAt(0)) + '</span>' + (onde === u ? '<i class="tbtac">👑</i>' : "") + '<b>' + esc(adOf(u)) + '</b>' + tacListe(u) + "</div>"; }
-    $("vitrin").innerHTML = '<div class="tbvs">' + kisi(sol) +
-      '<div class="tbskor"><b>' + a + '</b><span>–</span><b>' + b + '</b><small>taç</small></div>' + kisi(sag) + '</div>' +
-      '<div class="tbterazi"><i class="' + sinif(sol) + '" style="width:' + (oran * 100).toFixed(1) + '%"></i><i class="' + sinif(sag) + '" style="width:' + ((1 - oran) * 100).toFixed(1) + '%"></i></div>' +
-      '<p class="tbvalt">' + (toplam ? (onde ? "Büyük taç şu an " + esc(ekDe(adOf(onde))) + " · " : "Taçlar başa baş · ") + "her oyunun tacı, o oyunda önde olana" : "Henüz kimse taç almadı; ilk tacı kim kapacak?") + (oyunTop ? " · " + oyunTop + " düello" : "") + "</p>";
-    /* 2) haftalık özet (akıştan) */
-    var hafta = now - 7 * 86400000, hs = { n: 0, g: {}, o: {} };
-    akis.forEach(function (e) { var t = Hesap.tms(e.t); if (!t || t < hafta || DUEL.indexOf(e.o) < 0) return; if (["kazandi", "kaybetti", "berabere"].indexOf(e.k) < 0) return; hs.n++; hs.o[e.o] = (hs.o[e.o] || 0) + 1; var w = e.k === "kazandi" ? e.uid : e.k === "kaybetti" ? (e.uid === ben ? o : ben) : null; if (w) hs.g[w] = (hs.g[w] || 0) + 1; });
-    if (hs.n) {
-      var fav = Object.keys(hs.o).sort(function (x, y) { return hs.o[y] - hs.o[x]; })[0], ga = hs.g[sol] || 0, gb = hs.g[sag] || 0;
-      $("hafta").hidden = false;
-      $("hafta").innerHTML = '<span class="tbhik">📆</span><span><b>Bu hafta ' + hs.n + " oyun oynadık.</b> " + (ga === gb ? "Başa baş: " + ga + "–" + gb + "." : esc(adOf(ga > gb ? sol : sag)) + " " + Math.max(ga, gb) + "–" + Math.min(ga, gb) + " önde.") + " En çok " + esc(OYUN[fav] || fav) + " " + IK[fav] + "</span>";
-    } else $("hafta").hidden = true;
-    /* 3) sıra sende şeridi */
-    var bekleyen = DUEL.filter(function (k) { if (kapali(k)) return false; var d = durumOf(k); return d && d.ben; });
-    if (bekleyen.length) {
-      $("siraSende").hidden = false;
-      $("siraSende").innerHTML = '<div class="tbsbas">Sıra sende <i>' + bekleyen.length + "</i></div>" + '<div class="tbserit">' + bekleyen.map(function (k) { var d = durumOf(k); return '<a class="tbsk qm-' + k + '" href="' + LINK[k] + '"><span>' + IK[k] + "</span><b>" + esc(OYUN[k]) + "</b><small>" + esc(d.t) + "</small></a>"; }).join("") + "</div>";
-    } else $("siraSende").hidden = true;
-    /* oyuncu kartları: çevrimiçi */
-    $("players").innerHTML = L.map(function (p) {
-      var t = p.son && p.son.t ? Hesap.tms(p.son.t) : 0, canli = t && now - t < 180000 && p.son.o && OYUN[p.son.o] && !kapali(p.son.o) && ["oyunlar", "tablo", "giris", "index", "takvim"].indexOf(p.son.o) < 0;
-      var durum = canli ? "şu an " + OYUN[p.son.o] + " oynuyor" : t ? "son görülme " + nezaman(t) : "henüz girmedi";
-      return '<div class="tbp' + (p.uid === ben ? " me" : "") + '"><span class="hsava ' + (p.kul === "bus" ? "a" : "b") + '">' + esc((p.ad || "?").charAt(0).toUpperCase()) + '</span><b>' + esc(p.ad || p.kul || "?") + (p.uid === ben ? ' <i>(sen)</i>' : "") + '</b><small class="' + (canli ? "on" : "") + '">' + esc(durum) + '</small></div>';
-    }).join("");
-    /* 4) oyun kartları */
-    $("grid").innerHTML = DUEL.filter(function (k) { return !kapali(k); }).map(function (k) {
-      var se = seriOf(k), g = (se && se.g) || {}, wa = g[sol] || 0, wb = g[sag] || 0, son = ((se && se.son) || []).slice(-5), sr = sonSeri(se), d = durumOf(k);
-      var noktalar = son.map(function (x) { return '<i class="tbn ' + (x.k ? sinif(x.k) : "e") + '" title="' + (x.k ? esc(adOf(x.k)) : "berabere") + '"></i>'; }).join("") || '<small class="tbsoluk">henüz oyun yok</small>';
-      var seriYazi = sr.n >= 2 ? esc(adOf(sr.k)) + " " + sr.n + " maçtır kazanıyor 🔥" : (se && se.oyun ? se.oyun + " oyun" + (se.b ? " · " + se.b + " berabere" : "") : "");
-      return '<a class="tbkart qm-' + k + '" href="' + LINK[k] + '"><div class="tbkust"><span class="tbkik">' + IK[k] + '</span><b>' + esc(OYUN[k]) + "</b>" + (d ? '<i class="tbdurum' + (d.ben ? " ben" : "") + '">' + esc(d.t) + "</i>" : "") + '</div>' +
-        '<div class="tbksk"><span class="' + sinif(sol) + (wa > wb ? " lider" : "") + '"><small>' + (wa > wb ? "👑 " : "") + esc(adOf(sol)) + "</small><b>" + wa + '</b></span><span class="tbnok">' + noktalar + '</span><span class="' + sinif(sag) + (wb > wa ? " lider" : "") + '"><small>' + (wb > wa ? "👑 " : "") + esc(adOf(sag)) + "</small><b>" + wb + "</b></span></div>" +
-        (seriYazi ? '<small class="tbkalt">' + seriYazi + "</small>" : "") + "</a>";
-    }).join("");
-    /* 5) rozetler */
-    $("rozet").innerHTML = [sol, sag].filter(Boolean).map(function (u) {
-      var R = rozetler(u);
-      return '<div class="tbrk ' + sinif(u) + '"><b>' + esc(adOf(u)) + ' <small>' + R.filter(function (r) { return r.var; }).length + "/" + R.length + "</small></b><div>" + R.map(function (r) { return '<span class="tbr' + (r.var ? " var" : "") + '" title="' + esc(r.t) + '"><i>' + r.ik + "</i><small>" + esc(r.ad) + "</small></span>"; }).join("") + "</div></div>";
-    }).join("");
-    /* 6) rekorlar (tek kişilik) */
-    var oz = L.map(function (p) { return ozet(p.d); }), html = "";
+    var list = liste();
+    if (!list.length) { $("grid").innerHTML = '<p class="tbempty">Henüz veri yok. Oyunlardan birini oyna, burada görünsün.</p>'; return; }
+    var now = Date.now(), o = karsi(), sol = o || ben, sag = ben, taclar = {}; taclar[sol] = 0; taclar[sag] = 0;
+    /* satırlar (eski düzen): tek kişilik rekorlar, sonra düellolar — her satırın tacı (👑) o satırı kazananda */
+    var oz = list.map(function (p) { return ozet(p.d); }), html = "";
     for (var r = 0; r < oz[0].length; r++) {
-      if (oz.every(function (z) { return !z[r].v; })) continue;
-      var best = -1; if (L.length > 1) { var m = Math.max(oz[0][r].v, oz[1][r].v); if (m > 0 && oz[0][r].v !== oz[1][r].v) best = oz[0][r].v > oz[1][r].v ? 0 : 1; }
-      html += '<div class="tbrow"><div class="tbg">' + (IK[oz[0][r].o] || "") + " " + esc(oz[0][r].ad) + '</div>' + L.map(function (p, i) {
+      var best = -1; if (list.length > 1) { var m = Math.max(oz[0][r].v, oz[1][r].v); if (m > 0 && oz[0][r].v !== oz[1][r].v) best = oz[0][r].v > oz[1][r].v ? 0 : 1; }
+      if (best >= 0) taclar[list[best].uid] = (taclar[list[best].uid] || 0) + 1;
+      html += '<div class="tbrow"><div class="tbg">' + esc(oz[0][r].ad) + '</div>' + list.map(function (p, i) {
         var c = oz[i][r]; return '<div class="tbc' + (best === i ? " win" : "") + '"><b>' + esc(c.t) + '</b>' + (c.alt ? '<small>' + esc(c.alt) + '</small>' : "") + '</div>';
       }).join("") + "</div>";
     }
-    $("rekor").innerHTML = html || '<p class="tbempty">Tek kişilik oyunlarda henüz rekor yok.</p>';
-  }
-  function rozetler(u) {
-    var p = oyuncular[u] || {}, d = p.d || {}, g = function (k) { var se = seriOf(k); return se && se.g ? (se.g[u] || 0) : 0; };
-    var gs = obj(d.gk_stat) || {}, enIyiSeri = 0;
-    DUEL.forEach(function (k) { var L = (seriOf(k) || {}).son || [], n = 0; L.forEach(function (x) { n = x.k === u ? n + 1 : 0; if (n > enIyiSeri) enIyiSeri = n; }); });
-    var toplamG = 0; DUEL.forEach(function (k) { toplamG += g(k); });
-    return [
-      { ik: "👑", ad: "İlk taç", t: "Bir düelloyu kazan", var: toplamG >= 1 },
-      { ik: "🔥", ad: "Seri", t: "Aynı oyunda üst üste 3 galibiyet", var: enIyiSeri >= 3 },
-      { ik: "💯", ad: "Yüzbaşı", t: "Toplam 25 düello galibiyeti", var: toplamG >= 25 },
-      { ik: "♟️", ad: "Şah mat", t: "Satrançta bir galibiyet", var: g("satranc") >= 1 },
-      { ik: "🧠", ad: "Hafıza", t: "Hafıza Düellosu'nda 5 galibiyet", var: g("hafiza") >= 5 },
-      { ik: "🔢", ad: "Dedektif", t: "Sayı Düellosu'nda 5 galibiyet", var: g("sayi") >= 5 },
-      { ik: "❌", ad: "Üçleme", t: "XOX'ta 5 galibiyet", var: g("xox") >= 5 },
-      { ik: "💥", ad: "Komutan", t: "Tepe Savaşı'nı kazan", var: g("tepe") >= 1 },
-      { ik: "🟩", ad: "Kelimeci", t: "Günün Kelimesi'ni 10 kez bul", var: num(gs.w) >= 10 },
-      { ik: "📅", ad: "Bir hafta", t: "Günün Kelimesi'nde 7 günlük seri", var: num(gs.m) >= 7 },
-      { ik: "🌸", ad: "Bahçıvan", t: "Kelime Bahçesi'ni bitir", var: d.kb_end === "1" },
-      { ik: "🍫", ad: "Sufle", t: "Peki Madem'de sufle kazan", var: num(d.pm_sufle) >= 1 },
-      { ik: "🏛️", ad: "Mimar", t: "Stilobat'ta 20 kat", var: num(d.stb_best) >= 20 },
-      { ik: "🔨", ad: "Yıkıcı", t: "Yıkım'da 10. seviye", var: num(d.yk_seviye) >= 10 },
-      { ik: "🔍", ad: "Keskin göz", t: "7 Farkı Bul'un iki bölümü", var: d.fark2_done === "1" && d.fark3_done === "1" }
-    ];
+    DUEL.forEach(function (k) {
+      if (kapali(k)) return;
+      var se = seriOf(k), gg = (se && se.g) || {}, a0 = gg[list[0].uid] || 0, a1 = list.length > 1 ? (gg[list[1].uid] || 0) : 0, ab = list.length < 2 || a0 === a1 ? -1 : (a0 > a1 ? 0 : 1), d = durumOf(k);
+      if (ab >= 0) taclar[list[ab].uid] = (taclar[list[ab].uid] || 0) + 1;
+      html += '<div class="tbrow"><div class="tbg">' + esc(OYUN[k]) + (d ? ' · <i>' + esc(d.t) + "</i>" : "") + '</div>' + list.map(function (p, i) {
+        var w = gg[p.uid] || 0; return '<div class="tbc' + (ab === i ? " win" : "") + '"><b>' + w + " galibiyet</b>" + (se && se.oyun ? "<small>" + se.oyun + " oyun" + (se.b ? " · " + se.b + " berabere" : "") + "</small>" : "") + "</div>";
+      }).join("") + "</div>";
+    });
+    $("grid").innerHTML = html;
+    /* vitrin: toplam taç (yeni) */
+    var a = taclar[sol] || 0, b = taclar[sag] || 0, onde = !o || a === b ? null : a > b ? sol : sag;
+    function durumK(u) { var p = oyuncular[u] || {}, t = p.son && p.son.t ? Hesap.tms(p.son.t) : 0, canli = t && now - t < 180000 && p.son.o && LINK[p.son.o]; return canli ? '<small class="on">şu an ' + esc(OYUN[p.son.o]) + " oynuyor</small>" : "<small>" + (t ? esc(nezaman(t)) : "henüz girmedi") + "</small>"; }
+    function kisi(u) { return '<div class="tbvk' + (onde === u ? " onde" : "") + '"><span class="hsava ' + sinif(u) + '">' + esc(adOf(u).charAt(0)) + "</span>" + (onde === u ? '<i class="tbtac">👑</i>' : "") + "<b>" + esc(adOf(u)) + "</b>" + durumK(u) + "</div>"; }
+    $("vitrin").innerHTML = '<div class="tbvs">' + kisi(sol) + '<div class="tbskor"><b>' + a + "</b><span>–</span><b>" + b + "</b><small>taç</small></div>" + kisi(sag) + "</div>" +
+      '<p class="tbvalt">' + (a + b ? (onde ? "Büyük taç " + esc(ekDe(adOf(onde))) : "Taçlar başa baş") : "Henüz kimse taç almadı") + "</p>";
   }
   function gunAd(ms) { var t = new Date(ms), b = new Date(); b.setHours(0, 0, 0, 0); var g = Math.round((b - new Date(t.getFullYear(), t.getMonth(), t.getDate())) / 86400000); return g === 0 ? "Bugün" : g === 1 ? "Dün" : t.getDate() + " " + AYLAR[t.getMonth()]; }
   function cizAkis() {
-    var var_ = {}; akis.forEach(function (e) { if (!kapali(e.o) && OYUN[e.o]) var_[e.o] = 1; });
-    $("filtre").innerHTML = '<button type="button" class="' + (!filtreO ? "on" : "") + '" data-f="">Hepsi</button>' + Object.keys(var_).map(function (k) { return '<button type="button" class="' + (filtreO === k ? "on" : "") + '" data-f="' + k + '">' + (IK[k] || "") + " " + esc(OYUN[k]) + "</button>"; }).join("");
-    var L = akis.filter(function (e) { return !kapali(e.o) && (!filtreO || e.o === filtreO); }).slice(0, 40);
+    var L = akis.filter(function (e) { return !kapali(e.o); }).slice(0, 40);
     if (!L.length) { $("feed").innerHTML = '<li class="tbempty">Henüz bir şey yok.</li>'; return; }
-    var son = "", html = "";
-    L.forEach(function (e) {
-      var t = Hesap.tms(e.t), g = t ? gunAd(t) : ""; if (g !== son) { son = g; html += '<li class="tbgun">' + esc(g) + "</li>"; }
-      var p = oyuncular[e.uid] || {}, ad = p.ad || (p.kul ? Hesap.gorunenAd(p.kul) : "Biri"), w = e.k === "kazandi" ? e.uid : e.k === "kaybetti" ? (e.uid === ben ? karsi() : ben) : e.uid;
-      html += '<li class="' + (w ? sinif(w) : "") + '"><span class="tbfik">' + (IK[e.o] || "✨") + '</span><span class="tbft">' + esc(metin(e, ad)) + '<small>' + esc(t ? (nezaman(t).indexOf("önce") >= 0 ? nezaman(t) : pad(new Date(t).getHours()) + ":" + pad(new Date(t).getMinutes())) : "") + '</small></span></li>';
-    });
-    $("feed").innerHTML = html;
+    $("feed").innerHTML = L.map(function (e) {
+      var p = oyuncular[e.uid] || {}, ad = p.ad || (p.kul ? Hesap.gorunenAd(p.kul) : "Biri");
+      return '<li><span class="hsava sm ' + (p.kul === "bus" ? "a" : "b") + '">' + esc(ad.charAt(0).toUpperCase()) + '</span><span class="tbft">' + esc(metin(e, ad)) + '<small>' + esc(nezaman(Hesap.tms(e.t))) + '</small></span></li>';
+    }).join("");
   }
-  $("filtre").addEventListener("click", function (e) { var b = e.target.closest ? e.target.closest("button[data-f]") : null; if (!b) return; filtreO = b.getAttribute("data-f"); try { sessionStorage.setItem("tb_filtre", filtreO); } catch (x) {} cizAkis(); });
   var tik = setInterval(function () { if (!$("wrap").hidden) { ciz(); cizAkis(); } }, 30000);
 
   var basladi = false;
