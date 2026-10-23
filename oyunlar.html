@@ -441,7 +441,7 @@
 /* açılış: yaklaşık 1,2 sn (oturum başına bir kez), sonra kaybolur */
 (function () {
   var a = document.getElementById("qmAcilis"); if (!a || / yok/.test(a.className)) { if (a) a.parentNode.removeChild(a); return; }
-  /* hafif müzik kutusu melodisi (Web Audio); tarayıcı izin vermezse ilk dokunuşta çalar */
+  /* kısa açılış sesi (Web Audio); tarayıcı izin vermezse ilk dokunuşta çalar */
   var ctx = null, caldi = false, AC = window.AudioContext || window.webkitAudioContext, sesKapali = false;
   try { sesKapali = localStorage.getItem("qg_acilis_ses") === "0"; } catch (e) {}
   function cal() {
@@ -450,20 +450,14 @@
       ctx = ctx || new AC();
       if (ctx.state !== "running") { var r = ctx.resume(); if (r && r.then) r.then(function () { if (!bitti) cal(); }, function () {}); return; }
       caldi = true;
-      var t0 = ctx.currentTime + 0.03, ana = ctx.createGain(), dl = ctx.createDelay(), fb = ctx.createGain(), wet = ctx.createGain();
-      ana.gain.value = 0.16; dl.delayTime.value = 0.19; fb.gain.value = 0.28; wet.gain.value = 0.35;
-      ana.connect(ctx.destination); ana.connect(dl); dl.connect(fb); fb.connect(dl); dl.connect(wet); wet.connect(ctx.destination);
-      function nota(hz, t, sure, v) {
-        [[1, 1], [2, 0.28], [3, 0.08]].forEach(function (h) {
-          var o = ctx.createOscillator(), g = ctx.createGain(); o.type = "sine"; o.frequency.value = hz * h[0];
-          g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(v * h[1], t + 0.012); g.gain.exponentialRampToValueAtTime(0.0001, t + sure);
-          o.connect(g); g.connect(ana); o.start(t); o.stop(t + sure + 0.05);
-        });
-      }
-      /* C majör, müzik kutusu: yükselen arpej + tatlı kapanış */
-      var N = [[783.99, 0], [1046.5, 0.16], [1318.5, 0.32], [1567.98, 0.48], [1318.5, 0.68], [1174.66, 0.84], [1567.98, 1.02]];
-      N.forEach(function (n, i) { nota(n[0], t0 + n[1], i === N.length - 1 ? 1.4 : 0.7, i === N.length - 1 ? 0.7 : 0.55); });
-      nota(261.63, t0, 1.2, 0.35); nota(392, t0 + 0.68, 1.0, 0.3); nota(523.25, t0 + 1.02, 1.5, 0.32);
+      /* kısa, yumuşak "tıng": üç hızlı çan notası, yankısız */
+      var t0 = ctx.currentTime + 0.03, ana = ctx.createGain(); ana.gain.value = 0.09; ana.connect(ctx.destination);
+      [[1318.5, 0], [1567.98, 0.07], [2093, 0.14]].forEach(function (n, i) {
+        var o = ctx.createOscillator(), g = ctx.createGain(), t = t0 + n[1], sure = i === 2 ? 0.7 : 0.35;
+        o.type = "sine"; o.frequency.value = n[0];
+        g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(i === 2 ? 0.8 : 0.5, t + 0.008); g.gain.exponentialRampToValueAtTime(0.0001, t + sure);
+        o.connect(g); g.connect(ana); o.start(t); o.stop(t + sure + 0.05);
+      });
     } catch (e) {}
   }
   var bitti = false;
