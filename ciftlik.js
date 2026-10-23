@@ -565,7 +565,7 @@
   var KAR_YOL = [[-8.5, -3.5], [-3, -4.7], [3, -4.7], [8, -3.5], [8, 1.5], [1, 6.5], [-1, 6.5], [-7.7, 1.5], [-5, 9.5], [12.5, 11.5], [-9, 11]];
   var karCiz = null, karYedek = false, karVur = new T.Mesh(new T.BoxGeometry(1.0, 2.1, 1.0), new T.MeshBasicMaterial({ visible: false }));
   karVur.position.y = 1.05; kar.g.add(karVur); hedefle(karVur, { tip: "karakter" });
-  if (window.CfKar) CfKar.yukle("1020m", function (v) { if (!v) { karYedek = true; karakterKur(); return; } try { karCiz = CfKar.olustur(v); } catch (e) { karCiz = null; karYedek = true; karakterKur(); return; } if (!kar3d) kar.g.add(karCiz.g); karakterKur(); if (!$("karKart").hidden) karakterCiz(); _ip = "\u0000"; try { ipucuYaz(); } catch (e) {} });
+  if (window.CfKar) CfKar.yukle("1020o", function (v) { if (!v) { karYedek = true; karakterKur(); return; } try { karCiz = CfKar.olustur(v); } catch (e) { karCiz = null; karYedek = true; karakterKur(); return; } if (!kar3d) kar.g.add(karCiz.g); karakterKur(); if (!$("karKart").hidden) karakterCiz(); _ip = "\u0000"; try { ipucuYaz(); } catch (e) {} });
   else karYedek = true;
   /* gerçek 3D model (varsa çizim panonun yerine geçer; çizim yüzleri baloncuklarda kalır) */
   var kar3d = null;

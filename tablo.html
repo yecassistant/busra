@@ -19,8 +19,8 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Queen Games">
 <link rel="apple-touch-icon" href="ikon/app-180.png">
-<link rel="stylesheet" href="style.css?v=1020m">
-<script src="kapi.js?v=1020m"></script>
+<link rel="stylesheet" href="style.css?v=1020o">
+<script src="kapi.js?v=1020o"></script>
 </head>
 <body data-page="tablo">
 
@@ -34,17 +34,26 @@
   </div>
 
   <section class="tbwrap" id="wrap" hidden>
+    <div class="tbvitrin" id="vitrin"></div>
+    <div class="tbhafta" id="hafta" hidden></div>
+    <div class="tbsira" id="siraSende" hidden></div>
     <div class="tbplayers" id="players"></div>
-    <div class="tbgrid" id="grid"></div>
+    <h2 class="tbh2">İkimizin oyunları</h2>
+    <div class="tbkartlar" id="grid"></div>
+    <h2 class="tbh2">Rozetler</h2>
+    <div class="tbrozet" id="rozet"></div>
+    <h2 class="tbh2">Rekorlar</h2>
+    <div class="tbrekor" id="rekor"></div>
     <h2 class="tbh2">Son hareketler</h2>
+    <div class="tbfiltre" id="filtre"></div>
     <ol class="tbfeed" id="feed"><li class="tbempty">Henüz bir şey yok.</li></ol>
     <div class="tbtools"><button type="button" class="hsghost" id="yedek">Yedek indir</button><button type="button" class="hsghost" id="cikis">Çıkış yap</button></div>
   </section>
 </main>
 
-<script src="app.js?v=1020m"></script>
-<script src="hesap.js?v=1020m"></script>
-<script src="deneme.js?v=1020m"></script>
+<script src="app.js?v=1020o"></script>
+<script src="hesap.js?v=1020o"></script>
+<script src="deneme.js?v=1020o"></script>
 <script>
 (function () {
   var $ = function (id) { return document.getElementById(id); };
@@ -115,55 +124,129 @@
     return ad + " bir şey yaptı.";
   }
 
-  var oyuncular = {}, ben = null, akis = [], seri = null, mac = null, stSeri = null, stMac = null, duSeri = { sayi: null, amiral: null, asmaca: null, xox: null, tepe: null }, duMac = { sayi: null, amiral: null, asmaca: null, xox: null, tepe: null };
+  var oyuncular = {}, ben = null, akis = [], seri = null, mac = null, stSeri = null, stMac = null;
+  var DUEL = ["hafiza", "sayi", "xox", "tepe", "satranc", "amiral", "asmaca"];
+  var duSeri = {}, duMac = {}; DUEL.forEach(function (k) { duSeri[k] = null; duMac[k] = null; });
+  var IK = { hafiza: "🃏", sayi: "🔢", xox: "❌", tepe: "💥", satranc: "♟️", amiral: "⚓", asmaca: "🔤", gunun: "🟩", kelime: "🌸", ok: "🏹", kase: "🍫", oda: "🛋️", plan: "🌿", tur: "🏰", fark: "🔍", yikim: "🔨", stilobat: "🏛️", takvim: "📅", hesap: "🔑", tabu: "🃏" };
+  var LINK = { hafiza: "hafiza.html", sayi: "sayi.html", xox: "xox.html", tepe: "tepe.html", satranc: "satranc.html", amiral: "amiral.html", asmaca: "asmaca.html" };
+  var filtreO = ""; try { filtreO = sessionStorage.getItem("tb_filtre") || ""; } catch (e) {}
   function ekDe(ad) { var m = String(ad).toLowerCase().match(/[aeıioöuü](?![\s\S]*[aeıioöuü])/), v = m ? m[0] : "a"; return ad + "'" + (/[fstkçşhp]$/i.test(ad) ? "t" : "d") + (/[aıou]/.test(v) ? "a" : "e"); }
+  function liste() { var L = [], u; for (u in oyuncular) L.push(oyuncular[u]); L.sort(function (a, b) { return (a.uid === ben ? 1 : 0) - (b.uid === ben ? 1 : 0) || (a.ad > b.ad ? 1 : -1); }); return L; }
+  function karsi() { for (var u in oyuncular) if (u !== ben) return u; return null; }
+  function adOf(u) { var p = oyuncular[u] || {}; return p.ad || (p.kul ? Hesap.gorunenAd(p.kul) : "?"); }
+  function sinif(u) { var p = oyuncular[u] || {}; return p.kul === "bus" ? "a" : "b"; }
+  function seriOf(k) { return k === "hafiza" ? seri : k === "satranc" ? stSeri : duSeri[k]; }
+  function macOf(k) { return k === "hafiza" ? mac : k === "satranc" ? stMac : duMac[k]; }
+  function sonSeri(se) {                                                 /* son oyunlardan kesintisiz kazanma serisi */
+    var L = (se && se.son) || [], k = null, n = 0;
+    for (var i = L.length - 1; i >= 0; i--) { var w = L[i].k || ""; if (!w) break; if (k === null) k = w; if (w !== k) break; n++; }
+    return { k: k, n: n };
+  }
+  function durumOf(k) {                                                  /* bu oyunda bende hamle var mı */
+    var mc = macOf(k); if (!mc || mc.bitti) return null; var oth = mc.a === ben ? mc.b : mc.a;
+    if (k === "asmaca") { if (!mc.ilerleme) return null; var ad5 = mc.adet || 5, il = mc.ilerleme || {}, bi = il[ben] && il[ben].s ? il[ben].s.length : 0;
+      if (mc.mod === "yaz" && !(mc.hazir && mc.hazir[ben])) return { ben: true, t: "kelimeleri yaz" };
+      return bi < ad5 ? { ben: true, t: (bi + 1) + ". kelimede" } : { ben: false, t: "o çözüyor" }; }
+    if (k === "sayi" || k === "amiral") { if (!mc.hazir || !mc.hazir[ben]) return { ben: true, t: k === "sayi" ? "sayını belirle" : "filonu diz" }; if (!mc.hazir[oth]) return { ben: false, t: "onu bekliyorsun" }; }
+    return mc.sira === ben ? { ben: true, t: "sıra sende" } : { ben: false, t: "sıra " + (oyuncular[mc.sira] ? ekDe(adOf(mc.sira)) : "onda") };
+  }
   function ciz() {
-    var list = [], uid; for (uid in oyuncular) list.push(oyuncular[uid]);
-    list.sort(function (a, b) { return (a.uid === ben ? 1 : 0) - (b.uid === ben ? 1 : 0) || (a.ad > b.ad ? 1 : -1); });   /* karşı taraf solda, ben sağda */
-    if (!list.length) { $("players").innerHTML = ""; $("grid").innerHTML = '<p class="tbempty">Henüz veri yok. Oyunlardan birini oyna, burada görünsün.</p>'; return; }
-    var now = Date.now();
-    $("players").innerHTML = list.map(function (p) {
+    var L = liste();
+    if (!L.length) { $("players").innerHTML = ""; $("grid").innerHTML = '<p class="tbempty">Henüz veri yok. Oyunlardan birini oyna, burada görünsün.</p>'; return; }
+    var o = karsi(), now = Date.now();
+    /* 1) vitrin: bütün iki kişilik oyunlarda toplam galibiyet */
+    var top = {}, oyunTop = 0, ber = 0; top[ben] = 0; if (o) top[o] = 0;
+    DUEL.forEach(function (k) { if (kapali(k)) return; var se = seriOf(k); if (!se) return; var g = se.g || {}; for (var u in g) top[u] = (top[u] || 0) + (g[u] || 0); oyunTop += se.oyun || 0; ber += se.b || 0; });
+    var sol = o || ben, sag = ben, a = top[sol] || 0, b = top[sag] || 0, toplam = a + b, oran = toplam ? a / toplam : 0.5;
+    var onde = a === b ? null : a > b ? sol : sag;
+    $("vitrin").innerHTML = '<div class="tbvs"><div class="tbvk ' + sinif(sol) + (onde === sol ? " onde" : "") + '"><span class="hsava ' + sinif(sol) + '">' + esc(adOf(sol).charAt(0)) + '</span>' + (onde === sol ? '<i class="tbtac">👑</i>' : "") + '<b>' + esc(adOf(sol)) + '</b></div>' +
+      '<div class="tbskor"><b>' + a + '</b><span>–</span><b>' + b + '</b></div>' +
+      '<div class="tbvk ' + sinif(sag) + (onde === sag ? " onde" : "") + '"><span class="hsava ' + sinif(sag) + '">' + esc(adOf(sag).charAt(0)) + '</span>' + (onde === sag ? '<i class="tbtac">👑</i>' : "") + '<b>' + esc(adOf(sag))+'</b></div></div>' +
+      '<div class="tbterazi"><i class="' + sinif(sol) + '" style="width:' + (oran * 100).toFixed(1) + '%"></i><i class="' + sinif(sag) + '" style="width:' + ((1 - oran) * 100).toFixed(1) + '%"></i></div>' +
+      '<p class="tbvalt">' + (oyunTop ? oyunTop + " düello" + (ber ? " · " + ber + " berabere" : "") + (onde ? " · taç şu an " + esc(ekDe(adOf(onde))) : " · başa baş") : "Henüz düello yok; ilk tacı kim kapacak?") + "</p>";
+    /* 2) haftalık özet (akıştan) */
+    var hafta = now - 7 * 86400000, hs = { n: 0, g: {}, o: {} };
+    akis.forEach(function (e) { var t = Hesap.tms(e.t); if (!t || t < hafta || DUEL.indexOf(e.o) < 0) return; if (["kazandi", "kaybetti", "berabere"].indexOf(e.k) < 0) return; hs.n++; hs.o[e.o] = (hs.o[e.o] || 0) + 1; var w = e.k === "kazandi" ? e.uid : e.k === "kaybetti" ? (e.uid === ben ? o : ben) : null; if (w) hs.g[w] = (hs.g[w] || 0) + 1; });
+    if (hs.n) {
+      var fav = Object.keys(hs.o).sort(function (x, y) { return hs.o[y] - hs.o[x]; })[0], ga = hs.g[sol] || 0, gb = hs.g[sag] || 0;
+      $("hafta").hidden = false;
+      $("hafta").innerHTML = '<span class="tbhik">📆</span><span><b>Bu hafta ' + hs.n + " oyun oynadık.</b> " + (ga === gb ? "Başa baş: " + ga + "–" + gb + "." : esc(adOf(ga > gb ? sol : sag)) + " " + Math.max(ga, gb) + "–" + Math.min(ga, gb) + " önde.") + " En çok " + esc(OYUN[fav] || fav) + " " + IK[fav] + "</span>";
+    } else $("hafta").hidden = true;
+    /* 3) sıra sende şeridi */
+    var bekleyen = DUEL.filter(function (k) { if (kapali(k)) return false; var d = durumOf(k); return d && d.ben; });
+    if (bekleyen.length) {
+      $("siraSende").hidden = false;
+      $("siraSende").innerHTML = '<div class="tbsbas">Sıra sende <i>' + bekleyen.length + "</i></div>" + '<div class="tbserit">' + bekleyen.map(function (k) { var d = durumOf(k); return '<a class="tbsk qm-' + k + '" href="' + LINK[k] + '"><span>' + IK[k] + "</span><b>" + esc(OYUN[k]) + "</b><small>" + esc(d.t) + "</small></a>"; }).join("") + "</div>";
+    } else $("siraSende").hidden = true;
+    /* oyuncu kartları: çevrimiçi */
+    $("players").innerHTML = L.map(function (p) {
       var t = p.son && p.son.t ? Hesap.tms(p.son.t) : 0, canli = t && now - t < 180000 && p.son.o && OYUN[p.son.o] && !kapali(p.son.o) && ["oyunlar", "tablo", "giris", "index", "takvim"].indexOf(p.son.o) < 0;
       var durum = canli ? "şu an " + OYUN[p.son.o] + " oynuyor" : t ? "son görülme " + nezaman(t) : "henüz girmedi";
       return '<div class="tbp' + (p.uid === ben ? " me" : "") + '"><span class="hsava ' + (p.kul === "bus" ? "a" : "b") + '">' + esc((p.ad || "?").charAt(0).toUpperCase()) + '</span><b>' + esc(p.ad || p.kul || "?") + (p.uid === ben ? ' <i>(sen)</i>' : "") + '</b><small class="' + (canli ? "on" : "") + '">' + esc(durum) + '</small></div>';
     }).join("");
-    var oz = list.map(function (p) { return ozet(p.d); }), html = "";
+    /* 4) oyun kartları */
+    $("grid").innerHTML = DUEL.filter(function (k) { return !kapali(k); }).map(function (k) {
+      var se = seriOf(k), g = (se && se.g) || {}, wa = g[sol] || 0, wb = g[sag] || 0, son = ((se && se.son) || []).slice(-5), sr = sonSeri(se), d = durumOf(k);
+      var noktalar = son.map(function (x) { return '<i class="tbn ' + (x.k ? sinif(x.k) : "e") + '" title="' + (x.k ? esc(adOf(x.k)) : "berabere") + '"></i>'; }).join("") || '<small class="tbsoluk">henüz oyun yok</small>';
+      var seriYazi = sr.n >= 2 ? esc(adOf(sr.k)) + " " + sr.n + " maçtır kazanıyor 🔥" : (se && se.oyun ? se.oyun + " oyun" + (se.b ? " · " + se.b + " berabere" : "") : "");
+      return '<a class="tbkart qm-' + k + '" href="' + LINK[k] + '"><div class="tbkust"><span class="tbkik">' + IK[k] + '</span><b>' + esc(OYUN[k]) + "</b>" + (d ? '<i class="tbdurum' + (d.ben ? " ben" : "") + '">' + esc(d.t) + "</i>" : "") + '</div>' +
+        '<div class="tbksk"><span class="' + sinif(sol) + (wa > wb ? " lider" : "") + '"><small>' + esc(adOf(sol)) + "</small><b>" + wa + '</b></span><span class="tbnok">' + noktalar + '</span><span class="' + sinif(sag) + (wb > wa ? " lider" : "") + '"><small>' + esc(adOf(sag)) + "</small><b>" + wb + "</b></span></div>" +
+        (seriYazi ? '<small class="tbkalt">' + seriYazi + "</small>" : "") + "</a>";
+    }).join("");
+    /* 5) rozetler */
+    $("rozet").innerHTML = [sol, sag].filter(Boolean).map(function (u) {
+      var R = rozetler(u);
+      return '<div class="tbrk ' + sinif(u) + '"><b>' + esc(adOf(u)) + ' <small>' + R.filter(function (r) { return r.var; }).length + "/" + R.length + "</small></b><div>" + R.map(function (r) { return '<span class="tbr' + (r.var ? " var" : "") + '" title="' + esc(r.t) + '"><i>' + r.ik + "</i><small>" + esc(r.ad) + "</small></span>"; }).join("") + "</div></div>";
+    }).join("");
+    /* 6) rekorlar (tek kişilik) */
+    var oz = L.map(function (p) { return ozet(p.d); }), html = "";
     for (var r = 0; r < oz[0].length; r++) {
-      var best = -1; if (list.length > 1) { var m = Math.max(oz[0][r].v, oz[1][r].v); if (m > 0 && oz[0][r].v !== oz[1][r].v) best = oz[0][r].v > oz[1][r].v ? 0 : 1; }
-      html += '<div class="tbrow"><div class="tbg">' + esc(oz[0][r].ad) + '</div>' + list.map(function (p, i) {
+      if (oz.every(function (z) { return !z[r].v; })) continue;
+      var best = -1; if (L.length > 1) { var m = Math.max(oz[0][r].v, oz[1][r].v); if (m > 0 && oz[0][r].v !== oz[1][r].v) best = oz[0][r].v > oz[1][r].v ? 0 : 1; }
+      html += '<div class="tbrow"><div class="tbg">' + (IK[oz[0][r].o] || "") + " " + esc(oz[0][r].ad) + '</div>' + L.map(function (p, i) {
         var c = oz[i][r]; return '<div class="tbc' + (best === i ? " win" : "") + '"><b>' + esc(c.t) + '</b>' + (c.alt ? '<small>' + esc(c.alt) + '</small>' : "") + '</div>';
       }).join("") + "</div>";
     }
-    /* Hafıza Düellosu: galibiyetler (hafiza/seri) ve sıra */
-    var g = (seri && seri.g) || {}, w0 = g[list[0].uid] || 0, w1 = list.length > 1 ? (g[list[1].uid] || 0) : 0, hb = w0 === w1 ? -1 : (w0 > w1 ? 0 : 1);
-    html += '<div class="tbrow"><div class="tbg">Hafıza Düellosu' + (mac && !mac.bitti ? ' · <i>' + esc(mac.sira === ben ? "sıra sende" : "sıra " + ((oyuncular[mac.sira] || {}).ad ? ekDe(oyuncular[mac.sira].ad) : "onda")) + "</i>" : "") + '</div>' + list.map(function (p, i) {
-      var w = g[p.uid] || 0; return '<div class="tbc' + (hb === i && (w0 || w1) ? " win" : "") + '"><b>' + w + " galibiyet</b>" + (seri && seri.oyun ? "<small>" + seri.oyun + " oyun</small>" : "") + "</div>";
-    }).join("") + "</div>";
-    /* Satranç: galibiyet / berabere (satranc/seri) ve sıra */
-    var sg = (stSeri && stSeri.g) || {}, s0 = sg[list[0].uid] || 0, s1 = list.length > 1 ? (sg[list[1].uid] || 0) : 0, sb = s0 === s1 ? -1 : (s0 > s1 ? 0 : 1);
-    html += '<div class="tbrow"><div class="tbg">Satranç' + (stMac && !stMac.bitti ? ' · <i>' + esc(stMac.sira === ben ? "sıra sende" : "sıra " + ((oyuncular[stMac.sira] || {}).ad ? ekDe(oyuncular[stMac.sira].ad) : "onda")) + "</i>" : "") + '</div>' + list.map(function (p, i) {
-      var w = sg[p.uid] || 0; return '<div class="tbc' + (sb === i && (s0 || s1) ? " win" : "") + '"><b>' + w + " galibiyet</b>" + (stSeri && stSeri.oyun ? "<small>" + stSeri.oyun + " oyun" + (stSeri.b ? " · " + stSeri.b + " berabere" : "") + "</small>" : "") + "</div>";
-    }).join("") + "</div>";
-    /* Sayı Düellosu ve Amiral Battı: galibiyetler + sıra */
-    [["sayi", "Sayı Düellosu"], ["amiral", "Amiral Battı"], ["asmaca", "Adam Asmaca"], ["xox", "XOX"], ["tepe", "Tepe Savaşı"]].filter(function (x) { return !kapali(x[0]); }).forEach(function (x) {
-      var se = duSeri[x[0]], mc = duMac[x[0]], gg = (se && se.g) || {}, a0 = gg[list[0].uid] || 0, a1 = list.length > 1 ? (gg[list[1].uid] || 0) : 0, ab = a0 === a1 ? -1 : (a0 > a1 ? 0 : 1);
-      var oth = mc ? (mc.a === ben ? mc.b : mc.a) : "", il = (mc && mc.ilerleme) || {}, bi = (il[ben] && il[ben].s ? il[ben].s.length : 0), oi = (il[oth] && il[oth].s ? il[oth].s.length : 0);
-      var ad5 = (mc && mc.adet) || 5;
-      var durum = mc && !mc.bitti && x[0] === "asmaca" ? (mc.ilerleme ? (mc.mod === "yaz" && !(mc.hazir && mc.hazir[ben]) ? "kelimeleri yaz" : mc.mod === "yaz" && !mc.hazir[oth] ? "o yazıyor" : (bi >= ad5 ? "sen bitirdin" : "sen " + (bi + 1) + ". kelimede") + " · " + (oi >= ad5 ? "o bitirdi" : "o " + (oi + 1) + ". kelimede")) : "") : mc && !mc.bitti && (x[0] === "xox" || x[0] === "tepe") ? (mc.sira === ben ? "sıra sende" : "sıra " + ((oyuncular[mc.sira] || {}).ad ? ekDe(oyuncular[mc.sira].ad) : "onda")) : mc && !mc.bitti ? (!mc.hazir || !mc.hazir[ben] ? "hazırlık" : !mc.hazir[mc.a === ben ? mc.b : mc.a] ? "onu bekliyorsun" : mc.sira === ben ? "sıra sende" : "sıra " + ((oyuncular[mc.sira] || {}).ad ? ekDe(oyuncular[mc.sira].ad) : "onda")) : "";
-      html += '<div class="tbrow"><div class="tbg">' + x[1] + (durum ? ' · <i>' + esc(durum) + "</i>" : "") + '</div>' + list.map(function (p, i) {
-        var w = gg[p.uid] || 0; return '<div class="tbc' + (ab === i && (a0 || a1) ? " win" : "") + '"><b>' + w + " galibiyet</b>" + (se && se.oyun ? "<small>" + se.oyun + " oyun" + (se.b ? " · " + se.b + " berabere" : "") + "</small>" : "") + "</div>";
-      }).join("") + "</div>";
-    });
-    $("grid").innerHTML = html;
+    $("rekor").innerHTML = html || '<p class="tbempty">Tek kişilik oyunlarda henüz rekor yok.</p>';
   }
+  function rozetler(u) {
+    var p = oyuncular[u] || {}, d = p.d || {}, g = function (k) { var se = seriOf(k); return se && se.g ? (se.g[u] || 0) : 0; };
+    var gs = obj(d.gk_stat) || {}, enIyiSeri = 0;
+    DUEL.forEach(function (k) { var L = (seriOf(k) || {}).son || [], n = 0; L.forEach(function (x) { n = x.k === u ? n + 1 : 0; if (n > enIyiSeri) enIyiSeri = n; }); });
+    var toplamG = 0; DUEL.forEach(function (k) { toplamG += g(k); });
+    return [
+      { ik: "👑", ad: "İlk taç", t: "Bir düelloyu kazan", var: toplamG >= 1 },
+      { ik: "🔥", ad: "Seri", t: "Aynı oyunda üst üste 3 galibiyet", var: enIyiSeri >= 3 },
+      { ik: "💯", ad: "Yüzbaşı", t: "Toplam 25 düello galibiyeti", var: toplamG >= 25 },
+      { ik: "♟️", ad: "Şah mat", t: "Satrançta bir galibiyet", var: g("satranc") >= 1 },
+      { ik: "🧠", ad: "Hafıza", t: "Hafıza Düellosu'nda 5 galibiyet", var: g("hafiza") >= 5 },
+      { ik: "🔢", ad: "Dedektif", t: "Sayı Düellosu'nda 5 galibiyet", var: g("sayi") >= 5 },
+      { ik: "❌", ad: "Üçleme", t: "XOX'ta 5 galibiyet", var: g("xox") >= 5 },
+      { ik: "💥", ad: "Komutan", t: "Tepe Savaşı'nı kazan", var: g("tepe") >= 1 },
+      { ik: "🟩", ad: "Kelimeci", t: "Günün Kelimesi'ni 10 kez bul", var: num(gs.w) >= 10 },
+      { ik: "📅", ad: "Bir hafta", t: "Günün Kelimesi'nde 7 günlük seri", var: num(gs.m) >= 7 },
+      { ik: "🌸", ad: "Bahçıvan", t: "Kelime Bahçesi'ni bitir", var: d.kb_end === "1" },
+      { ik: "🍫", ad: "Sufle", t: "Peki Madem'de sufle kazan", var: num(d.pm_sufle) >= 1 },
+      { ik: "🏛️", ad: "Mimar", t: "Stilobat'ta 20 kat", var: num(d.stb_best) >= 20 },
+      { ik: "🔨", ad: "Yıkıcı", t: "Yıkım'da 10. seviye", var: num(d.yk_seviye) >= 10 },
+      { ik: "🔍", ad: "Keskin göz", t: "7 Farkı Bul'un iki bölümü", var: d.fark2_done === "1" && d.fark3_done === "1" }
+    ];
+  }
+  function gunAd(ms) { var t = new Date(ms), b = new Date(); b.setHours(0, 0, 0, 0); var g = Math.round((b - new Date(t.getFullYear(), t.getMonth(), t.getDate())) / 86400000); return g === 0 ? "Bugün" : g === 1 ? "Dün" : t.getDate() + " " + AYLAR[t.getMonth()]; }
   function cizAkis() {
-    var liste = akis.filter(function (e) { return !kapali(e.o); });
-    if (!liste.length) { $("feed").innerHTML = '<li class="tbempty">Henüz bir şey yok.</li>'; return; }
-    $("feed").innerHTML = liste.map(function (e) {
-      var p = oyuncular[e.uid] || {}, ad = p.ad || (p.kul ? Hesap.gorunenAd(p.kul) : "Biri");
-      return '<li><span class="hsava sm ' + (p.kul === "bus" ? "a" : "b") + '">' + esc(ad.charAt(0).toUpperCase()) + '</span><span class="tbft">' + esc(metin(e, ad)) + '<small>' + esc(nezaman(Hesap.tms(e.t))) + '</small></span></li>';
-    }).join("");
+    var var_ = {}; akis.forEach(function (e) { if (!kapali(e.o) && OYUN[e.o]) var_[e.o] = 1; });
+    $("filtre").innerHTML = '<button type="button" class="' + (!filtreO ? "on" : "") + '" data-f="">Hepsi</button>' + Object.keys(var_).map(function (k) { return '<button type="button" class="' + (filtreO === k ? "on" : "") + '" data-f="' + k + '">' + (IK[k] || "") + " " + esc(OYUN[k]) + "</button>"; }).join("");
+    var L = akis.filter(function (e) { return !kapali(e.o) && (!filtreO || e.o === filtreO); }).slice(0, 40);
+    if (!L.length) { $("feed").innerHTML = '<li class="tbempty">Henüz bir şey yok.</li>'; return; }
+    var son = "", html = "";
+    L.forEach(function (e) {
+      var t = Hesap.tms(e.t), g = t ? gunAd(t) : ""; if (g !== son) { son = g; html += '<li class="tbgun">' + esc(g) + "</li>"; }
+      var p = oyuncular[e.uid] || {}, ad = p.ad || (p.kul ? Hesap.gorunenAd(p.kul) : "Biri"), w = e.k === "kazandi" ? e.uid : e.k === "kaybetti" ? (e.uid === ben ? karsi() : ben) : e.uid;
+      html += '<li class="' + (w ? sinif(w) : "") + '"><span class="tbfik">' + (IK[e.o] || "✨") + '</span><span class="tbft">' + esc(metin(e, ad)) + '<small>' + esc(t ? (nezaman(t).indexOf("önce") >= 0 ? nezaman(t) : pad(new Date(t).getHours()) + ":" + pad(new Date(t).getMinutes())) : "") + '</small></span></li>';
+    });
+    $("feed").innerHTML = html;
   }
+  $("filtre").addEventListener("click", function (e) { var b = e.target.closest ? e.target.closest("button[data-f]") : null; if (!b) return; filtreO = b.getAttribute("data-f"); try { sessionStorage.setItem("tb_filtre", filtreO); } catch (x) {} cizAkis(); });
   var tik = setInterval(function () { if (!$("wrap").hidden) { ciz(); cizAkis(); } }, 30000);
 
   var basladi = false;
@@ -186,8 +269,8 @@
         db.collection(kol).doc("seri").onSnapshot(function (snap) { duSeri[kol] = snap.exists ? snap.data() : null; ciz(); }, function () {});
         db.collection(kol).doc("mac").onSnapshot(function (snap) { duMac[kol] = snap.exists ? snap.data() : null; ciz(); }, function () {});
       });
-      db.collection("akis").orderBy("t", "desc").limit(40).onSnapshot(function (snap) {
-        akis = []; snap.forEach(function (doc) { akis.push(doc.data()); }); cizAkis();
+      db.collection("akis").orderBy("t", "desc").limit(150).onSnapshot(function (snap) {
+        akis = []; snap.forEach(function (doc) { akis.push(doc.data()); }); ciz(); cizAkis();
       }, function () {});
     }, function () { $("tbSub").textContent = "bağlantı yok"; });
   }
