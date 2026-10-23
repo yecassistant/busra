@@ -21,8 +21,8 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Queen Games">
 <link rel="apple-touch-icon" href="ikon/app-180.png">
-<link rel="stylesheet" href="style.css?v=1019y">
-<script src="kapi.js?v=1019y"></script>
+<link rel="stylesheet" href="style.css?v=1020m">
+<script src="kapi.js?v=1020m"></script>
 </head>
 <body data-page="asmaca">
 
@@ -38,6 +38,25 @@
     <div class="hdp" id="pMe"><span class="hsava b" id="avaMe">?</span><div class="ampt"><small id="adMe">sen</small><span class="amnok" id="nokMe"></span></div><b class="ampuan" id="puanMe">0</b></div>
     <div class="hdp" id="pOther"><span class="hsava a" id="avaOther">?</span><div class="ampt"><small id="adOther">rakip</small><span class="amnok" id="nokOther"></span></div><b class="ampuan" id="puanOther">0</b></div>
   </div>
+
+  <!-- "biz yazalım" modu: öbürüne 3 kelime -->
+  <section class="amyaz" id="yaz" hidden>
+    <div class="amtahta amtahta-yaz">
+      <p class="amel" id="yazBaslik">Ona 3 kelime yaz ✍️</p>
+      <div class="amyazliste" id="yazListe"></div>
+      <p class="amnot" id="yazNot">Her kelime 3–14 harf, en çok 2 kelime. İpucu isteğe bağlı.</p>
+    </div>
+    <button type="button" class="hsbtn amkilit" id="bKilit" disabled>Kelimeleri gönder</button>
+  </section>
+
+  <!-- "biz yazalım": ben yazdım, onu bekliyorum -->
+  <section class="amozet" id="bekle" hidden>
+    <div class="amtahta amtahta-ozet">
+      <div class="amozbas">Kelimelerin gönderildi ✍️</div>
+      <p class="amnot" id="bekleNot"></p>
+      <ul class="ambenim" id="bekleListe"></ul>
+    </div>
+  </section>
 
   <!-- çözme -->
   <section class="amoyun" id="oyun" hidden>
@@ -94,6 +113,7 @@
     <div class="gkkick" id="startKick">İlk oyun</div>
     <h2 id="startTitle">Hazır mısın?</h2>
     <p id="startText">İkimize de aynı 5 kelime geliyor; herkes kendi hızında çözüyor.</p>
+    <div class="amsec" id="startSec" role="radiogroup"><button type="button" data-mod="oto" class="on">Kelimeler otomatik gelsin</button><button type="button" data-mod="yaz">Kelimeleri biz yazalım</button></div>
     <button type="button" class="hsbtn" id="startGo">Oyunu kur</button>
     <a class="gkghost hdlink" href="oyunlar.html">Menü</a>
   </div>
@@ -106,6 +126,7 @@
     <p id="doneText"></p>
     <div class="amkarsi" id="doneEk"></div>
     <div class="gkstats" id="doneStats"></div>
+    <div class="amsec" id="doneSec" role="radiogroup"><button type="button" data-mod="oto" class="on">Otomatik</button><button type="button" data-mod="yaz">Biz yazalım</button></div>
     <button type="button" class="hsbtn" id="doneNew">Yeni oyun</button>
     <button type="button" class="gkghost" id="doneClose">Tahtaya bak</button>
   </div>
@@ -123,7 +144,7 @@
 <div class="gkover" id="help" hidden>
   <div class="gkcard hdcard">
     <h2>Adam Asmaca</h2>
-    <p>İkimize de aynı 5 kelime geliyor. Herkes kendi telefonunda, kendi hızında çözüyor; kimse kimseyi beklemiyor. Üstte kimin kaçıncı kelimede olduğunu canlı görebilirsin.</p>
+    <p>İki şekilde oynanıyor: <b>Otomatik</b>'te ikimize de aynı 5 kelime geliyor. <b>Biz yazalım</b>'da herkes öbürüne 3 kelime (istersek ipucuyla) yazıyor, sonra herkes kendisine yazılanları çözüyor. İki modda da herkes kendi hızında ilerliyor, kimse kimseyi beklemiyor. Üstte kimin kaçıncı kelimede olduğunu canlı görebilirsin.</p>
     <p>Doğru harf kelimede geçtiği her yerde açılır, yanlış harfte tahtaya bir çizgi eklenir. 7 yanlışta adam asılır. Takılırsan ipucu alabilirsin ama bir hakkın gider.</p>
     <p>Bulduğun her kelime 10 puan, her yanlış 1 puan götürür; asılırsan o kelimeden puan yok. İkimiz de bitirince puanlar karşılaştırılıyor, çok puanı olan kazanır.</p>
     <p class="gksmall">Aynı anda girmemiz gerekmiyor ama daha tatlı olur :) Bulduğun kelimeyi bana söyleme, ben de aynılarını çözüyorum 🤫</p>
@@ -131,12 +152,12 @@
   </div>
 </div>
 
-<script src="app.js?v=1019y"></script>
-<script src="hesap.js?v=1019y"></script>
-<script src="deneme.js?v=1019y"></script>
-<script src="duello.js?v=1019y"></script>
-<script src="tabu-kart.js?v=1019y"></script>
-<script src="asmaca.js?v=1019y"></script>
-<script src="asmaca-ses.js?v=1019y"></script>
+<script src="app.js?v=1020m"></script>
+<script src="hesap.js?v=1020m"></script>
+<script src="deneme.js?v=1020m"></script>
+<script src="duello.js?v=1020m"></script>
+<script src="tabu-kart.js?v=1020m"></script>
+<script src="asmaca.js?v=1020m"></script>
+<script src="asmaca-ses.js?v=1020m"></script>
 </body>
 </html>

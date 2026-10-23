@@ -16,15 +16,24 @@
   /* ---- ölçüler ---- */
   var POLE_R = 0.5, R_IN = 0.56, R_OUT = 1.6, R_MID = 1.08, H = 0.24, PITCH = 0.34, S = 12, SEG = Math.PI * 2 / S, GAP = 0.025;
   var BALL_R = 0.19, G = 20, BOUNCE = 5.4, SMASH = 4.6, TWIST = 0.13;
-  var BLACK = new THREE.Color("#25202d");
-  var PAL = [["#ff8fb3", "#e8517f"], ["#b79cf2", "#7d5bd6"], ["#ffd15c", "#f29b26"], ["#7fe0b5", "#2fae78"], ["#8cbcff", "#3f7ae8"], ["#ffb48a", "#f06a3a"]];
-  var BG = [[262, 300], [330, 280], [200, 250], [160, 230], [28, 330], [290, 220]];
+  var BLACK = new THREE.Color("#1c1826");
+  /* seviye paletleri: [halka üst rengi, halka alt rengi, top rengi, arka plan üst, arka plan alt, parlama] – modern, doygun ikililer */
+  var PAL = [
+    ["#ff7eb3", "#ff5c7a", "#2ee6ff", "#2a1a5e", "#120a2e", "#ff5c7a"],
+    ["#a78bfa", "#6d4ae8", "#ffd93d", "#1c1a4a", "#0d0b26", "#8b6cff"],
+    ["#ffd166", "#ff8e3c", "#3d63ff", "#3a1d3f", "#160a1c", "#ff8e3c"],
+    ["#5ee6b8", "#1fb886", "#ff5c8a", "#0f2e3d", "#07171f", "#2bd8a2"],
+    ["#7cc4ff", "#3a7bff", "#ff8a3c", "#111a46", "#070b22", "#4a8cff"],
+    ["#ffb08a", "#ff6a3c", "#2ee6ff", "#2e1726", "#140912", "#ff6a3c"]
+  ];
 
   /* ---- sahne ---- */
   var scene = new THREE.Scene(), camera = new THREE.PerspectiveCamera(42, 1, 0.1, 120);
-  scene.add(new THREE.HemisphereLight(0xffffff, 0x4a3a6a, 0.72));
-  var dl = new THREE.DirectionalLight(0xffffff, 0.72); dl.position.set(5, 6, 7); scene.add(dl);
-  scene.add(new THREE.AmbientLight(0xffffff, 0.08));
+  scene.fog = new THREE.Fog(0x120a2e, 12, 30);
+  scene.add(new THREE.HemisphereLight(0xffffff, 0x2a1a4a, 0.55));
+  var dl = new THREE.DirectionalLight(0xffffff, 0.75); dl.position.set(4, 7, 6); scene.add(dl);
+  var dl2 = new THREE.DirectionalLight(0x9fb8ff, 0.3); dl2.position.set(-6, 2, -4); scene.add(dl2);        /* soğuk kenar ışığı */
+  scene.add(new THREE.AmbientLight(0xffffff, 0.12));
   var tower = new THREE.Group(); scene.add(tower);
 
   /* dilim geometrisi: halkanın 1/12'si; şekil XY'de çizilip yatırılır (eksen Y) */
@@ -33,34 +42,40 @@
   segGeom.rotateX(-Math.PI / 2);                                          /* (x, y, z) → (x, z, -y): halka yatay, kalınlık yukarı */
   var C0 = new THREE.Vector3(R_MID * Math.cos(SEG / 2), H / 2, -R_MID * Math.sin(SEG / 2));   /* dilimin ağırlık merkezi (yerel) */
   var fragGeom = segGeom.clone(); fragGeom.translate(-C0.x, -C0.y, -C0.z);                    /* parçalar kendi merkezinde dönsün */
-  var ringMat = new THREE.MeshLambertMaterial({ color: 0xffffff });
-  var poleMat = new THREE.MeshLambertMaterial({ color: 0xf7f1ea });
+  var ringMat = new THREE.MeshPhongMaterial({ color: 0xffffff, shininess: 34, specular: 0x3a3a3a });
+  var poleTex = (function () { var c = document.createElement("canvas"); c.width = 4; c.height = 256; var x = c.getContext("2d"), g = x.createLinearGradient(0, 0, 0, 256); g.addColorStop(0, "#ffffff"); g.addColorStop(0.5, "#f1ecff"); g.addColorStop(1, "#d9d2f2"); x.fillStyle = g; x.fillRect(0, 0, 4, 256); var t = new THREE.CanvasTexture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(1, 6); return t; })();
+  var poleMat = new THREE.MeshPhongMaterial({ map: poleTex, shininess: 12, specular: 0x222222 });
   var pole = null, base = null, rings = null, ringInfo = [];
 
   /* bitiş tabanı: damalı üst yüz */
   var damaTex = (function () { var c = document.createElement("canvas"); c.width = c.height = 128; var x = c.getContext("2d"); for (var i = 0; i < 8; i++) for (var j = 0; j < 8; j++) { x.fillStyle = (i + j) % 2 ? "#2b2233" : "#fffaf3"; x.fillRect(i * 16, j * 16, 16, 16); } var t = new THREE.CanvasTexture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(3, 3); return t; })();
-  var baseMats = [new THREE.MeshLambertMaterial({ color: 0xf2c35b }), new THREE.MeshLambertMaterial({ map: damaTex }), new THREE.MeshLambertMaterial({ color: 0xc99a3c })];
+  var baseMats = [new THREE.MeshPhongMaterial({ color: 0xf2c35b, shininess: 20 }), new THREE.MeshPhongMaterial({ map: damaTex, shininess: 40 }), new THREE.MeshLambertMaterial({ color: 0xc99a3c })];
+  /* yumuşak parlama dokusu (top halesi, çarpma flaşı) */
+  var glowTex = (function () { var c = document.createElement("canvas"); c.width = c.height = 128; var x = c.getContext("2d"), g = x.createRadialGradient(64, 64, 0, 64, 64, 64); g.addColorStop(0, "rgba(255,255,255,1)"); g.addColorStop(0.35, "rgba(255,255,255,.55)"); g.addColorStop(1, "rgba(255,255,255,0)"); x.fillStyle = g; x.fillRect(0, 0, 128, 128); return new THREE.CanvasTexture(c); })();
 
   /* top + gölge + iz */
-  var ballMat = new THREE.MeshPhongMaterial({ color: 0x3d63ff, shininess: 70, specular: 0x8899ff, emissive: 0x000000 });
+  var ballCol = new THREE.Color(0x2ee6ff);
+  var ballMat = new THREE.MeshPhongMaterial({ color: 0x2ee6ff, shininess: 90, specular: 0xffffff, emissive: 0x0a3a44 });
   var ball = new THREE.Mesh(new THREE.SphereGeometry(BALL_R, 28, 18), ballMat); scene.add(ball);
-  var haleMat = new THREE.MeshBasicMaterial({ color: 0xff8a3c, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending });
-  var hale = new THREE.Mesh(new THREE.SphereGeometry(BALL_R * 1.9, 20, 14), haleMat); scene.add(hale);
+  var haleMat = new THREE.SpriteMaterial({ map: glowTex, color: 0x2ee6ff, transparent: true, opacity: 0.55, depthWrite: false, blending: THREE.AdditiveBlending });
+  var hale = new THREE.Sprite(haleMat); hale.scale.setScalar(BALL_R * 5); scene.add(hale);
+  var flasMat = new THREE.SpriteMaterial({ map: glowTex, color: 0xffffff, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending });
+  var flas = new THREE.Sprite(flasMat); flas.scale.setScalar(0.1); scene.add(flas); var flasT = 1;
   var golge = new THREE.Mesh(new THREE.CircleGeometry(BALL_R * 0.95, 20), new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.22, depthWrite: false }));
   golge.rotation.x = -Math.PI / 2; scene.add(golge);
   var izler = [];
-  for (var ii = 0; ii < 7; ii++) { var im = new THREE.Mesh(new THREE.SphereGeometry(BALL_R * (0.9 - ii * 0.09), 14, 10), new THREE.MeshBasicMaterial({ color: 0x3d63ff, transparent: true, opacity: 0, depthWrite: false })); scene.add(im); izler.push(im); }
+  for (var ii = 0; ii < 8; ii++) { var im = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTex, color: 0x2ee6ff, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending })); im.scale.setScalar(BALL_R * (3.2 - ii * 0.3)); scene.add(im); izler.push(im); }
 
   /* ---- efekt havuzları ---- */
   var parcalar = [];                                                       /* (1) savrulan dilimler */
   for (var pi = 0; pi < 60; pi++) { var pm = new THREE.Mesh(fragGeom, new THREE.MeshLambertMaterial({ color: 0xffffff, transparent: true })); pm.visible = false; scene.add(pm); parcalar.push({ m: pm, v: new THREE.Vector3(), w: new THREE.Vector3(), t: 0, omur: 0 }); }
-  var KUP_N = 260, kupGeom = new THREE.BoxGeometry(0.11, 0.11, 0.11), kupMesh = new THREE.InstancedMesh(kupGeom, new THREE.MeshLambertMaterial({ color: 0xffffff }), KUP_N);   /* (2) küpler */
+  var KUP_N = 260, kupGeom = new THREE.BoxGeometry(0.13, 0.045, 0.09), kupMesh = new THREE.InstancedMesh(kupGeom, new THREE.MeshLambertMaterial({ color: 0xffffff }), KUP_N);   /* (2) konfeti pulları */
   kupMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage); kupMesh.frustumCulled = false; scene.add(kupMesh);
   var kupler = [], SIFIR = new THREE.Matrix4().makeScale(0, 0, 0);
   for (var ki = 0; ki < KUP_N; ki++) { kupler.push({ p: new THREE.Vector3(), v: new THREE.Vector3(), r: new THREE.Euler(), w: new THREE.Vector3(), t: 0, omur: 0, s: 1 }); kupMesh.setMatrixAt(ki, SIFIR); kupMesh.setColorAt(ki, new THREE.Color(1, 1, 1)); }
   kupMesh.instanceColor.setUsage(THREE.DynamicDrawUsage);
   var dalgalar = [];                                                       /* (3) halka dalgası */
-  for (var di = 0; di < 5; di++) { var dm = new THREE.Mesh(new THREE.RingGeometry(R_IN, R_OUT, 48, 1), new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0, side: THREE.DoubleSide, depthWrite: false })); dm.rotation.x = -Math.PI / 2; dm.visible = false; scene.add(dm); dalgalar.push({ m: dm, t: 0, omur: 0 }); }
+  for (var di = 0; di < 5; di++) { var dm = new THREE.Mesh(new THREE.RingGeometry(R_OUT - 0.12, R_OUT + 0.06, 56, 1), new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0, side: THREE.DoubleSide, depthWrite: false, blending: THREE.AdditiveBlending })); dm.rotation.x = -Math.PI / 2; dm.visible = false; scene.add(dm); dalgalar.push({ m: dm, t: 0, omur: 0 }); }
   var kupSira = 0, parcaSira = 0, dalgaSira = 0, sonEfekt = -1;
 
   /* ---- durum ---- */
@@ -70,9 +85,11 @@
   var bitisT = 0, olumT = 0;
   $("rekor").textContent = best;
 
+  var _fit = "";
   function fit() {
     W = stage.clientWidth || innerWidth; Hh = stage.clientHeight || innerHeight;
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    var pr = Math.min(window.devicePixelRatio || 1, 2), k = W + "x" + Hh + "@" + pr; if (k === _fit) return; _fit = k;
+    renderer.setPixelRatio(pr);
     renderer.setSize(W, Hh, false);
     camera.aspect = W / Hh;
     var halfW = R_OUT + 0.45, tanV = Math.tan(camera.fov * Math.PI / 360);
@@ -92,7 +109,7 @@
     nRings = Math.min(96, 30 + level * 4); top = 0; seri = 0; ates = 0; atesli = false; ringInfo = [];
     omega = (1.45 + Math.min(1.25, level * 0.07)) * (level % 2 ? 1 : -1);
     tower.rotation.y = Math.random() * Math.PI * 2;
-    var pal = PAL[(level - 1) % PAL.length], pal2 = PAL[(level + 1) % PAL.length], c1 = new THREE.Color(pal[0]), c2 = new THREE.Color(pal2[1]);
+    var pal = PAL[(level - 1) % PAL.length], c1 = new THREE.Color(pal[0]), c2 = new THREE.Color(pal[1]);
     var olasilik = Math.min(0.62, 0.2 + level * 0.04), maxArk = Math.min(5, 2 + Math.floor(level / 2)), bas = Math.floor(Math.random() * S), adim = Math.random() < 0.5 ? 1 : -1;
     rings = new THREE.InstancedMesh(segGeom, ringMat, nRings * S); rings.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
     for (var i = 0; i < nRings; i++) {
@@ -103,13 +120,13 @@
         if (level >= 4 && Math.random() < 0.3) { var b2 = (bas + 6) % S, len2 = 1 + Math.floor(Math.random() * Math.min(3, maxArk)); for (var a2 = 0; a2 < len2; a2++) siyah[(b2 + a2) % S] = true; }
       }
       var renk = new THREE.Color().lerpColors(c1, c2, i / Math.max(1, nRings - 1)), tw = i * TWIST;
+      if (i % 2) renk.offsetHSL(0, 0, 0.05);                                 /* kat kat hafif ton farkı (dilim dilim değil) */
       ringInfo.push({ siyah: siyah, renk: renk, tw: tw, kirik: false });
       for (var k2 = 0; k2 < S; k2++) {
         var idx = i * S + k2;
         tmpQ.setFromAxisAngle(new THREE.Vector3(0, 1, 0), tw + k2 * SEG); tmpV.set(0, ringY(i), 0); tmpM.compose(tmpV, tmpQ, tmpS);
         rings.setMatrixAt(idx, tmpM);
-        if (siyah[k2]) tmpC.copy(BLACK); else { tmpC.copy(renk); if (k2 % 2) tmpC.offsetHSL(0, 0, 0.035); }
-        rings.setColorAt(idx, tmpC);
+        rings.setColorAt(idx, siyah[k2] ? BLACK : renk);
       }
     }
     rings.instanceMatrix.needsUpdate = true; rings.instanceColor.needsUpdate = true;
@@ -118,9 +135,11 @@
     pole = new THREE.Mesh(new THREE.CylinderGeometry(POLE_R, POLE_R, poleH, 32), poleMat); pole.position.y = H + 16 - poleH / 2; tower.add(pole);
     base = new THREE.Mesh(new THREE.CylinderGeometry(R_OUT + 0.15, R_OUT + 0.15, 0.5, 48), baseMats); base.position.y = ringY(nRings) - 0.25 + H; scene.add(base);
     ballY = H + BALL_R + 0.6; vy = 0; camY = ballY;
-    ball.visible = true; ball.scale.set(1, 1, 1); ballMat.color.set(0x3d63ff); ballMat.emissive.set(0x000000); haleMat.opacity = 0;
-    var bg = BG[(level - 1) % BG.length];
-    stage.style.background = "linear-gradient(180deg,hsl(" + bg[0] + ",42%,30%) 0%,hsl(" + bg[1] + ",46%,18%) 100%)";
+    ballCol.set(pal[2]);
+    ball.visible = true; ball.scale.set(1, 1, 1); ballMat.color.copy(ballCol); ballMat.emissive.copy(ballCol).multiplyScalar(0.22); haleMat.color.copy(ballCol); haleMat.opacity = 0.5;
+    scene.fog.color.set(pal[4]);
+    stage.style.background = "radial-gradient(120% 70% at 50% 0%," + pal[3] + " 0%," + pal[4] + " 70%)";
+    stage.style.setProperty("--yk-glow", pal[5]);
     $("lvA").textContent = level; $("lvB").textContent = level + 1; hud();
     ls("yk_lvl", level);
   }
@@ -159,7 +178,7 @@
     kupMesh.instanceColor.needsUpdate = true;
   }
   function efektDalga(y, renk) {
-    var d = dalgalar[dalgaSira++ % dalgalar.length]; d.m.position.y = y + H + 0.01; d.m.scale.set(1, 1, 1); d.m.material.color.copy(renk).lerp(new THREE.Color(1, 1, 1), 0.65); d.m.material.opacity = 0.9; d.m.visible = true; d.t = 0; d.omur = 0.45;
+    var d = dalgalar[dalgaSira++ % dalgalar.length]; d.m.position.y = y + H + 0.01; d.m.scale.set(0.75, 0.75, 1); d.m.material.color.copy(renk).lerp(new THREE.Color(1, 1, 1), 0.5); d.m.material.opacity = 0.9; d.m.visible = true; d.t = 0; d.omur = 0.5;
   }
   function kir(i) {
     var r = ringInfo[i]; r.kirik = true;
@@ -171,6 +190,8 @@
     else if (tur === 1) { efektKup(ringY(i) + H / 2, r.renk, 18, R_MID, 0.9, r.siyah.indexOf(true) >= 0 ? BLACK : null); efektSavrul(i, 6, 0.75); }
     else { efektDalga(ringY(i), r.renk); efektSavrul(i, 4, 1.15); }
     if (atesli) efektKup(ringY(i) + H, new THREE.Color("#ff8a3c"), 6, BALL_R * 2, 0.5, new THREE.Color("#ffd56b"));
+    flasT = 0; flasMat.color.copy(r.renk).lerp(tmpC.set(0xffffff), 0.6); flas.position.set(0, ringY(i) + H + 0.05, R_MID);
+    sarsinti = Math.max(sarsinti, 0.07);
     seri++; score += Math.min(12, seri) * (atesli ? 2 : 1);
     snd("kir", { seri: seri - 1, ates: atesli });
     if (!atesli) { ates = Math.min(1, ates + 1 / 13); if (ates >= 1) { atesli = true; snd("ates"); yaz("ALEV! 🔥"); } }
@@ -191,8 +212,8 @@
   /* ---- ölüm / seviye ---- */
   function ol() {
     durum = "olum"; olumT = 0; holding = false; sarsinti = 0.35; snd("olum");
-    efektKup(ballY, new THREE.Color("#3d63ff"), 30, 0.1, 0.8, new THREE.Color("#ffffff"));
-    ball.visible = false; izler.forEach(function (z) { z.material.opacity = 0; });
+    efektKup(ballY, ballCol.clone(), 30, 0.1, 0.8, new THREE.Color("#ffffff"));
+    ball.visible = false; hale.visible = false; izler.forEach(function (z) { z.material.opacity = 0; });
     setTimeout(function () {
       $("overKick").textContent = "Siyaha çarptın"; $("overPuan").textContent = score; $("overSeviye").textContent = level;
       $("overYuzde").textContent = Math.round(top / nRings * 100) + "%"; $("overRekor").textContent = best;
@@ -259,22 +280,24 @@
     /* top görünümü */
     ball.position.set(0, ballY, R_MID);
     ball.scale.x += (1 - ball.scale.x) * Math.min(1, dt * 12); ball.scale.y += (1 - ball.scale.y) * Math.min(1, dt * 12); ball.scale.z = ball.scale.x;
-    var hedefRenk = atesli ? 0xff6a2a : 0x3d63ff; ballMat.color.lerp(tmpC.set(hedefRenk), Math.min(1, dt * 8)); ballMat.emissive.lerp(tmpC.set(atesli ? 0x772200 : 0x000000), Math.min(1, dt * 8));
-    hale.position.copy(ball.position); haleMat.opacity += ((atesli ? 0.35 + Math.sin(performance.now() / 70) * 0.08 : 0) - haleMat.opacity) * Math.min(1, dt * 10); hale.visible = haleMat.opacity > 0.01;
+    ballMat.color.lerp(atesli ? tmpC.set(0xff6a2a) : ballCol, Math.min(1, dt * 8)); ballMat.emissive.lerp(atesli ? tmpC.set(0x8a2a00) : tmpC.copy(ballCol).multiplyScalar(0.22), Math.min(1, dt * 8));
+    haleMat.color.lerp(atesli ? tmpC.set(0xff8a3c) : ballCol, Math.min(1, dt * 8));
+    hale.position.copy(ball.position); hale.visible = ball.visible; var haleHedef = atesli ? 0.95 + Math.sin(performance.now() / 70) * 0.12 : (holding ? 0.75 : 0.5); haleMat.opacity += (haleHedef - haleMat.opacity) * Math.min(1, dt * 10); hale.scale.setScalar(BALL_R * (atesli ? 7 : 5));
+    if (flasT < 1) { flasT = Math.min(1, flasT + dt * 5); flasMat.opacity = (1 - flasT) * 0.9; flas.scale.setScalar(0.6 + flasT * 2.6); flas.visible = true; } else flas.visible = false;
     golge.position.set(0, topY + 0.012, R_MID); var yuk = Math.max(0, ballY - BALL_R - topY); golge.material.opacity = ball.visible ? Math.max(0, 0.24 - yuk * 0.12) : 0; golge.scale.setScalar(1 + yuk * 0.25);
     /* iz: hızlı inişte arkada küçülen toplar */
     var izAcik = holding && durum === "oyun" && ball.visible;
     for (var z = 0; z < izler.length; z++) {
-      var iz = izler[z]; iz.position.set(0, ballY + (z + 1) * 0.16, R_MID);
-      iz.material.color.copy(ballMat.color); iz.material.opacity += ((izAcik ? 0.32 * (1 - z / izler.length) : 0) - iz.material.opacity) * Math.min(1, dt * 14); iz.visible = iz.material.opacity > 0.01;
+      var iz = izler[z]; iz.position.set(0, ballY + (z + 1) * 0.17, R_MID);
+      iz.material.color.copy(ballMat.color); iz.material.opacity += ((izAcik ? 0.42 * (1 - z / izler.length) : 0) - iz.material.opacity) * Math.min(1, dt * 14); iz.visible = iz.material.opacity > 0.01;
     }
     /* parçalar */
     for (var p = 0; p < parcalar.length; p++) {
       var q = parcalar[p]; if (!q.m.visible) continue;
       q.t += dt; if (q.t >= q.omur) { q.m.visible = false; continue; }
       q.v.y -= 14 * dt; q.m.position.addScaledVector(q.v, dt); q.m.rotation.x += q.w.x * dt; q.m.rotation.y += q.w.y * dt; q.m.rotation.z += q.w.z * dt;
-      q.m.material.opacity = Math.min(1, (q.omur - q.t) / 0.35);
-      var sc = 1 - Math.max(0, q.t - q.omur * 0.5) / q.omur * 0.6; q.m.scale.setScalar(sc);
+      q.m.material.opacity = Math.min(1, (q.omur - q.t) / 0.3);
+      var e1 = q.t / q.omur, sc = e1 < 0.12 ? 1 + e1 * 1.2 : Math.max(0.05, 1.14 - (e1 - 0.12) * 1.2); q.m.scale.setScalar(sc);   /* önce hafif büyür sonra küçülerek kaybolur */
     }
     var kupDegisti = false;
     for (var c = 0; c < KUP_N; c++) {
@@ -288,11 +311,11 @@
     if (kupDegisti) kupMesh.instanceMatrix.needsUpdate = true;
     for (var d = 0; d < dalgalar.length; d++) {
       var w = dalgalar[d]; if (!w.m.visible) continue; w.t += dt; if (w.t >= w.omur) { w.m.visible = false; continue; }
-      var e = w.t / w.omur, g2 = 1 + (1 - Math.pow(1 - e, 3)) * 0.9; w.m.scale.set(g2, g2, 1); w.m.material.opacity = 0.85 * (1 - e);
+      var e = w.t / w.omur, g2 = 0.75 + (1 - Math.pow(1 - e, 3)) * 1.35; w.m.scale.set(g2, g2, 1); w.m.material.opacity = 0.9 * (1 - e) * (1 - e);
     }
     /* kamera */
     camY += (ballY - camY) * Math.min(1, dt * (holding ? 9 : 4));
-    var sx = 0, sy = 0; if (sarsinti > 0) { sarsinti = Math.max(0, sarsinti - dt); sx = (Math.random() - 0.5) * sarsinti * 0.6; sy = (Math.random() - 0.5) * sarsinti * 0.6; }
+    var sx = 0, sy = 0; if (sarsinti > 0) { sarsinti = Math.max(0, sarsinti - dt); sx = (Math.random() - 0.5) * sarsinti * 0.5; sy = (Math.random() - 0.5) * sarsinti * 0.5; }
     camera.position.set(sx, camY + camDist * 0.42 + sy, camDist);
     z0.set(0, camY - 1.15, 0); camera.lookAt(z0);
   }

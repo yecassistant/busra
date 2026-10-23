@@ -1,5 +1,6 @@
 /* Adam Asmaca – iki kişilik, eş zamanlı (asmaca/mac, asmaca/seri). Ortak altyapı: duello.js. Kelimeler: tabu-kart.js listesinden.
-   Oyun kurulunca ikimize de aynı 5 kelime gelir (kısadan uzuna). Herkes kendi hızında çözer, kimse kimseyi beklemez; üstte iki tarafın
+   İki mod: "oto" → oyun kurulunca ikimize de aynı 5 kelime gelir (kısadan uzuna); "yaz" → herkes öbürüne 3 kelime (+ipucu) yazar
+   (yazilan[uid] = uid'in YAZDIĞI, öbürü çözer; hazir[uid]), ikisi de yazınca herkes kendisine yazılanları çözer. Herkes kendi hızında çözer, kimse kimseyi beklemez; üstte iki tarafın
    ilerlemesi canlı görünür. Her kelimede 7 hak; ipucu almak 1 hak. Bulunan kelime 10 − hata puan (en az 4), asılırsa 0.
    İkimiz de bitirince puanlar karşılaştırılır (eşitse berabere).
    mac = { n, v, a, b, kelimeler: [gizli ×5], ipuclari: [gizli ×5], ilerleme: {uid: {i, t, ip, s: [{b, h, p, t, ip}]}}, sira: "",
@@ -9,7 +10,7 @@
 (function () {
   "use strict";
   function $(id) { return document.getElementById(id); }
-  var HAK = 7, ADET = 5, ABC = "ERTYUIOPĞÜASDFGHJKLŞİZCVBNMÖÇ", SATIR = ["ERTYUIOPĞÜ", "ASDFGHJKLŞİ", "ZCVBNMÖÇ"];
+  var HAK = 7, ADET_OTO = 5, ADET_YAZ = 3, ABC = "ERTYUIOPĞÜASDFGHJKLŞİZCVBNMÖÇ", SATIR = ["ERTYUIOPĞÜ", "ASDFGHJKLŞİ", "ZCVBNMÖÇ"];
   function buyut(s) { return String(s || "").toLocaleUpperCase("tr").replace(/Â/g, "A").replace(/Î/g, "İ").replace(/Û/g, "U"); }
   function buyukIlk(w) { w = String(w || ""); return w.charAt(0).toLocaleUpperCase("tr") + w.slice(1); }
   function harfSay(w) { return String(w).replace(/ /g, "").length; }
@@ -27,7 +28,7 @@
     try { gor = JSON.parse(localStorage.getItem("asmaca_gordum") || "[]"); } catch (e) {}
     if (!(gor instanceof Array)) gor = [];
     HAVUZ.forEach(function (x) { if (!once[x[0]]) (gor.indexOf(x[0]) < 0 ? taze : eski).push(x); });
-    var sec = karistir(taze).concat(karistir(eski)).slice(0, ADET);
+    var sec = karistir(taze).concat(karistir(eski)).slice(0, ADET_OTO);
     var kel = sec.map(function (x) { return x[0]; }), max = Math.max(0, HAVUZ.length - 15);
     gor = gor.filter(function (w) { return kel.indexOf(w) < 0; }).concat(kel); if (gor.length > max) gor = gor.slice(gor.length - max);
     try { localStorage.setItem("asmaca_gordum", JSON.stringify(gor)); } catch (e) {}
@@ -39,19 +40,25 @@
     startText: "İkimize de aynı 5 kelime geliyor; herkes kendi hızında çözüyor, kimse kimseyi beklemiyor. İkimiz de bitirince puanlar karşılaştırılıyor.",
     eskiMi: function (d) { return !!d && !d.ilerleme; },
     yeniDoc: function (d, ME, OTHER) {
-      var n = (d && d.n || 0) + 1, sec = kelimeSec(d), il = {};
+      var n = (d && d.n || 0) + 1, il = {}, mod = modSec();
       il[ME] = bosIlerleme(); il[OTHER] = bosIlerleme();
-      return { a: ME, b: OTHER, sira: "", ilerleme: il,
+      if (mod === "yaz") {
+        var yz = {}, yi = {}, hz = {}; yz[ME] = []; yz[OTHER] = []; yi[ME] = []; yi[OTHER] = []; hz[ME] = false; hz[OTHER] = false;
+        return { a: ME, b: OTHER, sira: "", mod: "yaz", adet: ADET_YAZ, ilerleme: il, kelimeler: [], ipuclari: [], yazilan: yz, yazIp: yi, hazir: hz };
+      }
+      var sec = kelimeSec(d);
+      return { a: ME, b: OTHER, sira: "", mod: "oto", adet: ADET_OTO, ilerleme: il,
         kelimeler: sec.map(function (x, i) { return D.gizle(x[0], anahtar(n, i)); }),
         ipuclari: sec.map(function (x, i) { return D.gizle(x[1], anahtar(n, i) + "ip"); }) };
     },
     onMac: function (d, ilk) {
       var onceki = G; G = d;
       if (ilk || !ben) {
-        kelimeler = (d.kelimeler || []).map(function (g, i) { return D.coz(g, anahtar(d.n, i)); });
-        ipuclari = (d.ipuclari || []).map(function (g, i) { return D.coz(g, anahtar(d.n, i) + "ip"); });
+        kelimeleriCoz(d);
         ben = duzelt(kopya((d.ilerleme && d.ilerleme[D.me]) || bosIlerleme())); bakilan = ben.i; kirli = false; sonCizim = {}; sonKelime = null;
+        if (ilk) yazTemizle();
       } else {
+        if (d.mod === "yaz" && (!kelimeler.length || !onceki || !onceki.hazir || !onceki.hazir[D.other]) && d.hazir && d.hazir[D.other]) { kelimeleriCoz(d); snd("key"); D.msg((D.adlar[D.other] || "O") + " kelimelerini yazdı, çözebilirsin ✍️"); }
         var bulut = d.ilerleme && d.ilerleme[D.me];                       /* başka cihazdan ilerlediysem onu al */
         if (bulut && !kaydediyor && !kirli && adim(bulut) > adim(ben)) { ben = duzelt(kopya(bulut)); if (bakilan > ben.i) bakilan = ben.i; }
       }
@@ -68,7 +75,7 @@
         : d.sonuc === "berabere" ? "Berabere! " + pm + " – " + po
         : kazandim ? "Kazandın! " + pm + " – " + po + " 🤍" : ad + " kazandı · " + po + " – " + pm;
       var bm = bulunan(ilOf(ME)), bo = bulunan(ilOf(OTHER));
-      var metin = d.sonuc === "pes" ? "Kelimeler açıldı." : "5 kelimenin " + bm + " tanesini sen, " + bo + " tanesini " + ad + " buldu.";
+      var metin = d.sonuc === "pes" ? "Kelimeler açıldı." : adet() + " kelimenin " + bm + " tanesini sen, " + bo + " tanesini " + ad + " buldu.";
       return { kick: "Oyun " + d.n + " bitti", baslik: baslik, metin: metin, ek: '<table class="amtablo">' + tabloIc() + "</table>" };
     },
     bitisGecikme: function () { return bakilan < (ben ? ben.i : 0) ? 1700 : 300; },   /* son kelimenin sonucu bir an görünsün */
@@ -76,6 +83,29 @@
     helpKey: "asmaca_help2"
   });
   var G = null, ben = null, bakilan = 0, kelimeler = [], ipuclari = [], kirli = false, kaydediyor = false, sonCizim = {}, sonKelime = null, sonIpHtml = "";
+  function adet() { return (G && G.adet) || ADET_OTO; }
+  function ekE(ad) { var k = String(ad).toLocaleLowerCase("tr"), v = k.match(/[aeıioöuü](?=[^aeıioöuü]*$)/), on = v && "eiöü".indexOf(v[0]) >= 0; return ad + "'" + (/[aeıioöuü]$/.test(k) ? "y" : "") + (on ? "e" : "a"); }   /* Büşra'ya, Yunus'a */
+  function yazAnahtar(n, i, yazan) { return anahtar(n, i) + "-" + yazan; }
+  function kelimeleriCoz(d) {                                                /* bana düşen kelimeler: oto → ortak liste, yaz → onun yazdıkları */
+    if (d.mod === "yaz") {
+      var y = (d.yazilan && d.yazilan[D.other]) || [], yi = (d.yazIp && d.yazIp[D.other]) || [];
+      kelimeler = y.map(function (g, i) { return D.coz(g, yazAnahtar(d.n, i, D.other)); });
+      ipuclari = yi.map(function (g, i) { return D.coz(g, yazAnahtar(d.n, i, D.other) + "ip"); });
+    } else {
+      kelimeler = (d.kelimeler || []).map(function (g, i) { return D.coz(g, anahtar(d.n, i)); });
+      ipuclari = (d.ipuclari || []).map(function (g, i) { return D.coz(g, anahtar(d.n, i) + "ip"); });
+    }
+  }
+  function benimYazdiklarim() { if (!G || G.mod !== "yaz") return []; return ((G.yazilan && G.yazilan[D.me]) || []).map(function (g, i) { return D.coz(g, yazAnahtar(G.n, i, D.me)); }); }
+  /* mod seçimi (başlangıç ve bitiş kartlarındaki düğmeler; son seçim hatırlanır) */
+  function modSec() { var m = "oto"; try { m = localStorage.getItem("asmaca_mod") === "yaz" ? "yaz" : "oto"; } catch (e) {} return m; }
+  function modYaz() {
+    var m = modSec();
+    ["startSec", "doneSec"].forEach(function (id) { var el = $(id); if (!el) return; [].forEach.call(el.querySelectorAll("button"), function (b) { b.classList.toggle("on", b.getAttribute("data-mod") === m); }); });
+    var st = $("startText"); if (st && D.other) st.textContent = m === "yaz" ? "Herkes öbürüne 3 kelime yazıyor (istersen ipucuyla), sonra herkes kendisine yazılanları kendi hızında çözüyor." : "İkimize de aynı 5 kelime geliyor; herkes kendi hızında çözüyor, kimse kimseyi beklemiyor. İkimiz de bitirince puanlar karşılaştırılıyor.";
+  }
+  ["startSec", "doneSec"].forEach(function (id) { var el = $(id); if (el) el.addEventListener("click", function (e) { var b = e.target.closest ? e.target.closest("button[data-mod]") : null; if (!b) return; try { localStorage.setItem("asmaca_mod", b.getAttribute("data-mod")); } catch (x) {} snd("key"); modYaz(); }); });
+  modYaz(); setInterval(modYaz, 1500);
   function snd(n) { if (window.AmSes) try { window.AmSes.play(n); } catch (e) {} }
   function hataT(w, t) { var n = 0; for (var i = 0; i < t.length; i++) if (w.indexOf(t.charAt(i)) < 0) n++; return n; }
   function buldu(w, t) { if (!w) return false; for (var i = 0; i < w.length; i++) { var c = w.charAt(i); if (c !== " " && t.indexOf(c) < 0) return false; } return true; }
@@ -86,13 +116,60 @@
   function toplam(d, uid) { return toplamIl(d === G ? ilOf(uid) : duzelt(d && d.ilerleme && d.ilerleme[uid])); }
   function adim(il) { il = duzelt(il); return il.s.length * 1000 + il.t.length * 2 + (il.ip ? 1 : 0); }
 
-  function asama() {                                                       /* kur | coz | arada (kelime bitti, sonrakine geçilecek) | bitirdim | bitti */
+  function asama() {                                                       /* kur | yaz | bekle | coz | arada (kelime bitti, sonrakine geçilecek) | bitirdim | bitti */
     if (!G || !ben) return "kur";
-    if (bakilan < ben.i && bakilan < ADET) return "arada";
+    if (G.bitti && !(bakilan < ben.i && bakilan < adet())) return "bitti";
+    if (G.mod === "yaz") { if (!G.hazir || !G.hazir[D.me]) return "yaz"; if (!G.hazir[D.other]) return "bekle"; }
+    if (bakilan < ben.i && bakilan < adet()) return "arada";
     if (G.bitti) return "bitti";
-    if (ben.i >= ADET) return "bitirdim";
+    if (ben.i >= adet()) return "bitirdim";
     return "coz";
   }
+  /* ---- "biz yazalım": kelime girişi ---- */
+  function temizKelime(v) { return buyut(v).replace(/[^A-ZÇĞİÖŞÜ ]/g, "").replace(/[QWX]/g, "").replace(/\s+/g, " ").replace(/^ /, ""); }
+  function gecerli(w) { var t = w.trim(), h = t.replace(/ /g, "").length; if (!t) return "boş"; if (h < 3) return "en az 3 harf"; if (h > 14) return "en çok 14 harf"; if (t.split(" ").length > 2) return "en çok 2 kelime"; for (var i = 0; i < h; i++) if (ABC.indexOf(t.replace(/ /g, "").charAt(i)) < 0) return "sadece harf"; return ""; }
+  var yazKutu = [];
+  (function () {
+    var l = $("yazListe"); if (!l) return;
+    for (var i = 0; i < ADET_YAZ; i++) {
+      var r = document.createElement("div"); r.className = "amyazsatir";
+      r.innerHTML = '<span class="amno">' + (i + 1) + '</span><div class="amyazkutu"><input type="text" class="aminput kelime" maxlength="16" autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false" placeholder="KELİME"><input type="text" class="aminput ipucu" maxlength="36" autocomplete="off" placeholder="İpucu (isteğe bağlı)"></div>';
+      l.appendChild(r); yazKutu.push({ k: r.querySelector(".kelime"), i: r.querySelector(".ipucu") });
+    }
+    yazKutu.forEach(function (q, i) {
+      q.k.addEventListener("input", function () { var p = q.k.selectionStart, v = temizKelime(q.k.value); if (v !== q.k.value) { q.k.value = v; try { q.k.setSelectionRange(p, p); } catch (e) {} } yazKontrol(); });
+      q.k.addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); q.i.focus(); } });
+      q.i.addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); if (i + 1 < yazKutu.length) yazKutu[i + 1].k.focus(); else $("bKilit").click(); } });
+    });
+  })();
+  var gonderiyor = false;
+  function yazKontrol() {
+    var hata = "", say = 0, gorulen = {};
+    yazKutu.forEach(function (q, i) { var v = q.k.value.trim(), e = v ? gecerli(v) : "boş"; if (v && e) hata = hata || (i + 1) + ". kelime: " + e; if (v && !e) { if (gorulen[v]) hata = hata || "aynı kelimeyi iki kez yazdın"; gorulen[v] = 1; say++; } });
+    var tamam = !hata && say === ADET_YAZ;
+    $("bKilit").disabled = !tamam || gonderiyor;
+    $("yazNot").textContent = hata || (tamam ? "Hazır. Gönderince " + (D.adlar[D.other] || "o") + " bunları çözmeye başlar." : "Her kelime 3–14 harf, en çok 2 kelime. İpucu isteğe bağlı.");
+    $("yazNot").className = "amnot" + (hata ? " uyari" : "");
+  }
+  function yazTemizle() { yazKutu.forEach(function (q) { q.k.value = ""; q.i.value = ""; }); if (yazKutu.length) yazKontrol(); }
+  if ($("bKilit")) $("bKilit").onclick = function () {
+    if (asama() !== "yaz" || gonderiyor) return;
+    var kel = yazKutu.map(function (q) { return q.k.value.trim(); }), ip = yazKutu.map(function (q) { return q.i.value.trim().slice(0, 36); });
+    for (var i = 0; i < kel.length; i++) if (gecerli(kel[i])) { yazKontrol(); return; }
+    gonderiyor = true; yazKontrol();
+    var ME = D.me, n = G.n;
+    D.db.runTransaction(function (tx) {
+      return tx.get(D.ref).then(function (snap) {
+        var d = snap.data(); if (!d || d.bitti || d.n !== n || d.mod !== "yaz") throw new Error("oyun");
+        var upd = { yazilan: {}, yazIp: {}, hazir: {}, v: (d.v || 0) + 1, t: firebase.firestore.FieldValue.serverTimestamp() };
+        upd.yazilan[ME] = kel.map(function (w, i) { return D.gizle(w, yazAnahtar(n, i, ME)); });
+        upd.yazIp[ME] = ip.map(function (w, i) { return D.gizle(w, yazAnahtar(n, i, ME) + "ip"); });
+        upd.hazir[ME] = true;
+        tx.set(D.ref, upd, { merge: true });
+      });
+    }).then(function () { gonderiyor = false; snd("found"); D.msg("Kelimelerin gönderildi 🤫"); yazKutu.forEach(function (q) { try { q.k.blur(); q.i.blur(); } catch (e) {} }); })
+      .catch(function () { gonderiyor = false; yazKontrol(); D.msg("Gönderilemedi, tekrar dene."); });
+  };
 
   /* ---- klavye ---- */
   var klavye = $("klavye"), TUS = {};
@@ -154,7 +231,8 @@
         var d = snap.data(); if (!d || d.bitti || d.n !== n || !d.ilerleme) throw new Error("oyun");
         var upd = { ilerleme: {}, v: (d.v || 0) + 1, t: firebase.firestore.FieldValue.serverTimestamp() }; upd.ilerleme[ME] = yolla;
         var o = duzelt(d.ilerleme[OTHER]);
-        if (yolla.i >= ADET && o.i >= ADET) {                               /* ikimiz de bitirdik: sonuç */
+        var ad = d.adet || ADET_OTO;
+        if (yolla.i >= ad && o.i >= ad) {                               /* ikimiz de bitirdik: sonuç */
           bitirdi = true; upd.bitti = true;
           var pm = toplamIl(yolla), po = toplamIl(o);
           if (pm === po) { upd.sonuc = "berabere"; upd.kazanan = null; } else { upd.sonuc = "puan"; upd.kazanan = pm > po ? ME : OTHER; }
@@ -202,7 +280,7 @@
   }
   function nokCiz(el, il) {
     il = duzelt(il); var h = "";
-    for (var k = 0; k < ADET; k++) { var x = il.s[k]; h += '<i class="' + (x ? (x.b ? "ok" : "no") : k === il.i ? "su" : "") + '"></i>'; }
+    for (var k = 0; k < adet(); k++) { var x = il.s[k]; h += '<i class="' + (x ? (x.b ? "ok" : "no") : k === il.i ? "su" : "") + '"></i>'; }
     if (el.innerHTML !== h) el.innerHTML = h;
   }
   function hucre(il, k) {
@@ -212,7 +290,8 @@
   }
   function tabloIc() {
     var me = ilOf(D.me), ot = ilOf(D.other), h = "<thead><tr><th></th><th>" + esc(D.adlar[D.me] || "Sen") + "</th><th>" + esc(D.adlar[D.other] || "O") + "</th></tr></thead><tbody>";
-    for (var k = 0; k < ADET; k++) h += '<tr><td class="kel">' + esc(kelimeler[k] || "?") + "</td>" + hucre(me, k) + hucre(ot, k) + "</tr>";
+    var benimki = benimYazdiklarim();
+    for (var k = 0; k < adet(); k++) h += '<tr><td class="kel">' + esc(kelimeler[k] || "?") + (benimki.length ? '<small class="amonun">' + esc(benimki[k] || "?") + "</small>" : "") + "</td>" + hucre(me, k) + hucre(ot, k) + "</tr>";
     return h + "</tbody><tfoot><tr><td>Toplam</td><td>" + toplamIl(me) + "</td><td>" + toplamIl(ot) + "</td></tr></tfoot>";
   }
 
@@ -223,14 +302,21 @@
     nokCiz($("nokMe"), ben); nokCiz($("nokOther"), ot);
     $("puanMe").textContent = toplamIl(ben); $("puanOther").textContent = toplamIl(ot);
     $("pMe").className = "hdp" + (a === "coz" || a === "arada" ? " on" : "");
-    $("pOther").classList.toggle("on", !G.bitti && ot.i < ADET);
+    $("pOther").classList.toggle("on", !G.bitti && ot.i < adet());
     var oyunda = a === "coz" || a === "arada";
-    $("oyun").hidden = !oyunda; $("ozet").hidden = oyunda;
-    $("bResign").hidden = !oyunda || !!G.bitti;
+    $("oyun").hidden = !oyunda; $("ozet").hidden = oyunda || a === "yaz" || a === "bekle";
+    $("yaz").hidden = a !== "yaz"; $("bekle").hidden = a !== "bekle";
+    $("bResign").hidden = !(oyunda || a === "yaz" || a === "bekle") || !!G.bitti;
+    if (a === "yaz") { $("yazBaslik").textContent = (D.adlar[OTHER] ? ekE(D.adlar[OTHER]) : "Ona") + " " + ADET_YAZ + " kelime yaz ✍️"; yazKontrol(); return; }
+    if (a === "bekle") {
+      $("bekleNot").textContent = adO + " sana kelimelerini yazıyor… o gönderince burada çözmeye başlarsın.";
+      $("bekleListe").innerHTML = benimYazdiklarim().map(function (w) { return "<li>" + esc(w) + "</li>"; }).join("");
+      return;
+    }
     if (oyunda) {
       var k = a === "arada" ? bakilan : ben.i, w = kelimeler[k] || "", kay = a === "arada" ? ben.s[k] : ben, t = kay.t || "", ip = !!kay.ip;
       var hn = hataT(w, t) + (ip ? 1 : 0), dur = a === "arada" ? (kay.b ? "buldu" : "asildi") : "";
-      $("kelNo").textContent = "Kelime " + (k + 1) + "/" + ADET;
+      $("kelNo").textContent = "Kelime " + (k + 1) + "/" + adet();
       cizimGuncelle(Math.min(HAK, hn), dur, k);
       kelimeCiz(k, w, t, dur === "asildi", dur);
       var ipH = ip ? "<span>İpucu</span> " + esc(ipuclari[k] || "—")
@@ -241,7 +327,7 @@
       $("sonuc").hidden = a !== "arada";
       if (a === "arada") { $("sonuc").className = "amsonuc " + dur; $("sonuc").innerHTML = kay.b ? "Buldun! <b>+" + kay.p + "</b>" : "Asıldı… <b>0</b>"; }
       klavye.hidden = a !== "coz"; $("bSonraki").hidden = a !== "arada";
-      $("bSonraki").textContent = k + 1 >= ADET ? "Sonuçları gör" : "Sonraki kelime →";
+      $("bSonraki").textContent = k + 1 >= adet() ? "Sonuçları gör" : "Sonraki kelime →";
       ABC.split("").forEach(function (h) {
         var b = TUS[h], denendi = t.indexOf(h) >= 0, cls = "amk" + (denendi ? (w.indexOf(h) >= 0 ? " dogru" : " yanlis") : "");
         if (b.className !== cls) b.className = cls; b.disabled = a !== "coz" || denendi;
@@ -250,7 +336,7 @@
       var bitti = a === "bitti", pm = toplamIl(ben), po = toplamIl(ot);
       $("ozBaslik").textContent = !bitti ? "Bitirdin! 🎉" : G.sonuc === "pes" ? (G.kazanan === ME ? adO + " pes etti" : "Pes ettin") : G.kazanan === ME ? "Kazandın! 🤍" : G.kazanan ? adO + " kazandı" : "Berabere!";
       $("ozPuan").innerHTML = bitti && G.sonuc !== "pes" ? pm + " <i>–</i> " + po : pm + " <small>puan</small>";
-      $("ozNot").textContent = bitti ? (G.sonuc === "pes" ? "Kelimeler açıldı." : "Yeni oyunda yine ikinize aynı kelimeler gelir.") : ot.i >= ADET ? "Sonuç hesaplanıyor…" : adO + " şu an " + (ot.i + 1) + ". kelimede; o da bitirince sonuç burada çıkacak.";
+      $("ozNot").textContent = bitti ? (G.sonuc === "pes" ? "Kelimeler açıldı." : G.mod === "yaz" ? "Yeni oyunda yine birbirinize yazarsınız." : "Yeni oyunda yine ikinize aynı kelimeler gelir.") : ot.i >= adet() ? "Sonuç hesaplanıyor…" : G.mod === "yaz" && !(G.hazir && G.hazir[OTHER]) ? adO + " henüz kelimelerini yazmadı; o da bitirince sonuç burada çıkacak." : adO + " şu an " + (ot.i + 1) + ". kelimede; o da bitirince sonuç burada çıkacak.";
       $("ozTablo").innerHTML = tabloIc();
       $("bYeni").hidden = !bitti;
     }
@@ -263,7 +349,8 @@
     D.ref.set({ bitti: true, sonuc: "pes", kazanan: D.other, sira: "", v: (G.v || 0) + 1, t: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true }).catch(function () { D.bitirenBenim = false; D.msg("Olmadı, tekrar dene."); });
   };
   if (location.hash === "#test") window.__am = {
-    state: function () { return { G: G, me: D.me, other: D.other, asama: asama(), ben: ben, bakilan: bakilan, kelimeler: kelimeler, ipuclari: ipuclari, havuz: HAVUZ.length }; },
-    tahmin: tahmin, ipucu: ipucuAl, sonraki: sonraki, yeni: D.yeniOyun
+    state: function () { return { G: G, me: D.me, other: D.other, asama: asama(), ben: ben, bakilan: bakilan, kelimeler: kelimeler, ipuclari: ipuclari, havuz: HAVUZ.length, mod: modSec() }; },
+    tahmin: tahmin, ipucu: ipucuAl, sonraki: sonraki, yeni: D.yeniOyun,
+    yaz: function (kel, ip) { yazKutu.forEach(function (q, i) { q.k.value = temizKelime(kel[i] || ""); q.i.value = (ip && ip[i]) || ""; }); yazKontrol(); $("bKilit").click(); }, temiz: temizKelime
   };
 })();

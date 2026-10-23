@@ -4,7 +4,7 @@
    - Sürümlü dosyalar (?v=…), resimler, ses, Firebase SDK ve Google yazı tipleri: önce saklanan kopya, yoksa ağ.
    - Firestore / giriş istekleri hiç saklanmaz (canlı veri).
    Yeni sürüm yüklenince SURUM'u değiştirmek yeterli; eski saklananlar silinir. */
-var SURUM = "qg-1019y";
+var SURUM = "qg-1020m";
 var ONCE = ["oyunlar.html", "manifest.webmanifest", "ikon/app-192.png"];
 self.addEventListener("install", function (e) {
   e.waitUntil(caches.open(SURUM).then(function (c) { return c.addAll(ONCE).catch(function () {}); }).then(function () { return self.skipWaiting(); }));
@@ -34,7 +34,7 @@ self.addEventListener("fetch", function (e) {
   if (/firestore\.googleapis|identitytoolkit|securetoken|googleapis\.com\/(v1|identitytoolkit)/.test(u.href)) return;   /* canlı veri: dokunma */
   if (u.origin === self.location.origin) {
     if (req.mode === "navigate" || /\.html$|\/$/.test(u.pathname)) { e.respondWith(onceAg(req)); return; }
-    if (/\.(js|css|png|jpg|jpeg|webp|svg|gif|mp3|wav|webmanifest|woff2?)$/.test(u.pathname)) { e.respondWith(oncedenSakli(req)); return; }
+    if (/\.(js|css|png|jpg|jpeg|webp|svg|gif|mp3|wav|webmanifest|woff2?|glb)$/.test(u.pathname)) { e.respondWith(oncedenSakli(req)); return; }
     return;
   }
   if (/www\.gstatic\.com\/firebasejs\/|fonts\.googleapis\.com|fonts\.gstatic\.com/.test(u.href)) { e.respondWith(oncedenSakli(req)); return; }

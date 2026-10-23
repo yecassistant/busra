@@ -24,8 +24,8 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Queen Games">
 <link rel="apple-touch-icon" href="ikon/app-180.png">
-<link rel="stylesheet" href="style.css?v=1019y">
-<script src="kapi.js?v=1019y"></script>
+<link rel="stylesheet" href="style.css?v=1020m">
+<script src="kapi.js?v=1020m"></script>
 </head>
 <body data-page="yakinda" data-tone="lav">
 
@@ -58,11 +58,11 @@
   </div>
 </div>
 
-<script src="app.js?v=1019y"></script>
+<script src="app.js?v=1020m"></script>
 <script>
 /* kapalı bir oyunun sayfasından yönlendirilince (?o=stilobat) kartta o oyunun adı yazar */
 (function () {
-  var AD = { stilobat: "Stilobat", sayi: "Sayı Düellosu", amiral: "Amiral Battı", hafiza: "Hafıza Düellosu", satranc: "Satranç", asmaca: "Adam Asmaca", tabu: "Tabu", yikim: "Yıkım" }, m = /[?&]o=([a-z]+)/.exec(location.search), ad = m && AD[m[1]];
+  var AD = { stilobat: "Stilobat", sayi: "Sayı Düellosu", amiral: "Amiral Battı", hafiza: "Hafıza Düellosu", satranc: "Satranç", asmaca: "Adam Asmaca", tabu: "Tabu", xox: "XOX", tepe: "Tepe Savaşı", yikim: "Yıkım" }, m = /[?&]o=([a-z]+)/.exec(location.search), ad = m && AD[m[1]];
   if (!ad) return;
   if (window.geliyorMu && !geliyorMu(m[1])) { location.replace(m[1] + ".html"); return; }   /* saat geldiyse oyuna geç */
   var h = document.querySelector("#yakinda h2"), p = document.querySelector("#yakinda .lead");

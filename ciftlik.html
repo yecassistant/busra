@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>Çiftlik</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="color-scheme" content="light">
+<meta name="theme-color" content="#7ec850">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Crect width=%27100%27 height=%27100%27 rx=%2724%27 fill=%27%237ec850%27/%3E%3Cpath d=%27M24 74V44l26-18 26 18v30z%27 fill=%27%23d64541%27/%3E%3Cpath d=%27M18 46l32-24 32 24%27 fill=%27none%27 stroke=%27%23fff8ee%27 stroke-width=%276%27 stroke-linejoin=%27round%27/%3E%3Cpath d=%27M40 74V56h20v18%27 fill=%27%23fff8ee%27/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Queen Games">
+<link rel="apple-touch-icon" href="ikon/app-180.png">
+<link rel="stylesheet" href="style.css?v=1020m">
+</head>
+<body data-page="ciftlik">
+
+<main class="cf" id="stage">
+  <canvas id="cv" aria-label="Çiftlik"></canvas>
+  <div class="cfkatman" id="balonlar"></div>
+  <div class="cfkatman" id="ucanlar"></div>
+
+  <header class="cfust" id="ust" hidden>
+    <a class="cfbtn" href="oyunlar.html" aria-label="Menü"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 5.5L8 12l6.5 6.5"/></svg></a>
+    <button type="button" class="cfseviye" id="svKutu" aria-label="Seviye"><span class="cfyildiz"><b id="sv">1</b></span><span class="cfxp"><i id="xpBar"></i></span><small id="xpTxt">0/10</small></button>
+    <div class="cfaltin" id="altinKutu"><span class="cfpara"></span><b id="altin">0</b></div>
+    <button type="button" class="cfbtn" id="bSes" aria-label="Ses"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 10v4h3l4 3.5v-11L8 10z"/><path d="M15.5 9.5a3.5 3.5 0 0 1 0 5" class="w1"/><path d="M18 7a7 7 0 0 1 0 10" class="w2"/></svg></button>
+  </header>
+
+  <div class="cfalt" id="alt" hidden>
+    <p class="cfipucu" id="ipucu"></p>
+    <div class="cfdugmeler">
+      <button type="button" class="cfyuvarlak" id="bMarket"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M5 12l2-6h18l2 6z" fill="#e85d75"/><path d="M5 12h22v3a3 3 0 0 1-6 0 3 3 0 0 1-6 0 3 3 0 0 1-6 0 3 3 0 0 1-4 0z" fill="#fff"/><rect x="7" y="16" width="18" height="11" rx="1.5" fill="#d39b5a"/><rect x="13" y="19" width="6" height="8" fill="#7d5128"/></svg><small>Market</small></button>
+      <button type="button" class="cfyuvarlak" id="bKarakter"><svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="11" r="6" fill="#f6d3b8"/><path d="M8 29c0-6 3.6-9 8-9s8 3 8 9z" fill="#7a1f2e"/><path d="M9 11c0-5 3-8 7-8s7 3 7 8c0 2-1 3-2 3H11c-1 0-2-1-2-3z" fill="#6b6b3a"/></svg><small>Karakter</small></button>
+      <button type="button" class="cfyuvarlak" id="bSiparis"><svg viewBox="0 0 32 32" aria-hidden="true"><rect x="5" y="6" width="22" height="16" rx="2.5" fill="#d39b5a" stroke="#7d5128" stroke-width="1.6"/><rect x="8.5" y="9" width="6" height="8" rx="1" fill="#fff"/><rect x="17" y="9" width="6" height="8" rx="1" fill="#fff3b0"/><path d="M10 22v6M22 22v6" stroke="#7d5128" stroke-width="2.4" stroke-linecap="round"/></svg><small>Sipariş</small><i class="cfnokta" id="sipNokta" hidden></i></button>
+      <button type="button" class="cfyuvarlak" id="bAmbar"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M5 27V13l11-7 11 7v14z" fill="#d64541" stroke="#8e3b33" stroke-width="1.6" stroke-linejoin="round"/><path d="M11 27v-9h10v9" fill="#b8383a" stroke="#fff8ee" stroke-width="1.6"/><path d="M11 18l10 9M21 18l-10 9" stroke="#fff8ee" stroke-width="1.4"/></svg><small>Ambar</small></button>
+    </div>
+  </div>
+
+  <div class="cfmod" id="mod" hidden><span class="cfmodik" id="modIk"></span><b id="modTxt"></b><button type="button" id="modBitti">Bitti</button></div>
+  <div class="cftoast" id="toast" aria-live="polite"></div>
+
+  <section class="cfsheet" id="sheet" hidden>
+    <div class="cfsheet-in">
+      <header><b id="shBaslik"></b><button type="button" class="cfkapat" id="shKapat" aria-label="Kapat">×</button></header>
+      <div class="cfsheet-govde" id="shIcerik"></div>
+    </div>
+  </section>
+
+  <div class="cfover" id="seviyeKart" hidden>
+    <div class="cfkart">
+      <div class="cfbuyukyildiz"><b id="svYeni">2</b></div>
+      <h2>Seviye atladın!</h2>
+      <ul class="cfacilan" id="svListe"></ul>
+      <button type="button" class="cfana" id="svTamam">Harika!</button>
+    </div>
+  </div>
+
+  <div class="cfover cfkar" id="karKart" hidden>
+    <div class="cfkart genis">
+      <div class="cfkick">Karakterin</div>
+      <h2>Nasıl görünmek istersin?</h2>
+      <div class="cfkalan" id="karSecenek"></div>
+      <div class="cfkbtn"><button type="button" class="cfikinci" id="karRastgele">🎲 Rastgele</button><button type="button" class="cfana" id="karTamam">Böyle iyi</button></div>
+      <p class="cfnot">Sonra evden istediğin zaman değiştirebilirsin.</p>
+    </div>
+  </div>
+
+  <div class="cfdonus" id="donus" hidden>
+    <div class="cfdonus-in"><div class="cftel"></div><b>Telefonu yan çevir</b><span>Çiftlik yatay oynanıyor; böyle her şey ekrana sığıyor.</span><button type="button" id="donusGec">Dikey devam et</button></div>
+  </div>
+
+  <div class="cfover" id="isimKart" hidden>
+    <div class="cfkart">
+      <div class="cfkick">Hoş geldin!</div>
+      <h2>Çiftliğine bir isim ver</h2>
+      <input type="text" id="isimIn" maxlength="22" autocomplete="off" spellcheck="false" aria-label="Çiftlik adı">
+      <p class="cfnot">Girişteki tabelada bu yazacak. Sonra evin üstüne dokunup değiştirebilirsin.</p>
+      <button type="button" class="cfana" id="isimTamam">Başla</button>
+    </div>
+  </div>
+
+  <div class="cfover cfkapi" id="kapi" hidden>
+    <div class="cfkart">
+      <div class="cfkilit"><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="9" y="21" width="30" height="21" rx="5" fill="#f2c94c" stroke="#a87b1d" stroke-width="2.4"/><path d="M15 21v-6a9 9 0 0 1 18 0v6" fill="none" stroke="#a87b1d" stroke-width="3.6" stroke-linecap="round"/><circle cx="24" cy="30" r="3.2" fill="#a87b1d"/><path d="M24 32v5" stroke="#a87b1d" stroke-width="3" stroke-linecap="round"/></svg></div>
+      <h2>Bu bahçenin kapısı kodla açılıyor</h2>
+      <input type="text" id="kodIn" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="off" placeholder="••••••" aria-label="Kod">
+      <p class="cfnot" id="kodNot">6 haneli kodu yaz.</p>
+      <button type="button" class="cfana" id="kodGir">Aç</button>
+      <a class="cfghost" href="oyunlar.html">Menüye dön</a>
+    </div>
+  </div>
+
+  <div class="cfdemo" id="demoSaat" hidden></div>
+  <div class="cfover cfdemobitti" id="demoBitti" hidden>
+    <div class="cfkart">
+      <img class="cfdemoyuz" id="demoYuz" alt="" hidden>
+      <div class="cfkick">Demo bitti</div>
+      <h2>Şimdilik bu kadar 🌱</h2>
+      <p>Oyun daha bitmedi. Favori oyununu buraya eklemek istedim ama yapması biraz zor, biraz zorlanıyorum :) Bitince ilk sen oynayacaksın.</p>
+      <a class="cfana" href="oyunlar.html">Menüye dön</a>
+      <button type="button" class="cfghost" onclick="cfKodSor()">Kodum var</button>
+    </div>
+  </div>
+  <div class="cfyukle" id="yukle" hidden><div class="cfdonen"></div><p>Çiftlik hazırlanıyor…</p></div>
+  <div class="ykhata cfhata" id="hata" hidden><b>3D açılamadı</b><span>Bu tarayıcı 3D grafiği desteklemiyor ya da kapalı. Safari'de ya da ana ekrandan açmayı dene.</span><a class="ykana" href="oyunlar.html">Menüye dön</a></div>
+</main>
+
+<script src="app.js?v=1020m"></script>
+<script src="hesap.js?v=1020m"></script>
+<script src="deneme.js?v=1020m"></script>
+<script>
+/* Kod kapısı: kod sayfada düz yazmıyor (yalnızca özeti var). Doğru kod bu cihazda hatırlanır; oyun dosyaları ancak kapı açılınca yüklenir. */
+(function () {
+  var OZ = "1k2zj9w";
+  function $(id) { return document.getElementById(id); }
+  function ozet(s) { var h = 2166136261; for (var r = 0; r < 3; r++) for (var i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619) >>> 0; } return h.toString(36); }
+  function yukle() {
+    $("kapi").hidden = true; $("yukle").hidden = false;
+    window.__cfYuklendi = true;
+    var l = ["lib/three.min.js?v=149", "ciftlik-model.js?v=1020m", "lib/GLTFLoader.js?v=149", "ciftlik-kar-veri.js?v=1020m", "ciftlik-kar.js?v=1020m", "ciftlik-kar3d-veri.js?v=1020m", "ciftlik-kar3d.js?v=1020m", "ciftlik-ses.js?v=1020m", "ciftlik.js?v=1020m"];
+    (function sira(i) { if (i >= l.length) return; var s = document.createElement("script"); s.src = l[i]; s.onload = function () { sira(i + 1); }; s.onerror = function () { $("yukle").hidden = true; $("hata").hidden = false; }; document.body.appendChild(s); })(0);
+  }
+  var acik = false; try { acik = localStorage.getItem("cf_kod") === OZ; } catch (e) {}
+  var kapi = $("kapi"), inp = $("kodIn"), deneme = 0;
+  window.CF_DEMO = !acik;                                                  /* kodu olmayan 5 dakikalık demo oynar */
+  window.cfKodSor = function () { $("demoBitti").hidden = true; kapi.hidden = false; try { inp.focus(); } catch (e) {} };
+  function dene() {
+    var v = (inp.value || "").replace(/\D/g, "");
+    if (v.length < 6) { $("kodNot").textContent = "6 haneli kodu yaz."; return; }
+    if (ozet("ciftlik:" + v + ":qg") === OZ) { try { localStorage.setItem("cf_kod", OZ); } catch (e) {} try { inp.blur(); } catch (e) {} if (window.__cfYuklendi) { location.reload(); return; } yukle(); return; }
+    deneme++; inp.value = ""; $("kodNot").textContent = "Olmadı, bir daha dene.";
+    var k = kapi.querySelector(".cfkart"); k.classList.remove("salla"); void k.offsetWidth; k.classList.add("salla");
+  }
+  inp.addEventListener("input", function () { var v = inp.value.replace(/\D/g, "").slice(0, 6); if (v !== inp.value) inp.value = v; if (v.length === 6) dene(); });
+  inp.addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); dene(); } });
+  $("kodGir").onclick = dene;
+  if (acik || !/[?&]kod=1/.test(location.search)) yukle(); else kapi.hidden = false;
+})();
+</script>
+</body>
+</html>

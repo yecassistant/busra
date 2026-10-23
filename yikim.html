@@ -21,12 +21,13 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Queen Games">
 <link rel="apple-touch-icon" href="ikon/app-180.png">
-<link rel="stylesheet" href="style.css?v=1019y">
-<script src="kapi.js?v=1019y"></script>
+<link rel="stylesheet" href="style.css?v=1020m">
+<script src="kapi.js?v=1020m"></script>
 </head>
 <body data-page="yikim">
 
 <main class="yk" id="stage">
+  <div class="ykbokeh" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
   <canvas id="cv" aria-label="Yıkım oyun alanı"></canvas>
   <header class="ykbar">
     <a class="ykbtn" href="oyunlar.html" aria-label="Geri"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 5.5L8 12l6.5 6.5"/></svg></a>
@@ -62,8 +63,8 @@
   <div class="ykhata" id="hata" hidden><b>3D açılamadı</b><span>Bu tarayıcı 3D grafiği desteklemiyor ya da kapalı. Safari'de ya da ana ekrandan açmayı dene.</span><a class="ykana" href="oyunlar.html">Menüye dön</a></div>
 </main>
 
-<script src="app.js?v=1019y"></script>
-<script src="hesap.js?v=1019y"></script>
-<script>(window.Hesap ? Hesap.oyun : function (l) { l.forEach(function (x) { document.write('<script src="' + x + '"><\/script>'); }); })(["lib/three.min.js?v=149", "yikim.js?v=1019y", "yikim-ses.js?v=1019y"]);</script>
+<script src="app.js?v=1020m"></script>
+<script src="hesap.js?v=1020m"></script>
+<script>(window.Hesap ? Hesap.oyun : function (l) { l.forEach(function (x) { document.write('<script src="' + x + '"><\/script>'); }); })(["lib/three.min.js?v=149", "yikim.js?v=1020m", "yikim-ses.js?v=1020m"]);</script>
 </body>
 </html>
