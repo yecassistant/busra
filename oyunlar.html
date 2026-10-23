@@ -47,9 +47,9 @@
     <svg class="qmac-tac" viewBox="0 0 64 44"><use href="#qmCrown"/></svg>
     <div class="qmac-logo"><span class="qmq">Queen</span><span class="qmg">Games</span></div>
     <div class="qmac-ik"><span>🃏</span><span>🔢</span><span>🟩</span><span>❌</span><span>💥</span><span>♟️</span></div>
-    <div class="qmac-bar"><i></i></div>
-    <p class="qmac-imza">crafted with love by <b>Büş</b> <em>&amp;</em> <b>Nunu</b></p>
-    <small class="qmac-alt">fait avec amour · hecho con amor</small>
+    <div class="qmac-bar"><i style="-webkit-animation-duration:1.8s;animation-duration:1.8s"></i></div>
+    <p class="qmac-imza">made for <b>Büş</b> <em>♥</em> by <b>Nunu</b></p>
+    <small class="qmac-alt" lang="en">rien que pour toi · solo para ti</small>
   </div>
 </div>
 <main class="qm">
@@ -469,7 +469,7 @@
   var bitti = false;
   cal();
   function kapat() { if (bitti) return; bitti = true; a.classList.add("bitti"); setTimeout(function () { if (a.parentNode) a.parentNode.removeChild(a); }, 520); }
-  setTimeout(kapat, 1800);
+  setTimeout(kapat, 1950);
   var buDokunus = false;
   a.addEventListener("pointerdown", function () { buDokunus = false; if (!caldi) { cal(); buDokunus = true; } }, { passive: true });
   a.addEventListener("click", function () { if (buDokunus) { buDokunus = false; return; } kapat(); });
