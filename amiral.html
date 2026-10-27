@@ -21,8 +21,8 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Queen Games">
 <link rel="apple-touch-icon" href="ikon/app-180.png">
-<link rel="stylesheet" href="style.css?v=1020o">
-<script src="kapi.js?v=1020o"></script>
+<link rel="stylesheet" href="style.css?v=1020r">
+<script src="kapi.js?v=1020r"></script>
 </head>
 <body data-page="amiral">
 
@@ -40,24 +40,30 @@
   </div>
 
   <div class="abwrap" id="wrap">
-    <div class="abmain">
-      <div class="ablbl" id="mainLbl">Rakip suları</div>
-      <div class="abgrid" id="grid"></div>
-    </div>
-    <div class="abside">
-      <div class="ablbl" id="miniLbl">Senin filon</div>
-      <div class="abgrid mini" id="mini"></div>
-      <ul class="abships" id="ships"></ul>
-    </div>
+    <section class="abpano">
+      <div class="abust"><b id="mainLbl">Rakip suları</b><span id="mainSag"></span></div>
+      <div class="abtahta">
+        <div class="abcols" id="colsA"></div><div class="abrows" id="rowsA"></div>
+        <div class="abgrid" id="grid"></div>
+      </div>
+    </section>
+    <section class="abpano abyan" id="yanPano" hidden>
+      <div class="abust"><b id="miniLbl">Senin filon</b></div>
+      <div class="abtahta kucuk">
+        <div class="abcols" id="colsB"></div><div class="abrows" id="rowsB"></div>
+        <div class="abgrid kucuk" id="mini" hidden></div>
+      </div>
+    </section>
+    <section class="abfilo"><div class="abust"><b id="shipsLbl">Filon</b></div><ul class="abships" id="ships"></ul></section>
   </div>
 
   <div class="abfoot" id="foot">
     <p class="hdmsg abmsg" id="msg"></p>
     <div class="abbtns" id="btns">
-      <button type="button" class="abfire" id="bFire" hidden>Ateş!</button>
+      <button type="button" class="abfire" id="bFire" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="7.5"/><circle cx="12" cy="12" r="2.2"/><path d="M12 1.5v4M12 18.5v4M1.5 12h4M18.5 12h4"/></svg><span id="bFireTxt">Hedef seç</span></button>
       <button type="button" class="stbtn" id="bShuffle" hidden>Karıştır</button>
       <button type="button" class="stbtn ok" id="bLock" hidden>Filoyu kilitle</button>
-      <button type="button" class="stbtn" id="bResign" hidden>Pes et</button>
+      <button type="button" class="stbtn abpes" id="bResign" hidden>Pes et</button>
     </div>
   </div>
 </main>
@@ -103,18 +109,18 @@
 <div class="gkover" id="help" hidden>
   <div class="gkcard hdcard">
     <h2>Amiral Battı</h2>
-    <p>5 gemi: uçak gemisi (5), zırhlı (4), kruvazör (3), denizaltı (3), muhrip (2). Gemiyi tutup istediğin kareye sürükle, bir kez dokununca döner; "Karıştır" diziliş değiştirir. Beğenince kilitle.</p>
-    <p>Sırayla rakip sularına atış: kareye dokun, "Ateş!" de. Vurursan bir daha atarsın, ıskalarsan sıra bana geçer. Bütün filoyu önce batıran kazanır.</p>
+    <p>5 gemi: uçak gemisi (5), zırhlı (4), muhrip (2) düz; <b>kruvazör</b> T şeklinde (3 kare + ortada çıkıntı), <b>denizaltı</b> L şeklinde (3 kare + uçta çıkıntı). Gemiyi tutup istediğin yere sürükle, dokununca döner (L gemisi ters de döner); "Karıştır" diziliş değiştirir. Beğenince kilitle.</p>
+    <p>Sırayla rakip sularına atış: kareye dokun (kırmızı nişan çıkar), "Ateş" de. Turuncu alev isabet, beyaz nokta ıska; son atış sarı çerçeveli. Vurursan bir daha atarsın, ıskalarsan sıra bana geçer. Bütün filoyu önce batıran kazanır.</p>
     <p class="gksmall">Aynı anda girmemiz gerekmiyor ama daha tatlı olur :) Sen yokken yaptığım atışları girince tek tek görürsün. Gemilerin yerleri oyun bitene kadar gizli.</p>
     <button type="button" class="gkprimary" id="helpGo">Tamam</button>
   </div>
 </div>
 
-<script src="app.js?v=1020o"></script>
-<script src="hesap.js?v=1020o"></script>
-<script src="deneme.js?v=1020o"></script>
-<script src="duello.js?v=1020o"></script>
-<script src="amiral.js?v=1020o"></script>
-<script src="amiral-ses.js?v=1020o"></script>
+<script src="app.js?v=1020r"></script>
+<script src="hesap.js?v=1020r"></script>
+<script src="deneme.js?v=1020r"></script>
+<script src="duello.js?v=1020r"></script>
+<script src="amiral.js?v=1020r"></script>
+<script src="amiral-ses.js?v=1020r"></script>
 </body>
 </html>

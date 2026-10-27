@@ -24,8 +24,8 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Queen Games">
 <link rel="apple-touch-icon" href="ikon/app-180.png">
-<link rel="stylesheet" href="style.css?v=1020o">
-<script src="kapi.js?v=1020o"></script>
+<link rel="stylesheet" href="style.css?v=1020r">
+<script src="kapi.js?v=1020r"></script>
 </head>
 <body data-page="oyunlar">
 
@@ -126,6 +126,12 @@
 
   <div class="qmsec" id="secYeni"><span>İkimiz</span></div>
   <div class="qmgrid" id="qmYeni">
+    <a class="qmc qmt qm-zincir" href="zincir.html" data-g="zincir" id="toZincir">
+      <span class="qmart"><svg viewBox="0 0 92 56" aria-hidden="true"><g font-family="Nunito,Arial,sans-serif" font-weight="900" font-size="11" text-anchor="middle"><rect x="20" y="3" width="13" height="14" rx="3.5" fill="#f2c35b"/><text x="26.5" y="14" fill="#3b2a08">K</text><rect x="35" y="3" width="13" height="14" rx="3.5" fill="#f2c35b"/><text x="41.5" y="14" fill="#3b2a08">A</text><rect x="50" y="3" width="13" height="14" rx="3.5" fill="#f2c35b"/><text x="56.5" y="14" fill="#3b2a08">L</text><rect x="65" y="3" width="13" height="14" rx="3.5" fill="#f2c35b"/><text x="71.5" y="14" fill="#3b2a08">E</text><path d="M49 19v4" stroke="#5fe3b8" stroke-width="2.4" stroke-dasharray="2 2"/><rect x="27" y="24" width="13" height="14" rx="3.5" fill="#fbf7fd"/><text x="33.5" y="35" fill="#12312e">T</text><rect x="42" y="24" width="13" height="14" rx="3.5" fill="none" stroke="#5fe3b8" stroke-width="1.6"/><rect x="57" y="24" width="13" height="14" rx="3.5" fill="none" stroke="#5fe3b8" stroke-width="1.6"/><path d="M49 40v4" stroke="#5fe3b8" stroke-width="2.4" stroke-dasharray="2 2"/><rect x="34" y="46" width="11" height="9" rx="3" fill="rgba(255,255,255,.75)"/><text x="39.5" y="54" font-size="8" fill="#12312e">B</text><rect x="47" y="46" width="11" height="9" rx="3" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="1.4"/></g></svg></span>
+      <span class="qmtx"><b>Kelime Zinciri</b><small id="zincirSub">Her kelime bir öncekine bağlı; sırayla bil.</small></span>
+      <i class="qmnew" id="zincirBadge">yeni</i>
+      <svg class="qmchev" aria-hidden="true"><use href="#qmChev"/></svg>
+    </a>
     <a class="qmc qmt qm-satranc" href="satranc.html" data-g="satranc" id="toSatranc">
       <span class="qmart"><svg viewBox="0 0 92 56" aria-hidden="true"><g transform="translate(14 6)"><rect width="44" height="44" rx="5" fill="#eedcc5"/><g fill="#b48a68"><rect x="11" width="11" height="11"/><rect x="33" width="11" height="11"/><rect y="11" width="11" height="11"/><rect x="22" y="11" width="11" height="11"/><rect x="11" y="22" width="11" height="11"/><rect x="33" y="22" width="11" height="11"/><rect y="33" width="11" height="11"/><rect x="22" y="33" width="11" height="11"/></g></g><g transform="translate(48 2) scale(.46)"><path d="M30 84c0-18 6-30 16-38 2-6 0-10-2-14l-8 10c-6 2-10-2-8-8 2-4 8-10 14-14 2-6 6-8 10-8l2 6c16 4 26 18 28 42l-2 24z" fill="#fdf6ec" stroke="#2d2033" stroke-width="4" stroke-linejoin="round"/><rect x="22" y="84" width="56" height="8" rx="3" fill="#fdf6ec" stroke="#2d2033" stroke-width="4"/><circle cx="46" cy="30" r="3" fill="#2d2033"/></g><use href="#qmSpark" x="4" y="40" width="8" height="8" fill="#f2c35b"/></svg></span>
       <span class="qmtx"><b>Satranç</b><small id="satrancSub">İkimizin satrancı, sırayla hamle.</small></span>
@@ -241,8 +247,8 @@
   </div>
 </div>
 
-<script src="app.js?v=1020o"></script>
-<script src="hesap.js?v=1020o"></script>
+<script src="app.js?v=1020r"></script>
+<script src="hesap.js?v=1020r"></script>
 <script>
 /* hesap çubuğu: giriş yoksa "Giriş yap", varsa ad + Skor Tablosu */
 (function () {
@@ -282,11 +288,11 @@
   Hesap.izle(function (k) {
     if (!k || !k.kesin || duBakti) return; duBakti = true;
     Hesap.db().then(function (db) {
-      [["sayi", "sayiBadge", "sayiSub", "tahmin"], ["amiral", "amiralBadge", "amiralSub", "atis"], ["xox", "xoxBadge", "xoxSub", "hamle"], ["tepe", "tepeBadge", "tepeSub", "hamle"]].filter(function (x) { return !(window.geliyorMu && geliyorMu(x[0])); }).forEach(function (x) {
+      [["sayi", "sayiBadge", "sayiSub", "tahmin"], ["amiral", "amiralBadge", "amiralSub", "atis"], ["xox", "xoxBadge", "xoxSub", "hamle"], ["tepe", "tepeBadge", "tepeSub", "hamle"], ["zincir", "zincirBadge", "zincirSub", "hamle"]].filter(function (x) { return !(window.geliyorMu && geliyorMu(x[0])); }).forEach(function (x) {
         db.collection(x[0]).doc("mac").get().then(function (snap) {
           var d = snap.exists ? snap.data() : null, badge = document.getElementById(x[1]), sub = document.getElementById(x[2]); if (!d) return;
           if (d.bitti) { badge.textContent = "yeni oyun"; sub.textContent = d.kazanan ? (d.kazanan === k.uid ? "Son oyunu sen kazandın." : "Son oyunu kaybettin.") + " Yeni oyunu ikiniz de kurabilirsiniz." : "Son oyun berabere bitti."; return; }
-          if (x[3] === "hamle") { if (d.sira === k.uid) { badge.textContent = "sıra sende"; badge.className = "qmnew qmturn"; sub.textContent = x[0] === "tepe" ? "Sıra sende · nişan al, ateşle." : "Sıra sende · hamleni yap."; } else { badge.textContent = "sırası onda"; sub.textContent = "Hamlesini yapınca sıra sana geçer."; } return; }
+          if (x[3] === "hamle") { if (d.sira === k.uid) { badge.textContent = "sıra sende"; badge.className = "qmnew qmturn"; sub.textContent = x[0] === "tepe" ? "Sıra sende · nişan al, ateşle." : x[0] === "zincir" ? "Sıra sende · sıradaki kelimeyi bil." : "Sıra sende · hamleni yap."; } else { badge.textContent = "sırası onda"; sub.textContent = "Hamlesini yapınca sıra sana geçer."; } return; }
           if (!d.hazir || !d.hazir[k.uid]) { badge.textContent = "sıra sende"; badge.className = "qmnew qmturn"; sub.textContent = x[0] === "sayi" ? "Gizli sayını belirle, oyun başlasın." : "Filonu yerleştir, oyun başlasın."; return; }
           if (!d.hazir[d.a === k.uid ? d.b : d.a]) { badge.textContent = "o hazırlanıyor"; sub.textContent = "Senin tarafın hazır, onu bekliyorsun."; return; }
           if (d.sira === k.uid) { badge.textContent = "sıra sende"; badge.className = "qmnew qmturn"; sub.textContent = x[0] === "sayi" ? "Sıra sende · " + (((d.tahmin || {})[k.uid] || []).length + 1) + ". tahmin." : "Sıra sende · ateş serbest."; }
@@ -374,7 +380,7 @@
 (function () { var b = 0; try { b = +localStorage.getItem("stb_best") || 0; } catch (e) {} if (b > 0) document.getElementById("stilobatBadge").textContent = "rekor " + b; })();
 /* Hadi Başlayalım: son oynanan oyuna götürür (yoksa Kelime Bahçesi). Sadece menüye ait küçük bir kayıt: qg_last */
 (function () {
-  var G = { kelime: ["kelime.html", "Kelime Bahçesi"], ok: ["ok.html", "Eros'un Oku"], kase: ["kase.html", "Peki Madem (:"], oda: ["oda.html", "Şefin Odası"], plan: ["oyun.html", "Şefin Planı"], tur: ["fatih.html", "Fatih Turu"], fark: ["fark.html", "7 Farkı Bul"], gunun: ["gunun.html", "Günün Kelimesi"], hafiza: ["hafiza.html", "Hafıza Düellosu"], satranc: ["satranc.html", "Satranç"], sayi: ["sayi.html", "Sayı Düellosu"], amiral: ["amiral.html", "Amiral Battı"], asmaca: ["asmaca.html", "Adam Asmaca"], xox: ["xox.html", "XOX"], tepe: ["tepe.html", "Tepe Savaşı"], tabu: ["tabu.html", "Tabu"], yikim: ["yikim.html", "Yıkım"], stilobat: ["stilobat.html", "Stilobat"] };
+  var G = { kelime: ["kelime.html", "Kelime Bahçesi"], ok: ["ok.html", "Eros'un Oku"], kase: ["kase.html", "Peki Madem (:"], oda: ["oda.html", "Şefin Odası"], plan: ["oyun.html", "Şefin Planı"], tur: ["fatih.html", "Fatih Turu"], fark: ["fark.html", "7 Farkı Bul"], gunun: ["gunun.html", "Günün Kelimesi"], hafiza: ["hafiza.html", "Hafıza Düellosu"], satranc: ["satranc.html", "Satranç"], sayi: ["sayi.html", "Sayı Düellosu"], amiral: ["amiral.html", "Amiral Battı"], asmaca: ["asmaca.html", "Adam Asmaca"], xox: ["xox.html", "XOX"], tepe: ["tepe.html", "Tepe Savaşı"], zincir: ["zincir.html", "Kelime Zinciri"], tabu: ["tabu.html", "Tabu"], yikim: ["yikim.html", "Yıkım"], stilobat: ["stilobat.html", "Stilobat"] };
   var last = null; try { last = localStorage.getItem("qg_last"); } catch (e) {}
   [].forEach.call(document.querySelectorAll(".qmt[data-g]"), function (a) {
     if (window.geliyorMu && geliyorMu(a.getAttribute("data-g"))) return;

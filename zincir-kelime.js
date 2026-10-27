@@ -1,0 +1,38 @@
+/* Kelime Zinciri – zincirler. Her zincirde yan yana iki kelime anlamlı bir ikili kurar (KALEM → TIRAŞ: "kalemtıraş", TIRAŞ → BIÇAĞI: "tıraş bıçağı").
+   Kelime, bir öncekiyle kurduğu ikilide nasıl yazılıyorsa öyle (BIÇAĞI); sonrakiyle kökü üzerinden bağlanabilir (bıçak sırtı).
+   Yeni zincir eklemek için listeye büyük harfle yeni bir satır ekle; oyun ilk kelimeyi açık, diğerlerini ilk harfiyle gösterir. */
+window.ZINCIRLER = [
+  ["KALEM", "TIRAŞ", "BIÇAĞI", "SIRTI", "ÇANTASI", "ASKISI"],
+  ["GÖZ", "KAPAĞI", "KIZI", "KULESİ", "SAATİ", "BAŞI", "AĞRISI"],
+  ["KAHVE", "FİNCANI", "TAKIMI", "ELBİSE", "DOLABI", "KAPAĞI"],
+  ["DENİZ", "FENERİ", "ALAYI", "KONUSU", "BAŞLIĞI", "PARASI"],
+  ["ÇAY", "BAHÇESİ", "KAPISI", "KOLU", "SAATİ", "FARKI"],
+  ["GÜNEŞ", "GÖZLÜĞÜ", "CAMI", "KENARI", "MAHALLE", "BASKISI"],
+  ["AY", "IŞIĞI", "YILI", "SONU", "DAKİKA", "GOLÜ"],
+  ["ATEŞ", "BÖCEĞİ", "İLACI", "KUTUSU", "OYUNU", "ALANI", "ADI"],
+  ["KAR", "MASKESİ", "BALOSU", "SALONU", "KÖPEĞİ", "BALIĞI", "AĞI"],
+  ["TELEFON", "REHBERİ", "ÖĞRETMEN", "ODASI", "ARKADAŞI", "CANLISI"],
+  ["DOĞUM", "GÜNÜ", "IŞIĞI", "GÖSTERİSİ", "DÜNYASI", "KUPASI", "KIZI"],
+  ["YAZ", "TATİLİ", "KÖYÜ", "KAHVESİ", "FALI", "TAŞI", "BASKI"],
+  ["KİTAP", "FUARI", "ALANI", "ADI", "GÜNÜ", "BATIMI"],
+  ["SABAH", "KAHVALTISI", "SOFRASI", "BEZİ", "BEBEK", "ARABASI", "YARIŞI"],
+  ["HAVA", "YASTIĞI", "SAVAŞI", "GEMİSİ", "KAPTANI", "KÖŞKÜ"],
+  ["OKUL", "ZİLİ", "SESİ", "TELİ", "DOLAP", "BEYGİRİ"],
+  ["ÇİÇEK", "BAHÇESİ", "KAPISI", "ZİLİ", "SESİ", "TONU", "BALIĞI"],
+  ["ALTIN", "KAFES", "KUŞU", "SÜTÜ", "DİŞİ", "FIRÇASI"],
+  ["GECE", "BEKÇİSİ", "KÖPEĞİ", "BALIĞI", "PAZARI", "GÜNÜ", "IŞIĞI"],
+  ["BUZ", "DAĞI", "KEÇİSİ", "SÜTÜ", "KARDEŞİ", "PAYI"],
+  ["RÜZGAR", "GÜLÜ", "SUYU", "YOLU", "ARKADAŞI", "CANLISI"],
+  ["KUM", "SAATİ", "BAŞI", "AĞRISI", "KESİCİ", "ALET"],
+  ["FİLM", "YILDIZI", "FALI", "TAŞI", "DEVRİ", "TESLİM", "TARİHİ"],
+  ["OYUN", "HAMURU", "İŞİ", "YERİ", "FISTIĞI", "EZMESİ"],
+  ["ÖĞLE", "YEMEĞİ", "MASASI", "TENİSİ", "TOPU", "SAKAL"],
+  ["SU", "KABAĞI", "TATLISI", "DİL", "BİLGİSİ", "YARIŞMASI"],
+  ["KUZU", "KULAĞI", "MİSAFİRİ", "ODASI", "KAPISI", "ZİLİ"],
+  ["AYAKKABI", "BOYASI", "KALEMİ", "TIRAŞ", "KÖPÜĞÜ", "BANYOSU"],
+  ["SOL", "EL", "YAZISI", "TAHTASI", "KAŞIK", "DÜŞMANI"],
+  ["BAL", "MUMU", "IŞIĞI", "HIZI", "TRENİ", "İSTASYONU"],
+  ["KARPUZ", "ÇEKİRDEĞİ", "AİLE", "ALBÜMÜ", "KAPAĞI", "FOTOĞRAFI"],
+  ["TİYATRO", "PERDESİ", "ARKASI", "BAHÇE", "KAPISI", "KOLU"],
+  ["KIRMIZI", "BİBER", "DOLMASI", "KALEM", "KUTUSU", "OYUNU", "PARKI"]
+];

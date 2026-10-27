@@ -409,7 +409,7 @@
     if (kalanCephane(silah) <= 0) silah = "bazuka";
     simRng = rng(((G_.seed || 1) + (G_.tur || 0) * 7919) >>> 0);
     odakla(aktif.x, aktif.y - 40, Math.max(kamera.z, 0.9)); kamera.serbest = 0;
-    ses("sira"); arayuz();
+    ses("sira"); arayuz(); canliOnce = ""; canliGonder(true);
   }
   var basNesne = null;
   function kalanCephane(w) { return kalanU(ME, w); }
@@ -421,6 +421,7 @@
     mod = "atis"; cozT = 0; atisT = 0; turDegisim = 0;
     tumKurt().forEach(function (k) { k.hasar = 0; });
     if (a.w !== "pas") ates(aktif, a);
+    canliAtisGonder(bekleyen);
     arayuz();
   }
   function yolSikistir(L) { var out = L.map(function (v) { return Math.round(v); }); while (out.length > 80) { var y = []; for (var i = 0; i < out.length; i += 4) { y.push(out[i], out[i + 1]); } if (y[y.length - 2] !== out[out.length - 2]) y.push(out[out.length - 2], out[out.length - 1]); out = y; } return out; }
@@ -434,7 +435,7 @@
     if (atisT > 0) atisT -= dt;
     turDegisim += dt;
     if (sakinMi()) cozT += dt; else cozT = 0;
-    if (cozT > 0.9 || turDegisim > 30) {
+    if (cozT > 0.5 || turDegisim > 20) {
       if (mod === "atis") { try { turuYaz(); } catch (e) { try { console.warn("tp-yaz", e && e.stack); } catch (x) {} mod = "atis"; cozT = -2; } } else if (mod === "tekrar") tekrarBitti();
     }
   }
@@ -475,7 +476,7 @@
     var k = (S.kurt[s.u] || [])[s.i]; if (!k) { durumUygula(d); return; }
     mod = "tekrar"; aktif = k; simRng = rng(((d.seed || 1) + ((s.n || 1) - 1) * 7919) >>> 0);
     tumKurt().forEach(function (w) { w.hasar = 0; });
-    tekrarIs = { d: d, yol: s.yol || [], j: 2, bekle: 0.8, atis: s.atis, atildi: false };
+    tekrarIs = { d: d, yol: s.yol || [], j: 2, bekle: 0.3, atis: s.atis, atildi: false };
     if (tekrarIs.yol.length >= 2) { k.x = tekrarIs.yol[0]; k.y = tekrarIs.yol[1]; }
     odakla(k.x, k.y - 40, Math.max(0.8, kamera.z)); kamera.serbest = 0;
     arayuz();
@@ -485,18 +486,24 @@
     if (t.bekle > 0) { t.bekle -= dt; return; }
     if (!t.atildi) {
       if (t.j < t.yol.length) {
-        var tx = t.yol[t.j], ty = t.yol[t.j + 1], dx = tx - k.x, dy = ty - k.y, L = Math.hypot(dx, dy), st = 90 * dt;
+        var tx = t.yol[t.j], ty = t.yol[t.j + 1], dx = tx - k.x, dy = ty - k.y, L = Math.hypot(dx, dy), st = 240 * dt;
         if (Math.abs(dx) > 0.5) k.yon = dx > 0 ? 1 : -1;
         if (L <= st) { k.x = tx; k.y = ty; t.j += 2; } else { k.x += dx / L * st; k.y += dy / L * st; k.yuruT = 1; k.yuruAn = 0.12; }
         return;
       }
-      t.atildi = true; t.nisanT = 0.7; nisan.a = t.atis.a; nisan.p = t.atis.p; nisan.var = true; return;
+      t.atildi = true; t.nisanT = 0.4; nisan.a = t.atis.a; nisan.p = t.atis.p; nisan.var = true; return;
     }
     if (t.nisanT > 0) { t.nisanT -= dt; if (t.nisanT <= 0) { nisan.var = false; mod = "tekrar"; cozT = 0; atisT = 0; turDegisim = 0; if (t.atis.w !== "pas") ates(k, t.atis); else yaziEkle(k.x, k.y - 30, "pas", "#fff"); t.atesli = true; } return; }
   }
   function tekrarBitti() {
+    var canliTur = tekrarIs && tekrarIs.canli;
     var d = tekrarIs ? tekrarIs.d : G_; tekrarIs = null;
     tumKurt().forEach(function (k) { if (!k.olu && k.hp <= 0) olum(k); });
+    if (canliTur) {                                                        /* canlı izlenen atış bitti: kesin sonucu bekle ya da hemen otur */
+      if (G_ && G_.son && G_.son.n >= canliTur) { gorulen[G_.n] = G_.son.n; gorKaydet(); durumUygula(G_, true); }
+      else { mod = "canliBekle"; arayuz(); }
+      return;
+    }
     gorulen[d.n] = d.son ? d.son.n : 0; gorKaydet();
     var son = G_ || d;
     if (son.n === d.n && son.son && son.son.u !== ME && son.son.n > gorulen[d.n]) { tekrarBaslat(son); return; }
@@ -518,6 +525,55 @@
   }
   function gorKaydet() { try { localStorage.setItem("tp_gor", JSON.stringify(gorulen)); } catch (e) {} }
   try { gorulen = JSON.parse(localStorage.getItem("tp_gor") || "{}") || {}; } catch (e) { gorulen = {}; }
+
+  /* ---------- canlı izleme: sırası gelen kendi "tepe/canli_<uid>" dokümanına yürüyüşünü, nişanını ve atışını yazar ---------- */
+  var canliRef = null, canliDinle = null, canliSon = 0, canliOnce = "", canliW = "bazuka", canliHedef = null, canliOynanan = { n: -1, tur: -1 };
+  function canliKur() {
+    if (canliRef || !D.db || !ME || !OTHER) return;
+    canliRef = D.db.collection("tepe").doc("canli_" + ME);
+    canliDinle = D.db.collection("tepe").doc("canli_" + OTHER).onSnapshot(function (snap) { if (snap.exists) canliGeldi(snap.data()); }, function () {});
+  }
+  function canliGonder(zorla) {
+    if (!canliRef || !aktif || !G_) return;
+    var simdi = Date.now(); if (!zorla && simdi - canliSon < 220) return;
+    var v = { sira: ME, n: G_.n, tur: G_.tur || 0, i: aktif.i, x: Math.round(aktif.x), y: Math.round(aktif.y), yon: aktif.yon, a: r3(nisan.a), p: r3(nisan.p), nv: !!nisan.var, w: silah, yu: yuruYon ? 1 : 0, atis: null };
+    var k = JSON.stringify(v); if (k === canliOnce) return; canliOnce = k; canliSon = simdi;
+    v.zt = simdi; canliRef.set(v).catch(function () {});
+  }
+  function canliAtisGonder(b) {
+    if (!canliRef || !G_ || !b) return;
+    var v = { sira: ME, n: G_.n, tur: G_.tur || 0, i: b.i, x: Math.round(aktif.x), y: Math.round(aktif.y), yon: aktif.yon, a: b.a.a, p: b.a.p, nv: false, w: b.a.w, yu: 0, zt: Date.now(),
+      atis: JSON.parse(JSON.stringify({ a: b.a, once: b.once, nesne: b.nesne, ruzgar: b.ruzgar, kc: harita.kc })) };
+    canliOnce = ""; canliRef.set(v).catch(function () {});
+  }
+  function canliGeldi(c) {
+    if (!G_ || G_.bitti || G_.sira !== OTHER || c.sira !== OTHER || c.n !== G_.n || (c.tur || 0) !== (G_.tur || 0)) return;
+    if (Date.now() - (c.zt || 0) > 180000) return;
+    if (mod === "tekrar" || mod === "atis" || mod === "yaziyor" || mod === "hareket") return;
+    var k = (S.kurt[OTHER] || [])[c.i]; if (!k || k.olu) return;
+    if (c.atis) {                                                          /* atış: aynı başlangıçtan aynı fizikle hemen oynat */
+      if (canliOynanan.n === c.n && canliOynanan.tur === c.tur + 1) return;
+      var at = c.atis; if (at.kc !== harita.kc) return;                    /* arazi farklı: kesin sonuç gelince baştan izlenir */
+      canliOynanan = { n: c.n, tur: c.tur + 1 };
+      durumYukle(G_, at.once, at.nesne); S.mermi = []; S.ruzgar = at.ruzgar || 0;
+      aktif = S.kurt[OTHER][c.i]; if (!aktif) return;
+      mod = "tekrar"; simRng = rng(((G_.seed || 1) + (c.tur || 0) * 7919) >>> 0);
+      tumKurt().forEach(function (w) { w.hasar = 0; });
+      tekrarIs = { d: G_, yol: [], j: 0, bekle: 0, atis: at.a, atildi: true, nisanT: 0, atesli: true, canli: c.tur + 1 };
+      nisan.var = false; cozT = 0; atisT = 0; turDegisim = 0;
+      if (at.a.w !== "pas") ates(aktif, at.a); else yaziEkle(aktif.x, aktif.y - 30, "pas", "#fff");
+      kamera.serbest = 0; arayuz(); return;
+    }
+    if (mod !== "canli") { mod = "canli"; aktif = k; odakla(k.x, k.y - 40, Math.max(kamera.z, 0.9)); kamera.serbest = 0; ses("sira"); arayuz(); }
+    aktif = k; canliHedef = { x: c.x, y: c.y, yu: c.yu }; k.yon = c.yon || k.yon;
+    nisan.a = c.a; nisan.p = c.p; nisan.var = !!c.nv; canliW = SILAH[c.w] ? c.w : "bazuka";
+  }
+  function canliAdim(dt) {
+    var k = aktif, h = canliHedef; if (!k || !h) return;
+    var dx = h.x - k.x, dy = h.y - k.y, L = Math.hypot(dx, dy);
+    if (L > 300) { k.x = h.x; k.y = h.y; return; }
+    if (L > 0.5) { var st = Math.max(70, L * 6) * dt; if (st >= L) { k.x = h.x; k.y = h.y; } else { k.x += dx / L * st; k.y += dy / L * st; } if (Math.abs(dx) > 1) { k.yuruT = 1; k.yuruAn = 0.12; } }
+  }
 
   /* ---------- Duello ---------- */
   D = window.Duello({
@@ -547,7 +603,7 @@
     seriKod: function (d) { return d.sonuc === "pes" ? 99 : Math.min(98, d.tur || 0); }
   });
   function macGeldi(d, ilk) {
-    ME = D.me; OTHER = D.other || (d.a === ME ? d.b : d.a);
+    ME = D.me; OTHER = D.other || (d.a === ME ? d.b : d.a); canliKur();
     var onceki = G_; G_ = d;
     if (ilk || !onceki || onceki.n !== d.n) {
       S.kraterler = []; harita.seed = -1; S.parca = []; S.izler = []; S.yazi = [];
@@ -556,8 +612,13 @@
       else { durumUygula(d); if (ilkKurulum) { kamera.x = kamera.hx; kamera.y = kamera.hy; kamera.z = kamera.hz; } }
       ilkKurulum = false; arayuz(); return;
     }
+    if (d.son && d.son.u !== ME && canliOynanan.n === d.n && canliOynanan.tur === d.son.n && d.son.n > (gorulen[d.n] || 0)) {
+      if (mod === "tekrar" && tekrarIs && tekrarIs.canli) { arayuz(); return; }           /* canlı simülasyon sürüyor; bitince oturur */
+      gorulen[d.n] = d.son.n; gorKaydet(); durumUygula(d, true); return;
+    }
     if (d.son && d.son.n > (gorulen[d.n] || 0) && d.son.u !== ME) { if (mod === "tekrar") { tekrarIs && (tekrarIs.sonraki = d); return; } tekrarBaslat(d); return; }
     if (mod === "atis" || mod === "yaziyor" || mod === "tekrar") { arayuz(); return; }
+    if (mod === "canli" && !d.bitti && d.sira === OTHER) { arayuz(); return; }
     if (d.bitti && mod !== "bitti") { durumUygula(d); return; }
     if (!d.bitti && d.sira === ME && mod !== "hareket") { durumUygula(d); return; }
     arayuz();
@@ -613,8 +674,8 @@
     else { ctx.fillStyle = rk.koyu; ctx.beginPath(); ctx.ellipse(0, -8, 8.8, 4.8, 0, Math.PI, 0); ctx.fill(); ctx.beginPath(); ctx.ellipse(yon * 7, -8, 6, 1.8, 0, 0, 7); ctx.fill(); }
     ctx.restore();
     /* silah */
-    if (k === aktif && (mod === "hareket" || (mod === "tekrar" && nisan.var))) {
-      var a = nisan.a, w = SILAH[mod === "tekrar" && tekrarIs ? tekrarIs.atis.w : silah] || SILAH.bazuka;
+    if (k === aktif && (mod === "hareket" || ((mod === "tekrar" || mod === "canli") && nisan.var) || mod === "canli")) {
+      var a = nisan.a, w = SILAH[mod === "tekrar" && tekrarIs ? tekrarIs.atis.w : mod === "canli" ? canliW : silah] || SILAH.bazuka;
       ctx.save(); ctx.translate(x, y - 3); ctx.rotate(a); if (Math.cos(a) < 0) ctx.scale(1, -1);
       if (w.tip === "sopa") { ctx.fillStyle = "#c58b4a"; ctx.fillRect(4, -1.5, 18, 3); ctx.fillRect(18, -2.5, 6, 5); }
       else if (w.tip === "mermi" && silahAd(w) === "Bazuka") { ctx.fillStyle = "#4a6b3a"; ctx.fillRect(2, -3, 20, 6); ctx.fillStyle = "#2f4626"; ctx.fillRect(20, -3.5, 4, 7); }
@@ -707,19 +768,19 @@
     tumKurt().forEach(function (k) { kurtCiz(k, t); });
     S.alev.forEach(function (f) { alevCiz(f, t); });
     if (mod === "hareket" && aktif) { izYolu(aktif); nisanCiz(aktif); }
-    if (mod === "tekrar" && aktif && nisan.var) nisanCiz(aktif);
+    if ((mod === "tekrar" || mod === "canli") && aktif && nisan.var) nisanCiz(aktif);
     S.mermi.forEach(mermiCiz);
     S.parca.forEach(function (p) { var o = Math.max(0, Math.min(1, p.omur * 1.5)) * p.o; ctx.fillStyle = "rgba(" + p.renk + "," + o + ")"; ctx.beginPath(); ctx.arc(p.x, p.y, p.b, 0, 7); ctx.fill(); });
     suCiz(t);
     tumKurt().forEach(etiketCiz);
-    if (aktif && !aktif.olu && (mod === "hareket" || mod === "tekrar")) { var ay = aktif.y - 44 - Math.abs(Math.sin(t * 4)) * 5; ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.moveTo(aktif.x - 6, ay); ctx.lineTo(aktif.x + 6, ay); ctx.lineTo(aktif.x, ay + 7); ctx.fill(); }
+    if (aktif && !aktif.olu && (mod === "hareket" || mod === "tekrar" || mod === "canli")) { var ay = aktif.y - 44 - Math.abs(Math.sin(t * 4)) * 5; ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.moveTo(aktif.x - 6, ay); ctx.lineTo(aktif.x + 6, ay); ctx.lineTo(aktif.x, ay + 7); ctx.fill(); }
     if (hedef && mod === "hareket") { ctx.strokeStyle = "#fff"; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(hedef.x, hedef.y, 14, 0, 7); ctx.moveTo(hedef.x - 20, hedef.y); ctx.lineTo(hedef.x + 20, hedef.y); ctx.moveTo(hedef.x, hedef.y - 20); ctx.lineTo(hedef.x, hedef.y + 20); ctx.stroke(); }
     S.yazi.forEach(function (y) { ctx.font = "900 15px Nunito, system-ui, sans-serif"; ctx.textAlign = "center"; ctx.lineWidth = 3.5; ctx.strokeStyle = "rgba(20,10,30," + Math.min(1, y.o) * 0.8 + ")"; ctx.strokeText(y.t, y.x, y.y); ctx.fillStyle = y.renk; ctx.globalAlpha = Math.min(1, y.o); ctx.fillText(y.t, y.x, y.y); ctx.globalAlpha = 1; });
   }
   function nisanCiz(k) {
     var a = nisan.a, cx = k.x + Math.cos(a) * 48, cy = k.y - 3 + Math.sin(a) * 48;
     ctx.strokeStyle = "rgba(255,80,80,.95)"; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(cx, cy, 6, 0, 7); ctx.moveTo(cx - 10, cy); ctx.lineTo(cx - 3, cy); ctx.moveTo(cx + 3, cy); ctx.lineTo(cx + 10, cy); ctx.moveTo(cx, cy - 10); ctx.lineTo(cx, cy - 3); ctx.moveTo(cx, cy + 3); ctx.lineTo(cx, cy + 10); ctx.stroke();
-    var w = SILAH[mod === "tekrar" && tekrarIs ? tekrarIs.atis.w : silah];
+    var w = SILAH[mod === "tekrar" && tekrarIs ? tekrarIs.atis.w : mod === "canli" ? canliW : silah];
     if (nisan.var && w && w.tip === "mermi") {
       for (var i = 0; i < 12; i++) { var f = i / 12; if (f > nisan.p) break; var rr = 2 + f * 5; ctx.fillStyle = "hsl(" + (60 - f * 60) + ",95%,55%)"; ctx.beginPath(); ctx.arc(k.x + Math.cos(a) * (16 + f * 60), k.y - 3 + Math.sin(a) * (16 + f * 60), rr, 0, 7); ctx.fill(); }
     }
@@ -735,12 +796,14 @@
       var h = Math.min(adim, kalan); kalan -= h;
       if (mod === "hareket" && aktif && !aktif.olu) yuruAdim(h);
       if (mod === "tekrar") tekrarAdim(h);
-      tumKurt().forEach(function (k) { if (!(mod === "tekrar" && k === aktif && tekrarIs && !tekrarIs.atesli)) kurtAdim(k, h); });
+      if (mod === "canli") canliAdim(h);
+      tumKurt().forEach(function (k) { if (!(mod === "tekrar" && k === aktif && tekrarIs && !tekrarIs.atesli) && !(mod === "canli" && k === aktif)) kurtAdim(k, h); });
       S.mermi.forEach(function (m) { mermiAdim(m, h); }); S.mermi = S.mermi.filter(function (m) { return !m.sil; });
       if (mod !== "yok") { nesneAdim(h); alevAdim(h); }
     }
     tumKurt().forEach(function (k) { if (k.yuruAn > 0) k.yuruAn -= dt; k.gor += (k.hp - k.gor) * Math.min(1, dt * 4); });
     if (mod === "atis" || (mod === "tekrar" && tekrarIs && tekrarIs.atesli)) cozumAdim(dt);
+    if (mod === "hareket") canliGonder(false);
     efektAdim(dt);
     bulutlar.forEach(function (b) { b.x += (8 + S.ruzgar * 40) * b.s * dt; if (b.x > W + 200) b.x = -200; if (b.x < -220) b.x = W + 180; });
     kameraAdim(dt);
@@ -767,6 +830,7 @@
     var odak = null;
     if (!kamera.serbest) {
       if (S.mermi.length) { var m = S.mermi[0]; odak = [m.x, m.y]; }
+      else if (mod === "canli" && aktif) odak = [aktif.x, aktif.y - 40];
       else if ((mod === "tekrar" || mod === "atis") && aktif) { var hv = tumKurt().filter(function (k) { return k.hava && !k.olu; })[0]; odak = hv ? [hv.x, hv.y - 30] : null; }
       if (odak) { kamera.hx = odak[0]; kamera.hy = odak[1]; }
     }
@@ -866,7 +930,7 @@
     var t = "";
     if (!G_) t = "Bağlanıyor…";
     else if (G_.bitti && mod !== "tekrar") t = G_.kazanan === ME ? "Kazandın 🏆" : G_.kazanan ? "Kaybettin" : "Berabere";
-    else if (mod === "tekrar") t = (D.adlar[OTHER] || "Rakip") + " oynuyor…";
+    else if (mod === "tekrar" || mod === "canli" || mod === "canliBekle") t = (D.adlar[OTHER] || "Rakip") + " oynuyor…";
     else if (mod === "hareket") t = "Sıra sende · " + (aktif ? aktif.ad : "");
     else if (mod === "atis" || mod === "yaziyor") t = "…";
     else if (mod === "yazamadi") t = "Kaydedilemedi";
@@ -876,7 +940,7 @@
     $("fitil").hidden = !w.fitil; [].forEach.call($("fitil").querySelectorAll("button"), function (b) { b.classList.toggle("on", +b.getAttribute("data-f") === fitil); });
     $("bAtes").hidden = !(w.tip === "birak" || w.tip === "aninda" || (w.tip === "hedef" && hedef));
     $("ipucu").textContent = !benim ? "" : w.tip === "hedef" ? (hedef ? "Hedef seçildi · Ateş!" : silah === "isinla" ? "Haritada gideceğin yere dokun" : silah === "gudumlu" ? "Füzenin gideceği yere dokun" : "Haritada vuracağın yere dokun") : w.tip === "aninda" ? "Herkesi sallar, 10 hasar · Ateş!" : w.koyun ? "Koyunu at, 5 sn yürüyüp patlar" : w.mayin ? "At; biri yaklaşınca patlar" : w.kazma ? "Kazmak istediğin yöne çek, bırak" : w.lazer ? "Hizadaki herkesi deler · çek, bırak" : w.yumruk ? "Yanındakini havaya uçurur · çek, bırak" : "Karakterini tut, geri çek, bırak";
-    $("pMe").classList.toggle("on", benim); $("pOther").classList.toggle("on", mod === "tekrar" || (G_ && !G_.bitti && G_.sira === OTHER));
+    $("pMe").classList.toggle("on", benim); $("pOther").classList.toggle("on", mod === "tekrar" || mod === "canli" || (G_ && !G_.bitti && G_.sira === OTHER));
     arayuzCan();
   }
   $("bResign").onclick = function () { if (!G_ || G_.bitti) return; $("confirm").hidden = false; };
@@ -898,7 +962,7 @@
   });
   secimCiz();
   /* bitiş kartı: tekrar bitince göster */
-  var _bit = D.bitisGoster; D.bitisGoster = function () { if (mod === "tekrar") { setTimeout(D.bitisGoster, 600); return; } _bit(); };
+  var _bit = D.bitisGoster; D.bitisGoster = function () { if (mod === "tekrar" || mod === "canliBekle") { setTimeout(D.bitisGoster, 600); return; } _bit(); };
   requestAnimationFrame(dongu);
   arayuz();
   if (location.hash === "#test") window.__tp = {

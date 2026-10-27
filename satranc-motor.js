@@ -115,7 +115,7 @@
     if (kn === 0) { for (i = 1; i < bish.length; i++) if (bish[i] !== bish[0]) return false; return true; }   /* aynı renk karelerde filler */
     return false;
   }
-  function anahtar(st) { return st.b.join("") + st.w + (st.c.K ? "K" : "") + (st.c.Q ? "Q" : "") + (st.c.k ? "k" : "") + (st.c.q ? "q" : "") + st.ep; }
+  function anahtar(st) { return st.b.map(function (x) { return x || "."; }).join("") + st.w + (st.c.K ? "K" : "") + (st.c.Q ? "Q" : "") + (st.c.k ? "k" : "") + (st.c.q ? "q" : "") + st.ep; }
   /* durum: "" | "sah" | "mat" | "pat" | "yetersiz" | "50" ; tekrar üç kez oluşumu çağıran taraf geçmişten bakar */
   function durum(st, legal) {
     var white = st.w === "w", sah = sahta(st, white);
