@@ -153,6 +153,7 @@
     if (k === "asmaca") { if (!mc.ilerleme) return null; var ad5 = mc.adet || 5, il = mc.ilerleme || {}, bi = il[ben] && il[ben].s ? il[ben].s.length : 0;
       if (mc.mod === "yaz" && !(mc.hazir && mc.hazir[ben])) return { ben: true, t: "kelimeleri yaz" };
       return bi < ad5 ? { ben: true, t: (bi + 1) + ". kelimede" } : { ben: false, t: "o çözüyor" }; }
+    if (k === "zincir" && mc.mod === "yaz") { if (!mc.hazir || !mc.hazir[ben]) return { ben: true, t: "zincirini yaz" }; if (!mc.hazir[oth]) return { ben: false, t: "o yazıyor" }; }
     if (k === "sayi" || k === "amiral") { if (!mc.hazir || !mc.hazir[ben]) return { ben: true, t: k === "sayi" ? "sayını belirle" : "filonu diz" }; if (!mc.hazir[oth]) return { ben: false, t: "onu bekliyorsun" }; }
     return mc.sira === ben ? { ben: true, t: "sıra sende" } : { ben: false, t: "sıra " + (oyuncular[mc.sira] ? ekDe(adOf(mc.sira)) : "onda") };
   }

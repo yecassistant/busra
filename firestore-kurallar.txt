@@ -1,0 +1,98 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function uye() { return request.auth != null && request.auth.token.email in ['bus@queengames.app', 'yec@queengames.app']; }
+
+    match /oyuncular/{uid} {
+      allow read: if uye();
+      allow write: if uye() && request.auth.uid == uid;
+    }
+
+    match /akis/{id} {
+      allow read: if uye();
+      allow create: if uye() && request.resource.data.uid == request.auth.uid && request.resource.data.size() <= 6;
+      allow update, delete: if false;
+    }
+
+    match /hafiza/{id} {
+      allow read: if uye();
+      allow create: if uye();
+      allow update: if uye() && (id == "seri" || resource.data.sira == request.auth.uid || resource.data.bitti == true || request.resource.data.diff(resource.data).affectedKeys().hasOnly(['gorulen', 't']));
+      allow delete: if false;
+    }
+
+    match /satranc/{id} {
+      allow read: if uye();
+      allow create: if uye();
+      allow update: if uye() && (id == "seri" || resource.data.sira == request.auth.uid || resource.data.bitti == true || (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['bitti', 'sonuc', 'kazanan', 'teklif', 't', 'v']) && request.resource.data.kazanan != request.auth.uid));
+      allow delete: if false;
+    }
+
+    match /sayi/{id} {
+      allow read: if uye();
+      allow create: if uye();
+      allow update: if uye() && (id == "seri" || resource.data.sira == request.auth.uid || resource.data.bitti == true
+        || (resource.data.sira == "" && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['gizli', 'hazir', 'sira', 't', 'v']))
+        || (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['bitti', 'sonuc', 'kazanan', 'sira', 't', 'v']) && request.resource.data.kazanan != request.auth.uid));
+      allow delete: if false;
+    }
+
+    match /amiral/{id} {
+      allow read: if uye();
+      allow create: if uye();
+      allow update: if uye() && (id == "seri" || resource.data.sira == request.auth.uid || resource.data.bitti == true
+        || (resource.data.sira == "" && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['yer', 'hazir', 'sira', 't', 'v']))
+        || (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['bitti', 'sonuc', 'kazanan', 'sira', 't', 'v']) && request.resource.data.kazanan != request.auth.uid));
+      allow delete: if false;
+    }
+
+    match /asmaca/{id} {
+      allow read: if uye();
+      allow create: if uye();
+      allow update: if uye() && (id == "seri" || resource.data.bitti == true || !('ilerleme' in resource.data)
+        || (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['ilerleme', 'yazilan', 'yazIp', 'hazir', 'bitti', 'sonuc', 'kazanan', 'sira', 't', 'v'])
+          && request.resource.data.ilerleme.diff(resource.data.ilerleme).affectedKeys().hasOnly([request.auth.uid])
+          && (!('yazilan' in request.resource.data.diff(resource.data).affectedKeys()) || request.resource.data.yazilan.diff(resource.data.yazilan).affectedKeys().hasOnly([request.auth.uid]))
+          && (!('yazIp' in request.resource.data.diff(resource.data).affectedKeys()) || request.resource.data.yazIp.diff(resource.data.yazIp).affectedKeys().hasOnly([request.auth.uid]))
+          && (!('hazir' in request.resource.data.diff(resource.data).affectedKeys()) || request.resource.data.hazir.diff(resource.data.hazir).affectedKeys().hasOnly([request.auth.uid]))));
+      allow delete: if false;
+    }
+
+    match /xox/{id} {
+      allow read: if uye();
+      allow create: if uye();
+      allow update: if uye() && (id == "seri" || resource.data.sira == request.auth.uid || resource.data.bitti == true
+        || (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['bitti', 'sonuc', 'kazanan', 'sira', 'cizgi', 't', 'v']) && request.resource.data.kazanan != request.auth.uid));
+      allow delete: if false;
+    }
+
+    match /tepe/{id} {
+      allow read: if uye();
+      allow create: if uye();
+      allow update: if uye() && (id == "seri" || resource.data.sira == request.auth.uid || resource.data.bitti == true
+        || (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['bitti', 'sonuc', 'kazanan', 'sira', 't', 'v']) && request.resource.data.kazanan != request.auth.uid));
+      allow delete: if false;
+    }
+
+    match /zincir/{id} {
+      allow read: if uye();
+      allow create: if uye();
+      allow update: if uye() && (id == "seri" || resource.data.sira == request.auth.uid || resource.data.bitti == true
+        || (resource.data.sira == "" && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['yer', 'hazir', 'cz', 'sira', 't', 'v']))
+        || (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['bitti', 'sonuc', 'kazanan', 'sira', 't', 'v']) && request.resource.data.kazanan != request.auth.uid));
+      allow delete: if false;
+    }
+
+    match /ciftlik/{uid} {
+      allow read: if uye();
+      allow write: if uye() && request.auth.uid == uid;
+    }
+
+    match /takvim/{uid} {
+      allow read: if uye();
+      allow write: if uye() && request.auth.uid == uid;
+    }
+
+    match /{rest=**} { allow read, write: if false; }
+  }
+}

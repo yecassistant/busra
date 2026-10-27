@@ -292,6 +292,8 @@
         db.collection(x[0]).doc("mac").get().then(function (snap) {
           var d = snap.exists ? snap.data() : null, badge = document.getElementById(x[1]), sub = document.getElementById(x[2]); if (!d) return;
           if (d.bitti) { badge.textContent = "yeni oyun"; sub.textContent = d.kazanan ? (d.kazanan === k.uid ? "Son oyunu sen kazandın." : "Son oyunu kaybettin.") + " Yeni oyunu ikiniz de kurabilirsiniz." : "Son oyun berabere bitti."; return; }
+          if (x[0] === "zincir" && d.mod === "yaz" && (!d.hazir || !d.hazir[k.uid])) { badge.textContent = "sıra sende"; badge.className = "qmnew qmturn"; sub.textContent = "Zincirini yaz, o çözecek."; return; }
+          if (x[0] === "zincir" && d.mod === "yaz" && !d.hazir[d.a === k.uid ? d.b : d.a]) { badge.textContent = "o yazıyor"; sub.textContent = "Senin zincirin hazır, onunkini bekliyorsun."; return; }
           if (x[3] === "hamle") { if (d.sira === k.uid) { badge.textContent = "sıra sende"; badge.className = "qmnew qmturn"; sub.textContent = x[0] === "tepe" ? "Sıra sende · nişan al, ateşle." : x[0] === "zincir" ? "Sıra sende · sıradaki kelimeyi bil." : "Sıra sende · hamleni yap."; } else { badge.textContent = "sırası onda"; sub.textContent = "Hamlesini yapınca sıra sana geçer."; } return; }
           if (!d.hazir || !d.hazir[k.uid]) { badge.textContent = "sıra sende"; badge.className = "qmnew qmturn"; sub.textContent = x[0] === "sayi" ? "Gizli sayını belirle, oyun başlasın." : "Filonu yerleştir, oyun başlasın."; return; }
           if (!d.hazir[d.a === k.uid ? d.b : d.a]) { badge.textContent = "o hazırlanıyor"; sub.textContent = "Senin tarafın hazır, onu bekliyorsun."; return; }

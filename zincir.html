@@ -39,7 +39,19 @@
     <div class="hdp" id="pOther"><span class="hsava a" id="avaOther">?</span><div class="sdpt"><small id="adOther">rakip</small><b class="zcpuan" id="skorOther">0</b></div></div>
   </div>
 
-  <div class="zcalan" id="alan" hidden><div class="zczincir" id="zincir"></div></div>
+  <div class="zcsekme" id="sekme" hidden><button type="button" id="sekBen" class="on"></button><button type="button" id="sekO"></button></div>
+
+  <div class="zcyaz" id="yazForm" hidden>
+    <div class="zcykart">
+      <b class="zcybas">Zincirini yaz</b>
+      <p class="zcyacik">İlk kelime açık görünür; her kelime bir öncekiyle anlamlı bir ikili kursun (KALEM → TIRAŞ → BIÇAĞI…). Kelimeyi öncekine uyan hâliyle yaz: tıraş <b>BIÇAĞI</b>.</p>
+      <div class="zcyliste" id="yazListe"></div>
+      <p class="zcynot" id="yazNot"></p>
+      <button type="button" class="zctahmin zcykilit" id="bKilitle" disabled>Zinciri kilitle</button>
+    </div>
+  </div>
+
+  <div class="zcalan" id="alan" hidden><p class="zcbeklenot" id="bekleNot" hidden>Zincirin hazır. Öbürü de yazınca sırayla başlıyoruz.</p><div class="zczincir" id="zincir"></div></div>
 
   <div class="zcklavye" id="klavye" hidden>
     <p class="zcnot" id="klavyeNot"></p>
@@ -63,6 +75,8 @@
     <div class="gkkick" id="startKick">İlk oyun</div>
     <h2 id="startTitle">Hazır mısın?</h2>
     <p id="startText"></p>
+    <div class="xoseg zcseg" data-mod-seg><button type="button" data-mod="yaz">Biz yazalım</button><button type="button" data-mod="hazir">Hazır zincir</button></div>
+    <p class="gksmall" data-mod-not></p>
     <button type="button" class="hsbtn" id="startGo">Oyunu kur</button>
     <a class="gkghost hdlink" href="oyunlar.html">Menü</a>
   </div>
@@ -74,6 +88,7 @@
     <h2 id="doneTitle">—</h2>
     <p id="doneText"></p>
     <div class="gkstats" id="doneStats"></div>
+    <div class="xoseg zcseg" data-mod-seg><button type="button" data-mod="yaz">Biz yazalım</button><button type="button" data-mod="hazir">Hazır zincir</button></div>
     <button type="button" class="hsbtn" id="doneNew">Yeni oyun</button>
     <button type="button" class="gkghost" id="doneClose">Tahtaya bak</button>
   </div>
@@ -100,7 +115,8 @@
       <div class="zcsat sonra"><div class="zckel"><span class="zch acik">B</span><span class="zch"></span><span class="zch"></span><span class="zch"></span><span class="zch"></span><span class="zch"></span></div><i class="zcroz cev">bıçağı</i></div>
     </div>
     <p class="gksmall zcornekyazi">kalem<b>tıraş</b> · tıraş <b>bıçağı</b> · bıçak <b>sırtı</b> · sırt <b>çantası</b>… Kelime öncekine göre çekimli olabilir (bıçağı), sonraki ikili kökünden de kurulabilir (bıçak sırtı).</p>
-    <p><b>Sırayla</b> tahmin ediyoruz. Bilen, kapalı harf sayısı kadar puan alır ve bir sonrakine devam eder. Bilemeyen ya da pas diyen kelimenin bir harfini açar, sıra karşıya geçer. Zincir bitince puanı çok olan kazanır.</p>
+    <p><b>Biz yazalım</b> modunda ikimiz de birbirimize 5–6 kelimelik bir zincir yazarız; herkes ötekinin zincirini çözer. <b>Hazır zincir</b> modunda aynı zinciri birlikte çözeriz.</p>
+    <p><b>Sırayla</b> tahmin ediyoruz. Bilen, kapalı harf sayısı kadar puan alır ve bir sonrakine devam eder. Bilemeyen ya da pas diyen kelimenin bir harfini açar, sıra karşıya geçer. Zincirler bitince puanı çok olan kazanır.</p>
     <p class="gksmall">Aynı anda girmemiz gerekmiyor; tahminini yap, çık :)</p>
     <button type="button" class="gkprimary" id="helpGo">Tamam</button>
   </div>
@@ -111,7 +127,7 @@
 <script src="deneme.js?v=1020r"></script>
 <script src="duello.js?v=1020r"></script>
 <script src="zincir-kelime.js?v=1020r"></script>
-<script src="zincir.js?v=1020r"></script>
+<script src="zincir.js?v=1020s"></script>
 <script src="sayi-ses.js?v=1020r"></script>
 </body>
 </html>
