@@ -38,7 +38,7 @@
       var d = gor(i), k = kareler[d], p = b[i], h = hedef.indexOf(i) >= 0;
       var cls = "stsq " + ((((i >> 3) + (i & 7)) & 1) ? "d" : "l") + (i === sel ? " sel" : "") + (h ? (p || (P.st.b[sel] && P.st.b[sel].toLowerCase() === "p" && (i & 7) !== (sel & 7)) ? " cap" : " hint") : "") + (son && (son.f === i || son.t === i) ? " last" : "") + (chk === i ? " chk" : "");
       var html = p ? tasSvg(p) : "";
-      if (d >= 56) html += '<i class="cf">' + "abcdefgh".charAt(i & 7) + "</i>";
+      if (d >= 56) html += '<i class="kf">' + "abcdefgh".charAt(i & 7) + "</i>";
       if (d % 8 === 0) html += '<i class="cr">' + (8 - (i >> 3)) + "</i>";
       if (k.className !== cls) k.className = cls;
       if (k.getAttribute("data-h") !== html) { k.innerHTML = html; k.setAttribute("data-h", html); }

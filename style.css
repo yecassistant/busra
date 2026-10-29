@@ -1653,7 +1653,7 @@ body[data-page="satranc"] .hdbar{min-height:44px}
 .stsq.chk{background-image:radial-gradient(circle,rgba(229,72,111,.85) 0%,rgba(229,72,111,.35) 55%,transparent 72%)}
 .stsq i{position:absolute;font-style:normal;font-size:calc(var(--st-k) * .2);font-weight:800;line-height:1;opacity:.75;pointer-events:none;z-index:0}
 .stsq.l i{color:#8a6448}.stsq.d i{color:#f3e4d2}
-.stsq i.cf{right:2px;bottom:1px}.stsq i.cr{left:2px;top:2px}
+.stsq i.kf{right:2px;bottom:1px}.stsq i.cr{left:2px;top:2px}
 .stfly{position:absolute;z-index:5;pointer-events:none;display:flex;align-items:center;justify-content:center;transition:transform .22s cubic-bezier(.3,.8,.3,1)}
 .stfly svg{width:88%;height:88%}
 .stturn{flex:none;text-align:center;padding:4px 10px;border-radius:12px;line-height:1.15}
@@ -3253,3 +3253,11 @@ body.cz-sec .czkap{filter:blur(4px);opacity:.4}
 .shbalon{position:fixed;right:10px;z-index:86;max-width:76vw;padding:7px 13px;border-radius:16px 16px 4px 16px;background:#fff;color:#2b1650;font:800 .9rem/1.3 "Nunito",system-ui,sans-serif;box-shadow:0 8px 22px rgba(0,0,0,.35);pointer-events:none;-webkit-animation:shAc2 .2s ease-out;animation:shAc2 .2s ease-out;-webkit-transition:opacity .4s;transition:opacity .4s}
 .shbalon.git{opacity:0}
 @-webkit-keyframes shAc2{from{opacity:0;-webkit-transform:translateY(8px)}}@keyframes shAc2{from{opacity:0;transform:translateY(8px)}}
+.shyaz{grid-column:1/-1;display:flex;gap:6px;margin:4px 0 0}
+.shin{flex:1;min-width:0;height:38px;margin:0;padding:0 12px;border:0;border-radius:12px;background:rgba(255,255,255,.12);color:#fff;font:600 16px/38px "Nunito",system-ui,sans-serif;outline:none;box-shadow:inset 0 0 0 1px rgba(255,255,255,.18);-webkit-appearance:none;appearance:none}
+.shin::placeholder{color:rgba(230,220,255,.55)}
+.shin:focus{box-shadow:inset 0 0 0 2px #ff8fb3}
+.shgit{flex:none;width:38px;height:38px;margin:0;padding:0;border:0;border-radius:12px;background:#ff6b9a;color:#fff;font-size:16px;line-height:38px;cursor:pointer}
+.shgit:active{-webkit-transform:scale(.92);transform:scale(.92)}
+.shbalon{pointer-events:auto;white-space:normal;word-break:break-word}
+.shbalon.ben{background:#ff6b9a;color:#fff}
