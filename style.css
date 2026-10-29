@@ -1068,8 +1068,19 @@ button.qmt{padding:12px 14px 14px}
 .qmsoonbtn .qmtx small{color:rgba(255,255,255,.74)}
 /* bölüm başlıkları: Yeni / Geliyor / Oyunlar */
 .qmsec{display:flex;align-items:center;gap:10px;margin:2px 2px -4px;font-family:"Nunito",var(--body);font-weight:800;font-size:.72rem;line-height:1;letter-spacing:.16em;text-transform:uppercase;color:#cdb8ff}
-.qmsec:after{content:"";flex:1;height:1px;background:linear-gradient(90deg,rgba(205,184,255,.5),rgba(205,184,255,0))}
+.qmsec:after{content:"";flex:1;height:1px;background:linear-gradient(90deg,currentColor,transparent);opacity:.42}
 .qmsec[hidden]{display:none}
+.qmsec small{font-weight:700;font-size:.64rem;letter-spacing:.02em;text-transform:none;color:inherit;opacity:.68;white-space:nowrap}
+.qmsec-yeni{color:#ffd166}.qmsec-iki{color:#ffa9c9}.qmsec-tek{color:#8fe3c4}.qmsec-ani{color:#a7c3ff}.qmsec-yolda{color:#cdb8ff}
+.qmnew:empty{display:none}
+/* ilk oyunlarımız: "beni unutma" çiçeği */
+.qmaninot{display:flex;align-items:center;gap:8px;margin:-6px 2px -4px;font-family:"Caveat",var(--hand);font-weight:700;font-size:1.3rem;line-height:1.1;color:#d7caff}
+.qmaninot em{font-style:normal;color:#ff8fb3}
+.qmanicicek{flex:none;width:22px;height:22px;filter:drop-shadow(0 2px 3px rgba(0,0,0,.3))}
+.qmani{position:absolute;z-index:2;top:0;right:0;width:104px;height:104px;overflow:hidden;pointer-events:none;font-style:normal}
+.qmani span{position:absolute;top:20px;right:-40px;width:150px;display:flex;align-items:center;justify-content:center;gap:4px;padding:3px 0 4px;font-family:"Caveat",var(--hand);font-weight:700;font-size:.9rem;line-height:1;letter-spacing:.01em;color:#fff;background:rgba(18,12,48,.52);box-shadow:inset 0 1px 0 rgba(157,189,255,.45),0 2px 6px rgba(0,0,0,.28);-webkit-transform:rotate(45deg);transform:rotate(45deg)}
+.qmani svg{width:13px;height:13px;flex:none}
+.qmgrid-ani .qmwm{display:none}
 .qmtam{position:relative;display:flex;align-items:center;gap:12px;width:100%;margin:0;padding:10px 40px 10px 12px;border:0;border-radius:16px;font:inherit;text-align:left;color:#fff;cursor:pointer;-webkit-tap-highlight-color:transparent;
   background:rgba(255,255,255,.06);box-shadow:inset 0 0 0 1px rgba(205,184,255,.28)}
 .qmtam[hidden]{display:none}
@@ -1798,7 +1809,7 @@ body[data-page="amiral"] .stbtn.ok{background:var(--h-acc);color:#3b0d14}
 .abc.vur>b::after{content:"";position:absolute;width:62%;height:62%;background:linear-gradient(45deg,transparent 45%,rgba(60,10,10,.55) 45% 55%,transparent 55%),linear-gradient(-45deg,transparent 45%,rgba(60,10,10,.55) 45% 55%,transparent 55%);opacity:0}
 .abc.vur.batik>b::after{opacity:1}
 .abc.son>b{box-shadow:inset 0 0 0 2px rgba(255,214,102,.95);border-radius:6px;-webkit-animation:abSon 1.6s ease-in-out infinite;animation:abSon 1.6s ease-in-out infinite}
-@-webkit-keyframes abSon{50%{box-shadow:inset 0 0 0 2px rgba(255,214,102,.25)}}@keyframes abSon{50%{box-shadow:inset 0 0 0 2px rgba(255,214,102,.25)}}
+@-webkit-keyframes abSon{50%{opacity:.55}}@keyframes abSon{50%{opacity:.55}}
 /* nişan: hedef kare + satır/sütun kılavuzu */
 .abgrid.atesli .abc:not(:disabled):hover>b{background:rgba(255,255,255,.06)}
 .abc.hiza>b{background:rgba(255,107,122,.10)}
@@ -2726,7 +2737,7 @@ body[data-page="tepe"]{background:#5fb2ec}
 body[data-page="tepe"] .tp{left:0;top:0;right:0;bottom:0;width:100%;height:100%;max-width:none;margin:0;padding:0;display:block}
 
 /* ===== menü: takvim vitrini, favoriler, açılış ===== */
-.qmherosar{position:relative;border-radius:26px;padding:3px;background:linear-gradient(120deg,#ff8fb3,#f2c35b,#b79cf2,#ff8fb3);background-size:300% 300%;-webkit-animation:qmHeroAkis 6s ease-in-out infinite;animation:qmHeroAkis 6s ease-in-out infinite;box-shadow:0 18px 40px -18px rgba(255,143,179,.7)}
+.qmherosar{position:relative;border-radius:26px;padding:3px;background:linear-gradient(120deg,#ff8fb3,#f2c35b,#b79cf2,#ff8fb3);background-size:100% 100%;box-shadow:0 18px 40px -18px rgba(255,143,179,.7)}
 @-webkit-keyframes qmHeroAkis{50%{background-position:100% 50%}}@keyframes qmHeroAkis{50%{background-position:100% 50%}}
 .qmhero{border-radius:23px;min-height:104px;background:radial-gradient(120% 140% at 0% 0%,#ff9cbd 0%,#e45d8e 38%,#7b3fb8 100%)!important;box-shadow:inset 0 0 0 1px rgba(255,255,255,.25)}
 .qmhero .qmtx b{font-size:1.28rem!important}
@@ -2736,9 +2747,9 @@ body[data-page="tepe"] .tp{left:0;top:0;right:0;bottom:0;width:100%;height:100%;
 .qmherokalp:before,.qmherokalp:after{content:"";position:absolute;top:0;width:9px;height:14px;border-radius:9px 9px 0 0;background:#ff5d8f}
 .qmherokalp:before{left:7px;-webkit-transform:rotate(-45deg);transform:rotate(-45deg);-webkit-transform-origin:0 100%;transform-origin:0 100%}
 .qmherokalp:after{left:0;-webkit-transform:rotate(45deg);transform:rotate(45deg);-webkit-transform-origin:100% 100%;transform-origin:100% 100%}
-.qmherokalp.k2{right:12%;top:auto;bottom:-8px;-webkit-transform:scale(.7);transform:scale(.7);-webkit-animation-delay:1.1s;animation-delay:1.1s}
-.qmherokalp.k3{right:40%;top:auto;bottom:-6px;-webkit-transform:scale(.55);transform:scale(.55);-webkit-animation-delay:2s;animation-delay:2s}
-@-webkit-keyframes qmKalp{0%,100%{opacity:.0;margin-top:0}30%{opacity:1}70%{opacity:1;margin-top:-8px}}@keyframes qmKalp{0%,100%{opacity:.0;margin-top:0}30%{opacity:1}70%{opacity:1;margin-top:-8px}}
+.qmherokalp.k2{--k:.7;right:12%;top:auto;bottom:-8px;-webkit-animation-delay:1.1s;animation-delay:1.1s}
+.qmherokalp.k3{--k:.55;right:40%;top:auto;bottom:-6px;-webkit-animation-delay:2s;animation-delay:2s}
+@-webkit-keyframes qmKalp{0%,100%{opacity:0;-webkit-transform:translateY(0) scale(var(--k,1))}30%{opacity:1}70%{opacity:1;-webkit-transform:translateY(-8px) scale(var(--k,1))}}@keyframes qmKalp{0%,100%{opacity:0;transform:translateY(0) scale(var(--k,1))}30%{opacity:1}70%{opacity:1;transform:translateY(-8px) scale(var(--k,1))}}
 .qmsec-fav{color:#ffd98a}
 .qmsec-fav:before{content:"★";letter-spacing:0;font-size:.9rem;color:#f2c35b}
 .qmsec-fav:after{background:linear-gradient(90deg,rgba(242,195,91,.6),rgba(242,195,91,0))}
@@ -3194,3 +3205,16 @@ body[data-page="ciz"] .gkcard p{color:#3d3730}
 body.cz-sec .czkap{filter:blur(4px);opacity:.4}
 @media (max-width:360px){.czh{width:19px;height:25px;font-size:1.3rem}.czrenk{width:30px;height:30px}.czik{width:40px}.czciz{font-size:1.5rem}}
 @media (max-height:640px){.czrenk{width:30px;height:30px}.czik{height:38px}.czik small{display:none}}
+
+/* performans: sürekli çizilen oyunların üstünde bulanıklık her karede yeniden hesaplanıyordu (kasma); daha opak zemin yeter */
+.ykbtn,.ykrekor,.yktap,.ykkart,.tpust .gkbtn,.tptakim,.tporta,.czyuv,.czskor,.czaraclar{-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+.ykbtn,.ykrekor{background:rgba(30,22,58,.62)}
+.yktap{background:linear-gradient(180deg,rgba(60,48,100,.72),rgba(30,22,58,.62))}
+.ykkart{background:rgba(28,20,52,.94)}
+.tpust .gkbtn{background:rgba(20,14,40,.78)}
+.tptakim,.tporta{background:rgba(20,14,40,.74)}
+.czyuv,.czskor{background:rgba(255,253,248,.97)}
+.czaraclar{background:#fffdf8}
+/* menü: kartlar kendi içinde boyansın, kaydırırken tüm sayfa yeniden çizilmesin */
+.qmc{contain:layout paint}
+.qmnew.qmturn{-webkit-animation:none!important;animation:none!important}
