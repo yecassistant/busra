@@ -235,33 +235,43 @@
     if (st.k >= words.length) st.bitti = true;
     return { dogru: dogru, p: p, k: k };
   }
+  /* tahmin/pas sonucunu hesapla (saf): hem anında ekranda göstermek hem de işlemde yazmak için */
+  function hesapla(d, t, ME, OTHER) {
+    var puan = {}; puan[d.a] = (d.puan || {})[d.a] || 0; puan[d.b] = (d.puan || {})[d.b] || 0;
+    var upd = {}, r, sira, bitirdi = false;
+    if (d.mod === "yaz") {
+      var words = zincirOf(d, OTHER), cz = d.cz || {}, ben = JSON.parse(JSON.stringify(cz[ME] || null)), onun = cz[OTHER] || { bitti: true };
+      if (!words || !ben) throw new Error("zincir");
+      r = uygula(ben, words, t, ME); upd.cz = {}; upd.cz[ME] = ben;
+      if (ben.bitti && onun.bitti) sira = "";
+      else if (ben.bitti) sira = OTHER; else if (onun.bitti) sira = ME; else sira = r.dogru ? ME : OTHER;
+      if (!sira) bitirdi = true;
+    } else {
+      var st = { acik: d.acik.slice(), coz: d.coz.slice(), k: d.k }, zn = Z[d.z];
+      r = uygula(st, zn, t, ME); upd.acik = st.acik; upd.coz = st.coz; upd.k = st.k;
+      sira = st.bitti ? "" : r.dogru ? ME : OTHER; if (st.bitti) bitirdi = true;
+    }
+    puan[ME] += r.p; upd.puan = puan; upd.sira = sira;
+    upd.son = { u: ME, t: t === null ? "" : buyuk(t), d: r.dogru, k: r.k, p: r.p };
+    if (bitirdi) { upd.bitti = true; upd.sonuc = "zincir"; upd.kazanan = puan[ME] > puan[OTHER] ? ME : puan[OTHER] > puan[ME] ? OTHER : null; }
+    return { upd: upd, dogru: r.dogru, bitirdi: bitirdi };
+  }
+  function birlestir(a, b) { var o = JSON.parse(JSON.stringify(a)); (function m(x, y) { for (var k in y) { if (y[k] && typeof y[k] === "object" && !Array.isArray(y[k]) && x[k] && typeof x[k] === "object" && !Array.isArray(x[k])) m(x[k], y[k]); else x[k] = JSON.parse(JSON.stringify(y[k])); } })(o, b); return o; }
   function yaz(t) {
-    var ME = D.me, OTHER = D.other, once = G; gonderiyor = true; klavyeCiz();
-    var dogruMu = false, bitirdi = false;
+    var ME = D.me, OTHER = D.other, once = G, h;
+    try { h = hesapla(once, t, ME, OTHER); } catch (e) { D.msg("Zincir okunamadı."); return; }
+    /* anında göster: sunucu cevabını beklemeden */
+    gonderiyor = true; yazilan = []; G = birlestir(once, h.upd); ciz(); sonGoster(false); snd(h.dogru ? "found" : "lock");
+    var bitirdi = false;
     D.db.runTransaction(function (tx) {
       return tx.get(D.ref).then(function (snap) {
         var d = snap.data(); if (!d || d.bitti || d.sira !== ME || d.v !== once.v) throw new Error("sira");
-        var puan = {}; puan[d.a] = (d.puan || {})[d.a] || 0; puan[d.b] = (d.puan || {})[d.b] || 0;
-        var upd = { v: d.v + 1, t: firebase.firestore.FieldValue.serverTimestamp() }, r, sira;
-        if (d.mod === "yaz") {
-          var words = zincirOf(d, OTHER), cz = d.cz || {}, ben = JSON.parse(JSON.stringify(cz[ME] || null)), onun = cz[OTHER] || { bitti: true };
-          if (!words || !ben) throw new Error("zincir");
-          r = uygula(ben, words, t, ME); upd.cz = {}; upd.cz[ME] = ben;
-          if (ben.bitti && onun.bitti) sira = "";
-          else if (ben.bitti) sira = OTHER; else if (onun.bitti) sira = ME; else sira = r.dogru ? ME : OTHER;
-          if (!sira) bitirdi = true;
-        } else {
-          var st = { acik: d.acik.slice(), coz: d.coz.slice(), k: d.k }, zn = Z[d.z];
-          r = uygula(st, zn, t, ME); upd.acik = st.acik; upd.coz = st.coz; upd.k = st.k;
-          sira = st.bitti ? "" : r.dogru ? ME : OTHER; if (st.bitti) bitirdi = true;
-        }
-        puan[ME] += r.p; upd.puan = puan; upd.sira = sira; dogruMu = r.dogru;
-        upd.son = { u: ME, t: t === null ? "" : buyuk(t), d: r.dogru, k: r.k, p: r.p };
-        if (bitirdi) { upd.bitti = true; upd.sonuc = "zincir"; upd.kazanan = puan[ME] > puan[OTHER] ? ME : puan[OTHER] > puan[ME] ? OTHER : null; }
+        var r = hesapla(d, t, ME, OTHER), upd = r.upd; bitirdi = r.bitirdi;
+        upd.v = d.v + 1; upd.t = firebase.firestore.FieldValue.serverTimestamp();
         tx.set(D.ref, upd, { merge: true });
       });
-    }).then(function () { gonderiyor = false; yazilan = []; if (bitirdi) D.bitirenBenim = true; snd(dogruMu ? "found" : "lock"); if (G) ciz(); })
-      .catch(function (e) { gonderiyor = false; klavyeCiz(); D.msg(String(e && e.message) === "sira" ? "Sıra sende değil ya da zincir değişti." : "Bağlantı kurulamadı, tekrar dene."); });
+    }).then(function () { gonderiyor = false; if (bitirdi) D.bitirenBenim = true; if (G) ciz(); })
+      .catch(function (e) { gonderiyor = false; G = once; sonGosterilen = ""; ciz(); D.msg(String(e && e.message) === "sira" ? "Sıra sende değil ya da zincir değişti." : "Bağlantı kurulamadı, tekrar dene."); });
   }
   $("bResign").onclick = function () { if (!G || G.bitti) return; $("confirm").hidden = false; };
   $("confirmNo").onclick = function () { $("confirm").hidden = true; };
