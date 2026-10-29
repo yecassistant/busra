@@ -78,8 +78,32 @@ service cloud.firestore {
       allow read: if uye();
       allow create: if uye();
       allow update: if uye() && (id == "seri" || resource.data.sira == request.auth.uid || resource.data.bitti == true
-        || (resource.data.sira == "" && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['yer', 'hazir', 'cz', 'sira', 't', 'v']))
+        || (resource.data.mod == "yaz" && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['yer', 'hazir', 'cz', 'sira', 'puan', 'son', 'bitti', 'sonuc', 'kazanan', 't', 'v']))
         || (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['bitti', 'sonuc', 'kazanan', 'sira', 't', 'v']) && request.resource.data.kazanan != request.auth.uid));
+      allow delete: if false;
+    }
+
+    match /uno/{id} {
+      allow read: if uye();
+      allow create: if uye();
+      allow update: if uye() && (id == "seri" || resource.data.sira == request.auth.uid || resource.data.sira == "bot" || resource.data.bitti == true
+        || (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['bitti', 'sonuc', 'kazanan', 'sira', 't', 'v']) && request.resource.data.kazanan != request.auth.uid));
+      allow delete: if false;
+    }
+
+    match /dort/{id} {
+      allow read: if uye();
+      allow create: if uye();
+      allow update: if uye() && (id == "seri" || resource.data.sira == request.auth.uid || resource.data.bitti == true
+        || request.resource.data.diff(resource.data).affectedKeys().hasOnly(['odul', 't'])
+        || (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['bitti', 'sonuc', 'kazanan', 'sira', 'cizgi', 't', 'v']) && request.resource.data.kazanan != request.auth.uid));
+      allow delete: if false;
+    }
+
+    match /ciz/{id} {
+      allow read: if uye();
+      allow create: if uye();
+      allow update: if uye();
       allow delete: if false;
     }
 

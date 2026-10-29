@@ -107,7 +107,9 @@
     }
     if (a !== "oyun" || G.sira !== ME) { gonderiyor = false; cizPad(); return; }
     var hedef = coz(G, OTHER); if (hedef.length !== 4) { gonderiyor = false; cizPad(); D.msg("Rakibin sayısı okunamadı."); return; }
-    var pm = puanla(hedef, s), bulundu = pm.p === 4, bitirdi = false;
+    var pm = puanla(hedef, s), bulundu = pm.p === 4, bitirdi = false, once = G;
+    /* anında göster: tahmin listeye girer, sonuç sunucudan onaylanınca kesinleşir */
+    G = JSON.parse(JSON.stringify(G, function (k, v) { return k === "t" ? undefined : v; })); G.tahmin[ME] = (G.tahmin[ME] || []).concat([{ t: s, p: pm.p, m: pm.m }]); if (!(G.baslayan !== ME && bulundu)) G.sira = OTHER; giris = ""; ciz();
     D.db.runTransaction(function (tx) {
       return tx.get(D.ref).then(function (snap) {
         var d = snap.data(); if (!d || d.bitti || d.sira !== ME || d.v !== G.v) throw new Error("sira");
@@ -121,8 +123,8 @@
         } else upd.sira = OTHER;                                            /* başlayan: bulsa da bulmasa da sıra ikinciye (eşitleme hakkı) */
         tx.set(D.ref, upd, { merge: true });
       });
-    }).then(function () { gonderiyor = false; giris = ""; snd(bulundu ? "found" : pm.p ? "plus" : "key"); D.msg(bulundu ? "Buldun!" : "+" + pm.p + " −" + pm.m); if (bitirdi) D.bitirenBenim = true; })
-      .catch(function (e) { gonderiyor = false; cizPad(); D.msg(String(e && e.message) === "sira" ? "Sıra sende değil ya da liste değişti." : "Bağlantı kurulamadı, tekrar dene."); });
+    }).then(function () { gonderiyor = false; giris = ""; snd(bulundu ? "found" : pm.p ? "plus" : "key"); D.msg(bulundu ? "Buldun!" : "+" + pm.p + " −" + pm.m); if (bitirdi) D.bitirenBenim = true; ciz(); })
+      .catch(function (e) { gonderiyor = false; G = once; giris = s; cizPad(); ciz(); D.msg(String(e && e.message) === "sira" ? "Sıra sende değil ya da liste değişti." : "Bağlantı kurulamadı, tekrar dene."); });
   }
   $("bResign").onclick = function () { if (!G || G.bitti) return; $("confirm").hidden = false; };
   $("confirmNo").onclick = function () { $("confirm").hidden = true; };

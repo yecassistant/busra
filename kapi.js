@@ -6,7 +6,7 @@
 (function () {
   var GELIYOR = [];                                                    /* 20 Ekim: hepsi erken erişimle açıldı (eski liste: "stilobat", "sayi", "amiral") */
   var ACILIS = Date.parse("2026-10-20T20:00:00+03:00");               /* 20 Ekim 2026, 20:00 (Türkiye saati) */
-  var KAPALI = ["tabu"];                                             /* saatten bağımsız "yakında": Yunus "aç" diyene kadar (deneme modunda ve ?acik=1 cihazda açık). AÇMAK İÇİN listeden sil. */
+  var KAPALI = [];                                             /* saatten bağımsız "yakında": Yunus "aç" diyene kadar (deneme modunda ve ?acik=1 cihazda açık). AÇMAK İÇİN listeden sil. */
   var ALIAS = { plan: "oyun", tur: "fatih" };                             /* menü anahtarı → dosya adı */
   var q = location.search, m = /[?&]acik=([01])/.exec(q);
   if (m) try { if (m[1] === "1") localStorage.setItem("kapi_acik", "1"); else localStorage.removeItem("kapi_acik"); } catch (e) {}
