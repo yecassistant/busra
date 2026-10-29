@@ -17,7 +17,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Queen Games">
 <link rel="apple-touch-icon" href="ikon/app-180.png">
-<link rel="stylesheet" href="style.css?v=1020x">
+<link rel="stylesheet" href="style.css?v=1020y">
 </head>
 <body data-page="ciftlik">
 
@@ -112,9 +112,9 @@
   <div class="ykhata cfhata" id="hata" hidden><b>3D açılamadı</b><span>Bu tarayıcı 3D grafiği desteklemiyor ya da kapalı. Safari'de ya da ana ekrandan açmayı dene.</span><a class="ykana" href="oyunlar.html">Menüye dön</a></div>
 </main>
 
-<script src="app.js?v=1020x"></script>
-<script src="hesap.js?v=1020x"></script>
-<script src="deneme.js?v=1020x"></script>
+<script src="app.js?v=1020y"></script>
+<script src="hesap.js?v=1020y"></script>
+<script src="deneme.js?v=1020y"></script>
 <script>
 /* Kod kapısı: kod sayfada düz yazmıyor (yalnızca özeti var). Doğru kod bu cihazda hatırlanır; oyun dosyaları ancak kapı açılınca yüklenir. */
 (function () {
@@ -124,7 +124,7 @@
   function yukle() {
     $("kapi").hidden = true; $("yukle").hidden = false;
     window.__cfYuklendi = true;
-    var l = ["lib/three.min.js?v=149", "ciftlik-model.js?v=1020o", "lib/GLTFLoader.js?v=149", "ciftlik-kar-veri.js?v=1020o", "ciftlik-kar.js?v=1020x", "ciftlik-kar3d-veri.js?v=1020o", "ciftlik-kar3d.js?v=1020x", "ciftlik-ses.js?v=1020x", "ciftlik.js?v=1020x"];
+    var l = ["lib/three.min.js?v=149", "ciftlik-model.js?v=1020o", "lib/GLTFLoader.js?v=149", "ciftlik-kar-veri.js?v=1020o", "ciftlik-kar.js?v=1020y", "ciftlik-kar3d-veri.js?v=1020o", "ciftlik-kar3d.js?v=1020y", "ciftlik-ses.js?v=1020y", "ciftlik.js?v=1020y"];
     (function sira(i) { if (i >= l.length) return; var s = document.createElement("script"); s.src = l[i]; s.onload = function () { sira(i + 1); }; s.onerror = function () { $("yukle").hidden = true; $("hata").hidden = false; }; document.body.appendChild(s); })(0);
   }
   var acik = false, demoAcik = false; try { acik = localStorage.getItem("cf_kod") === OZ; demoAcik = localStorage.getItem("cf_kod_demo") === OZD; } catch (e) {}
