@@ -756,7 +756,10 @@
     var sx = (Math.random() - 0.5) * kamera.salla, sy = (Math.random() - 0.5) * kamera.salla;
     ctx.setTransform(DPR * kamera.z, 0, 0, DPR * kamera.z, DPR * (CW / 2 - kamera.x * kamera.z + sx), DPR * (CH / 2 - kamera.y * kamera.z + sy));
     bulutlar.forEach(function (b) { bulut(b.x, b.y, b.s); });
-    ctx.drawImage(bcv, 0, 0); ctx.drawImage(tcv, 0, 0);
+    /* sadece ekranda görünen parçayı çiz (2400×1100'lük iki katmanın tamamını her karede çizmek kasıyordu) */
+    var gx = Math.max(0, Math.floor(kamera.x - CW / 2 / kamera.z - 24)), gy = Math.max(0, Math.floor(kamera.y - CH / 2 / kamera.z - 24)),
+        gw = Math.min(W - gx, Math.ceil(CW / kamera.z + 48)), gh = Math.min(H - gy, Math.ceil(CH / kamera.z + 48));
+    if (gw > 0 && gh > 0) { ctx.drawImage(bcv, gx, gy, gw, gh, gx, gy, gw, gh); ctx.drawImage(tcv, gx, gy, gw, gh, gx, gy, gw, gh); }
     S.izler.forEach(function (z) {
       if (z.tip === "flas") { var g = ctx.createRadialGradient(z.x, z.y, 0, z.x, z.y, z.r); g.addColorStop(0, "rgba(255,255,230," + z.o + ")"); g.addColorStop(0.4, "rgba(255,190,80," + z.o * 0.8 + ")"); g.addColorStop(1, "rgba(255,120,40,0)"); ctx.fillStyle = g; ctx.beginPath(); ctx.arc(z.x, z.y, z.r, 0, 7); ctx.fill(); }
       else if (z.tip === "halka") { ctx.strokeStyle = "rgba(255,255,255," + z.o * 0.6 + ")"; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(z.x, z.y, z.r + (z.R - z.r) * (1 - z.o), 0, 7); ctx.stroke(); }

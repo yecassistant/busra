@@ -3230,3 +3230,26 @@ body.cz-sec .czkap{filter:blur(4px);opacity:.4}
 .qmkurdeleli .qmart{order:0}.qmkurdeleli .qmnew{order:1;position:relative;top:auto;right:auto;align-self:flex-start;margin:0 0 -2px}
 .qmkurdeleli .qmtx{order:2}
 .qmani.aday span{width:170px;right:-50px;top:24px}
+/* emoji sohbeti (sohbet.js): sağ kenarda sürüklenebilir sekme */
+.shkok{position:fixed;right:0;z-index:85;-webkit-transform:translateY(-50%);transform:translateY(-50%);font-family:"Nunito",system-ui,sans-serif}
+.shkok[hidden]{display:none}
+.shsekme{position:relative;display:flex;align-items:center;justify-content:center;width:40px;height:44px;margin:0;padding:0 0 0 2px;border:0;border-radius:14px 0 0 14px;background:rgba(36,18,72,.86);box-shadow:inset 1px 1px 0 rgba(255,255,255,.18),-2px 4px 12px rgba(0,0,0,.3);cursor:pointer;touch-action:none;-webkit-tap-highlight-color:transparent;opacity:.82;-webkit-transition:opacity .15s,width .15s;transition:opacity .15s,width .15s}
+.shkok.acik .shsekme,.shsekme:active{opacity:1;width:46px}
+.shsimge{font-size:20px;line-height:1;-webkit-user-select:none;user-select:none}
+.shnokta{position:absolute;top:6px;left:6px;width:10px;height:10px;border-radius:50%;background:#ff5d8f;box-shadow:0 0 0 2px rgba(36,18,72,.9)}
+.shnokta[hidden]{display:none}
+.shtepsi{position:absolute;right:52px;top:50%;-webkit-transform:translateY(-50%);transform:translateY(-50%);display:grid;grid-template-columns:repeat(5,40px);gap:4px;padding:8px;border-radius:18px;background:rgba(30,16,60,.95);box-shadow:inset 0 1px 0 rgba(255,255,255,.15),0 10px 26px rgba(0,0,0,.4);-webkit-animation:shAc .16s ease-out;animation:shAc .16s ease-out}
+.shtepsi[hidden]{display:none}
+.shem{width:40px;height:40px;margin:0;padding:0;border:0;border-radius:12px;background:transparent;font-size:24px;line-height:40px;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.shem:active{background:rgba(255,255,255,.14);-webkit-transform:scale(.9);transform:scale(.9)}
+@-webkit-keyframes shAc{from{opacity:0;-webkit-transform:translateY(-50%) scale(.9)}}@keyframes shAc{from{opacity:0;transform:translateY(-50%) scale(.9)}}
+.shucan{position:fixed;z-index:86;font-size:30px;line-height:1;pointer-events:none;opacity:0;-webkit-animation:shUc 1.9s ease-out forwards;animation:shUc 1.9s ease-out forwards}
+.shucan.ilk{font-size:46px}
+.shucan.ben{-webkit-animation-name:shGit;animation-name:shGit;-webkit-animation-duration:1s;animation-duration:1s}
+@-webkit-keyframes shUc{0%{opacity:0;-webkit-transform:translateY(20px) scale(.4)}15%{opacity:1;-webkit-transform:translateY(0) scale(1.15)}100%{opacity:0;-webkit-transform:translateY(-170px) scale(1)}}
+@keyframes shUc{0%{opacity:0;transform:translateY(20px) scale(.4)}15%{opacity:1;transform:translateY(0) scale(1.15)}100%{opacity:0;transform:translateY(-170px) scale(1)}}
+@-webkit-keyframes shGit{0%{opacity:1;-webkit-transform:scale(1)}100%{opacity:0;-webkit-transform:translate(-40px,-90px) scale(.6)}}
+@keyframes shGit{0%{opacity:1;transform:scale(1)}100%{opacity:0;transform:translate(-40px,-90px) scale(.6)}}
+.shbalon{position:fixed;right:10px;z-index:86;max-width:76vw;padding:7px 13px;border-radius:16px 16px 4px 16px;background:#fff;color:#2b1650;font:800 .9rem/1.3 "Nunito",system-ui,sans-serif;box-shadow:0 8px 22px rgba(0,0,0,.35);pointer-events:none;-webkit-animation:shAc2 .2s ease-out;animation:shAc2 .2s ease-out;-webkit-transition:opacity .4s;transition:opacity .4s}
+.shbalon.git{opacity:0}
+@-webkit-keyframes shAc2{from{opacity:0;-webkit-transform:translateY(8px)}}@keyframes shAc2{from{opacity:0;transform:translateY(8px)}}
