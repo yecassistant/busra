@@ -171,7 +171,11 @@
   if (ipucu || document.body.getAttribute("data-page") === "giris") baglan(); else bitti();   /* hiç giriş yapılmamış cihazda Firebase hiç yüklenmez */
   setInterval(function () { if (dirty) planla(); if (user && !document.hidden) nabiz(); }, NABIZ);
   function flush() { if (dirty && user && db) { clearTimeout(planT); gonder(); } }
-  addEventListener("pagehide", flush); document.addEventListener("visibilitychange", function () { if (document.hidden) flush(); });
+  addEventListener("pagehide", flush); document.addEventListener("visibilitychange", function () { if (document.hidden) flush(); else gorundu(); });
+  /* uygulama arka plandan geri açılınca (sayfa yeniden yüklenmeden) "şu an burada" hemen yazılsın; önceden 90 sn'lik nabzı bekliyordu */
+  var sonGorundu = 0;
+  function gorundu() { var t = Date.now(); if (t - sonGorundu < 15000) return; sonGorundu = t; if (user && db) nabiz(); }
+  addEventListener("pageshow", function (e) { if (e.persisted) gorundu(); }); addEventListener("focus", gorundu);
 
   /* ---- UI yardımcıları (menü, giriş, tablo sayfaları kullanır) ---- */
   var durumCb = [];

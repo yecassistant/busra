@@ -8,6 +8,7 @@
      Kayıt: ok_lvl (bölüm), ok_max (açılan en yüksek), ok_stars, ok_best (süre), ok_hint, ok_intro, ok_state (yarım bölüm), ok_gun (bugün kaç yeni bölüm).
      Açılış: pazartesi 08:00'e kadar ilk 20 bölüm açık; sonra kalan 80 bölüm, günde 10 yeni bölüm hakkıyla (eskiler hep tekrar oynanır). */
   var $ = function (id) { return document.getElementById(id); };
+  if (window.OK_BOLUM2) LEVELS = LEVELS.concat(window.OK_BOLUM2);   /* 101–200: şekilli zor bölümler (ok-bolum2.js) */
   var NS = "http://www.w3.org/2000/svg", S = 100, N = LEVELS.length;
   var DIR = { R: [1, 0], L: [-1, 0], D: [0, 1], U: [0, -1] };
   var board = $("board"), wrap = $("wrap"), stage = $("stage");
@@ -39,6 +40,9 @@
     lvl = isNaN(l) ? 0 : Math.max(0, Math.min(maxLvl, l));
     hints = isNaN(h) ? 3 : Math.max(0, h);
     stars = lsj("ok_stars") || []; best = lsj("ok_best") || [];
+    /* yeni bölümler eklenince: bitirilmiş son bölümün bir sonrakini aç (100'ü bitiren 101'e geçebilsin) */
+    for (var q = 0; q < stars.length && q < N; q++) if (stars[q] > 0 && q + 1 > maxLvl) maxLvl = Math.min(N - 1, q + 1);
+    if (stars[lvl] > 0 && maxLvl > lvl && !lsj("ok_state")) lvl = maxLvl;
   })();
   function pad(n) { return n < 10 ? "0" + n : "" + n; }
   function key(x, y) { return x + "," + y; }
@@ -84,7 +88,8 @@
     board.innerHTML = "";
     board.setAttribute("viewBox", (-S * 0.1) + " " + (-S * 0.1) + " " + (L.w * S + S * 0.2) + " " + (L.h * S + S * 0.2));
     var dots = el("g", { "class": "okdots" }, board);
-    for (var y = 0; y < L.h; y++) for (var x = 0; x < L.w; x++) el("circle", { cx: cx(x), cy: cx(y), r: 4.5 }, dots);
+    if (L.s) A.forEach(function (a) { a.cells.forEach(function (c) { el("circle", { cx: cx(c[0]), cy: cx(c[1]), r: 4.5 }, dots); }); });   /* şekilli bölüm: noktalar sadece şeklin içinde */
+    else for (var y = 0; y < L.h; y++) for (var x = 0; x < L.w; x++) el("circle", { cx: cx(x), cy: cx(y), r: 4.5 }, dots);
     var g = el("g", { "class": "okarrows" }, board);
     A.forEach(function (a) {
       a.g = el("g", { "class": "oka c" + a.c }, g);
@@ -127,7 +132,7 @@
     left = A.filter(function (a) { return !a.gone; }).length;
     tStart = Date.now();
     $("lvlNo").textContent = pad(i + 1); $("lvlTot").textContent = "/" + N;
-    drawHearts(); $("leftNo").textContent = left; $("hintNo").textContent = hints; msg("");
+    drawHearts(); $("leftNo").textContent = left; $("hintNo").textContent = hints; msg(L.s ? L.e + " " + L.s : "");
     ls("ok_lvl", i);
     fit(); render(); save();
     if (left === 0) win();
