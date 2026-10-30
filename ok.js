@@ -13,7 +13,7 @@
   var DIR = { R: [1, 0], L: [-1, 0], D: [0, 1], U: [0, -1] };
   var board = $("board"), wrap = $("wrap"), stage = $("stage");
   var lvl = 0, maxLvl = 0, stars = [], best = [], hints = 3, L = null, A = [], occ = {}, hearts = 3, mistakes = 0, left = 0;
-  var tStart = 0, tBefore = 0, finished = false, hintTimer = null, cell = 30, seq = 0;
+  var tStart = 0, tBefore = 0, finished = false, hintTimer = null, cell = 30, seq = 0, BX = 0, BY = 0, BW = 1, BH = 1;
   var OPEN_AT = new Date(2026, 9, 19, 8, 0, 0).getTime(), DEMO = 20, DAILY = 10, NCOL = 5;
   function today() { var d = new Date(); return d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate(); }
   function isDemo() { return Date.now() < OPEN_AT; }
@@ -86,7 +86,7 @@
   }
   function render() {
     board.innerHTML = "";
-    board.setAttribute("viewBox", (-S * 0.1) + " " + (-S * 0.1) + " " + (L.w * S + S * 0.2) + " " + (L.h * S + S * 0.2));
+    board.setAttribute("viewBox", (BX * S - S * 0.1) + " " + (BY * S - S * 0.1) + " " + (BW * S + S * 0.2) + " " + (BH * S + S * 0.2));
     var dots = el("g", { "class": "okdots" }, board);
     if (L.s) A.forEach(function (a) { a.cells.forEach(function (c) { el("circle", { cx: cx(c[0]), cy: cx(c[1]), r: 4.5 }, dots); }); });   /* şekilli bölüm: noktalar sadece şeklin içinde */
     else for (var y = 0; y < L.h; y++) for (var x = 0; x < L.w; x++) el("circle", { cx: cx(x), cy: cx(y), r: 4.5 }, dots);
@@ -105,14 +105,18 @@
     stage.style.height = Math.max(380, vh - pt - pb) + "px";
     var ws = getComputedStyle(wrap), px = (parseFloat(ws.paddingLeft) || 0) + (parseFloat(ws.paddingRight) || 0), py = (parseFloat(ws.paddingTop) || 0) + (parseFloat(ws.paddingBottom) || 0);
     var W = wrap.clientWidth - px, H = wrap.clientHeight - py;
-    cell = Math.max(16, Math.min(58, Math.floor(Math.min(W / (L.w + 0.2), H / (L.h + 0.2)))));
-    board.style.width = Math.round(cell * (L.w + 0.2)) + "px"; board.style.height = Math.round(cell * (L.h + 0.2)) + "px";
+    cell = Math.max(16, Math.min(58, Math.floor(Math.min(W / (BW + 0.2), H / (BH + 0.2)))));
+    board.style.width = Math.round(cell * (BW + 0.2)) + "px"; board.style.height = Math.round(cell * (BH + 0.2)) + "px";
   }
 
   /* ---- bölüm ---- */
   function load(i, restore) {
     seq++; snd("level"); lvl = i; L = LEVELS[i]; finished = false; occ = {}; hearts = 3; mistakes = 0; tBefore = 0; clearHint();
     A = L.a.map(function (s, j) { var a = decode(s); a.i = j; a.gone = false; a.busy = false; return a; });
+    /* tahta, ızgaranın tamamına değil okların kapladığı alana göre ölçeklenir: şekilli bölümler ortalanır ve büyür */
+    var x0 = L.w, y0 = L.h, x1 = 0, y1 = 0; A.forEach(function (a) { a.cells.forEach(function (c) { x0 = Math.min(x0, c[0]); y0 = Math.min(y0, c[1]); x1 = Math.max(x1, c[0]); y1 = Math.max(y1, c[1]); }); });
+    if (x1 < x0 || !L.s) { x0 = 0; y0 = 0; x1 = L.w - 1; y1 = L.h - 1; }   /* düz bölümlerde ızgaranın tamamı (noktalar dışarı taşmasın) */
+    BX = x0; BY = y0; BW = x1 - x0 + 1; BH = y1 - y0 + 1;
     if (restore) {
       var st = lsj("ok_state");
       if (st && st.lvl === i && st.n === A.length) {
@@ -205,7 +209,7 @@
   var HEART = "M12 20.5s-7.5-4.6-7.5-10.6a4.3 4.3 0 0 1 7.5-2.9 4.3 4.3 0 0 1 7.5 2.9c0 6-7.5 10.6-7.5 10.6z";
   function cupid(done) {
     var reduce = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
-    var bw = L.w * S, bh = L.h * S, m = Math.min(bw, bh), cxp = bw / 2, cyp = bh / 2 + m * 0.02;
+    var bw = BW * S, bh = BH * S, m = Math.min(bw, bh), cxp = BX * S + bw / 2, cyp = BY * S + bh / 2 + m * 0.02;
     var hs = m * 0.36 / 15, layer = el("g", { "class": "okcupid" }, board);
     var defs = el("defs", {}, layer), rg = el("radialGradient", { id: "okglow" }, defs);
     el("stop", { offset: "0", "stop-color": "#ff8597", "stop-opacity": ".55" }, rg); el("stop", { offset: "1", "stop-color": "#ff8597", "stop-opacity": "0" }, rg);
@@ -366,8 +370,8 @@
 
   /* ---- dokunma: en yakın okun hücresi (boşluğa denk gelirse yarım hücre tolerans) ---- */
   function pick(ev) {
-    var r = board.getBoundingClientRect(), u = r.width / (L.w + 0.2);
-    var fx = (ev.clientX - r.left) / u - 0.1, fy = (ev.clientY - r.top) / u - 0.1, x = Math.floor(fx), y = Math.floor(fy);
+    var r = board.getBoundingClientRect(), u = r.width / (BW + 0.2);
+    var fx = (ev.clientX - r.left) / u - 0.1 + BX, fy = (ev.clientY - r.top) / u - 0.1 + BY, x = Math.floor(fx), y = Math.floor(fy);
     var o = occ[key(x, y)]; if (o !== undefined) return A[o];
     var bestA = null, bd = 0.62;
     for (var dy = -1; dy <= 1; dy++) for (var dx = -1; dx <= 1; dx++) {
