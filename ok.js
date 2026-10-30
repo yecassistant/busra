@@ -51,6 +51,7 @@
   function setCls(a, st) { a.g.setAttribute("class", "oka c" + a.c + (st ? " " + st : "")); }
   function el(tag, attrs, parent) { var e = document.createElementNS(NS, tag); for (var k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; }
 
+  function imza(L) { var h = 0, t = L.w + "x" + L.h + "|" + L.a.join("|"); for (var k = 0; k < t.length; k++) h = (h * 31 + t.charCodeAt(k)) | 0; return String(h); }
   function decode(s) {
     var p = s.split(":"), xy = p[0].split(","), x = +xy[0], y = +xy[1], c = [[x, y]], d = [0, 0];
     for (var i = 0; i < p[1].length; i++) { d = DIR[p[1][i]]; x += d[0]; y += d[1]; c.push([x, y]); }
@@ -117,9 +118,12 @@
     var x0 = L.w, y0 = L.h, x1 = 0, y1 = 0; A.forEach(function (a) { a.cells.forEach(function (c) { x0 = Math.min(x0, c[0]); y0 = Math.min(y0, c[1]); x1 = Math.max(x1, c[0]); y1 = Math.max(y1, c[1]); }); });
     if (x1 < x0 || !L.s) { x0 = 0; y0 = 0; x1 = L.w - 1; y1 = L.h - 1; }   /* düz bölümlerde ızgaranın tamamı (noktalar dışarı taşmasın) */
     BX = x0; BY = y0; BW = x1 - x0 + 1; BH = y1 - y0 + 1;
+    /* 101'den sonra her 5 bölümde bir renk teması değişir (6 tema döner) */
+    document.body.setAttribute("data-okt", i >= 100 ? String(Math.floor((i - 100) / 5) % 6) : "");
     if (restore) {
       var st = lsj("ok_state");
-      if (st && st.lvl === i && st.n === A.length) {
+      /* yarım bölüm yalnızca aynı bölüm içeriğine geri yüklenir (bölümler yenilenirse eski yarım kayıt yok sayılır; yıldızlar ve ilerleme etkilenmez) */
+      if (st && st.lvl === i && st.n === A.length && (st.sig ? st.sig === imza(L) : i < 100)) {
         (st.gone || []).forEach(function (j) { if (A[j]) A[j].gone = true; });
         hearts = Math.max(1, Math.min(3, st.h | 0)); mistakes = 3 - hearts; tBefore = +st.t || 0;
       }
@@ -143,7 +147,7 @@
   }
   function save() {
     try {
-      localStorage.setItem("ok_state", JSON.stringify({ lvl: lvl, n: A.length, gone: A.filter(function (a) { return a.gone; }).map(function (a) { return a.i; }), h: hearts, t: elapsed() }));
+      localStorage.setItem("ok_state", JSON.stringify({ lvl: lvl, n: A.length, sig: imza(L), gone: A.filter(function (a) { return a.gone; }).map(function (a) { return a.i; }), h: hearts, t: elapsed() }));
     } catch (e) {}
   }
   function elapsed() { return tBefore + (finished ? 0 : Date.now() - tStart); }
