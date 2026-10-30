@@ -3360,3 +3360,7 @@ body[data-page="ok"][data-okt="2"]{--o-bg:#12251f;--o-sf:#1c3830;--o-line:#2d5a4
 body[data-page="ok"][data-okt="3"]{--o-bg:#25111b;--o-sf:#3a1d2c;--o-line:#5f3049;--o-ok:#ffe4ee;background:radial-gradient(110% 55% at 50% -5%,#4a2438 0%,#25111b 62%);background-color:#25111b}
 body[data-page="ok"][data-okt="4"]{--o-bg:#0d222e;--o-sf:#153646;--o-line:#245a71;--o-ok:#dcf2ff;background:radial-gradient(110% 55% at 50% -5%,#1d465b 0%,#0d222e 62%);background-color:#0d222e}
 body[data-page="ok"][data-okt="5"]{--o-bg:#231810;--o-sf:#38281c;--o-line:#5b4230;--o-ok:#fbeedc;background:radial-gradient(110% 55% at 50% -5%,#4a3423 0%,#231810 62%);background-color:#231810}
+
+/* ===== oyun bitti kartı: "… bak" + "Menüye dön" yan yana ===== */
+.gkbitsira{width:100%}
+.gkbitsira>*{flex:1 1 0;min-width:0;display:flex;align-items:center;justify-content:center;text-align:center;text-decoration:none;box-sizing:border-box}
