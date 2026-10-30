@@ -11,5 +11,5 @@ window.CIZ_KELIME = [
   ["ÇİZİM MASASI", 2], ["MAKET", 2], ["CETVEL", 2], ["PERGEL", 2], ["TUĞLA", 2], ["VİNÇ", 2], ["GÖKDELEN", 2], ["CAMİ", 2], ["KALE", 2], ["IŞIKLI YAZI", 2], ["TRAFİK LAMBASI", 2], ["OTOBÜS DURAĞI", 2], ["METRO", 2], ["ASANSÖR", 2], ["YÜRÜYEN MERDİVEN", 2],
   ["HAPŞIRMAK", 3], ["GIDIKLAMAK", 3], ["ESNEMEK", 3], ["UYKUSUZLUK", 3], ["KISKANÇLIK", 3], ["DEDİKODU", 3], ["TRAFİK", 3], ["PAZARTESİ", 3], ["TATİL", 3], ["BAYRAM", 3], ["DOĞUM GÜNÜ", 3], ["SÜRPRİZ", 3], ["RANDEVU", 3], ["SELFIE", 3], ["WİFİ", 3],
   ["RÜYA", 3], ["KÂBUS", 3], ["HAFIZA", 3], ["ZAMAN", 3], ["YERÇEKİMİ", 3], ["DEPREM", 3], ["ELEKTRİK", 3], ["KOKU", 3], ["SESSİZLİK", 3], ["GÜRÜLTÜ", 3], ["SOĞUK", 3], ["SICAK", 3], ["AÇLIK", 3], ["MUTLULUK", 3], ["AŞK", 3],
-  ["KALEM TIRAŞ", 3], ["DOLAP BEYGİRİ", 3], ["KEDİ DİLİ", 3], ["KUŞ SÜTÜ", 3], ["KÜRDAN", 3], ["ÇÖP ADAM", 3], ["GÖZ YAŞI", 3], ["SON DAKİKA", 3], ["AÇIK BİLET", 3], ["BUZ DAĞI", 3], ["AYNA", 3], ["GÖLGE", 3], ["KAHKAHA", 3], ["FISILTI", 3], ["SAKLAMBAÇ", 3]
+  ["KALEM TIRAŞ", 3], ["PİKNİK", 3], ["KEDİ DİLİ", 3], ["KUŞ SÜTÜ", 3], ["KÜRDAN", 3], ["ÇÖP ADAM", 3], ["GÖZ YAŞI", 3], ["SON DAKİKA", 3], ["AÇIK BİLET", 3], ["BUZ DAĞI", 3], ["AYNA", 3], ["GÖLGE", 3], ["KAHKAHA", 3], ["FISILTI", 3], ["SAKLAMBAÇ", 3]
 ];

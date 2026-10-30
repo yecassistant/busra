@@ -5,7 +5,7 @@
   "use strict";
   if (window.__sohbet) return; window.__sohbet = true;
   var EMOJI = ["🫣", "🫠", "😬", "😁", "😅", "🥲", "🙃", "🥰", "😵‍💫", "😵", "😂", "😘", "🔥", "👏", "☕"];
-  var SAYFA = { oyunlar: "menüden", hafiza: "Hafıza'dan", sayi: "Sayı Düellosu'ndan", xox: "XOX'tan", tepe: "Tepe Savaşı'ndan", satranc: "Satranç'tan", amiral: "Amiral Battı'dan", asmaca: "Adam Asmaca'dan", zincir: "Kelime Zinciri'nden", uno: "UNO'dan", dort: "Dört Taş'tan", ciz: "Çiz Bil'den" };
+  var SAYFA = { oyunlar: "menüden", hafiza: "Hafıza'dan", sayi: "Sayı Düellosu'ndan", xox: "XOX'tan", tepe: "Tepe Savaşı'ndan", satranc: "Satranç'tan", amiral: "Amiral Battı'dan", asmaca: "Adam Asmaca'dan", zincir: "Kelime Zinciri'nden", uno: "UNO'dan", dort: "Dört Taş'tan", ciz: "Çiz Bil'den", kelimeavi: "Kelime Avı'ndan" };
   var sayfa = document.body.getAttribute("data-page") || "";
   var me = null, other = null, db = null, sayac = 0, sonGonder = 0, gorulen = 0, kurulu = false;
   try { gorulen = +localStorage.getItem("sh_gorulen") || 0; } catch (e) {}
@@ -21,7 +21,7 @@
   var yy = 0.58, elle = false, YK = "sh_y_" + sayfa;
   try { var k0 = parseFloat(localStorage.getItem(YK)); if (k0 > 0.1 && k0 < 0.9) { yy = k0; elle = true; } } catch (e) {}
   function yer() { kok.style.top = Math.round(yy * innerHeight) + "px"; }
-  var ETKIN = "button,a,input,select,textarea,label,[role=button],[onclick],canvas,.stsq,.hdk,.abc,.dtk";
+  var ETKIN = "button,a,input,select,textarea,label,[role=button],[onclick],canvas,.stsq,.hdk,.abc,.dtk,.kah,.katablo";
   function engelVar(y) {
     var xs = [innerWidth - 6, innerWidth - 40], ys = [y - 24, y, y + 24];
     for (var i = 0; i < xs.length; i++) for (var j = 0; j < ys.length; j++) {

@@ -24,8 +24,8 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Queen Games">
 <link rel="apple-touch-icon" href="ikon/app-180.png">
-<link rel="stylesheet" href="style.css?v=1021c">
-<script src="kapi.js?v=1021c"></script>
+<link rel="stylesheet" href="style.css?v=1021d">
+<script src="kapi.js?v=1021d"></script>
 </head>
 <body data-page="oyunlar">
 
@@ -94,6 +94,12 @@
 
   <div class="qmsec qmsec-yeni" id="secYeni"><span>Yeni</span><small>son eklenenler</small></div>
   <div class="qmgrid" id="qmYeni">
+    <a class="qmc qmt qm-kelimeavi" href="kelimeavi.html" data-g="kelimeavi" id="toKelimeavi">
+      <span class="qmart"><svg viewBox="0 0 92 56" aria-hidden="true"><g font-family="Nunito,Arial,sans-serif" font-weight="900" font-size="12" text-anchor="middle"><rect x="14" y="4" width="20" height="20" rx="5" fill="#ffd166"/><text x="24" y="19" fill="#3a2410">K</text><rect x="37" y="4" width="20" height="20" rx="5" fill="#ffd166"/><text x="47" y="19" fill="#3a2410">A</text><rect x="60" y="4" width="20" height="20" rx="5" fill="#fbf4e6"/><text x="70" y="19" fill="#3a2410">L</text><rect x="14" y="28" width="20" height="20" rx="5" fill="#fbf4e6"/><text x="24" y="43" fill="#3a2410">S</text><rect x="37" y="28" width="20" height="20" rx="5" fill="#ffd166"/><text x="47" y="43" fill="#3a2410">H</text><rect x="60" y="28" width="20" height="20" rx="5" fill="#ffd166"/><text x="70" y="43" fill="#3a2410">V</text></g><path d="M24 14L47 14L47 38L70 38" fill="none" stroke="#f2c35b" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" opacity=".55"/><circle cx="8" cy="46" r="6" fill="#5fe3b8"/><text x="8" y="49" font-family="Nunito,Arial,sans-serif" font-weight="900" font-size="7" fill="#0b2a22" text-anchor="middle">90</text></svg></span>
+      <span class="qmtx"><b>Kelime Avı</b><small id="kelimeaviSub">Aynı tablo, 90 saniye; kim daha çok kelime bulur?</small></span>
+      <i class="qmnew" id="kelimeaviBadge">yeni</i>
+      <svg class="qmchev" aria-hidden="true"><use href="#qmChev"/></svg>
+    </a>
     <a class="qmc qmt qmkurdeleli qm-ciz" href="ciz.html" data-g="ciz" id="toCiz">
       <span class="qmart"><svg viewBox="0 0 92 56" aria-hidden="true"><rect x="18" y="4" width="50" height="50" rx="6" fill="#fffdf8"/><path d="M43 42c-10-8-14-14-12-19 2-4 8-4 12 1 4-5 10-5 12-1 2 5-2 11-12 19z" fill="none" stroke="#1c1a1f" stroke-width="2.6" stroke-linejoin="round"/><path d="M58 50l20-20" stroke="#e8505b" stroke-width="6" stroke-linecap="round"/><path d="M60 52l-5 2 2-5z" fill="#1c1a1f"/><text x="30" y="16" font-family="Caveat,Georgia,serif" font-size="9" font-weight="700" fill="#7d7366">kedi?</text></svg></span>
       <span class="qmtx"><b>Çiz Bil</b><small id="cizSub">Biri çizer, öbürü bakarak bilir; 6 tur.</small></span>
@@ -289,8 +295,8 @@
   </div>
 </div>
 
-<script src="app.js?v=1021c"></script>
-<script src="hesap.js?v=1021c"></script>
+<script src="app.js?v=1021d"></script>
+<script src="hesap.js?v=1021d"></script>
 <script>
 /* hesap çubuğu: giriş yoksa "Giriş yap", varsa ad + Skor Tablosu */
 (function () {
@@ -330,13 +336,14 @@
   Hesap.izle(function (k) {
     if (!k || !k.kesin || duBakti) return; duBakti = true;
     Hesap.db().then(function (db) {
-      [["sayi", "sayiBadge", "sayiSub", "tahmin"], ["amiral", "amiralBadge", "amiralSub", "atis"], ["xox", "xoxBadge", "xoxSub", "hamle"], ["tepe", "tepeBadge", "tepeSub", "hamle"], ["zincir", "zincirBadge", "zincirSub", "hamle"], ["uno", "unoBadge", "unoSub", "hamle"], ["dort", "dortBadge", "dortSub", "hamle"], ["ciz", "cizBadge", "cizSub", "hamle"]].filter(function (x) { return !(window.geliyorMu && geliyorMu(x[0])); }).forEach(function (x) {
+      [["sayi", "sayiBadge", "sayiSub", "tahmin"], ["amiral", "amiralBadge", "amiralSub", "atis"], ["kelimeavi", "kelimeaviBadge", "kelimeaviSub", "tur"], ["xox", "xoxBadge", "xoxSub", "hamle"], ["tepe", "tepeBadge", "tepeSub", "hamle"], ["zincir", "zincirBadge", "zincirSub", "hamle"], ["uno", "unoBadge", "unoSub", "hamle"], ["dort", "dortBadge", "dortSub", "hamle"], ["ciz", "cizBadge", "cizSub", "hamle"]].filter(function (x) { return !(window.geliyorMu && geliyorMu(x[0])); }).forEach(function (x) {
         db.collection(x[0]).doc("mac").get().then(function (snap) {
           var d = snap.exists ? snap.data() : null, badge = document.getElementById(x[1]), sub = document.getElementById(x[2]); if (!d) return;
           if (d.bitti) { badge.textContent = "yeni oyun"; sub.textContent = d.kazanan ? (d.kazanan === k.uid ? "Son oyunu sen kazandın." : "Son oyunu kaybettin.") + " Yeni oyunu ikiniz de kurabilirsiniz." : "Son oyun berabere bitti."; return; }
           if (x[0] === "zincir" && d.mod === "yaz" && (!d.hazir || !d.hazir[k.uid])) { badge.textContent = "sıra sende"; badge.className = "qmnew qmturn"; sub.textContent = "Zincirini yaz, o çözecek."; return; }
           if (x[0] === "zincir" && d.mod === "yaz" && !d.hazir[d.a === k.uid ? d.b : d.a]) { badge.textContent = "o yazıyor"; sub.textContent = "Senin zincirin hazır, onunkini bekliyorsun."; return; }
           if (x[0] === "ciz") { var cb = d.cizen === k.uid; if (cb && !d.hazir) { badge.textContent = "sıra sende"; badge.className = "qmnew qmturn"; sub.textContent = "Sıra sende · kelime seç, çiz."; } else if (cb) { badge.textContent = "çiziyorsun"; sub.textContent = "Çizimini bitir; o tahmin ediyor."; } else if (d.hazir) { badge.textContent = "sıra sende"; badge.className = "qmnew qmturn"; sub.textContent = "Sıra sende · çizime bak, tahmin et."; } else { badge.textContent = "o çiziyor"; sub.textContent = "Kelimesini seçince çizimi görürsün."; } return; }
+          if (x[0] === "kelimeavi") { var oy = d.oy || {}, bo = oy[k.uid], oo = oy[d.a === k.uid ? d.b : d.a]; if (!bo || !bo.bitti) { badge.textContent = "sıra sende"; badge.className = "qmnew qmturn"; sub.textContent = oo && oo.bitti ? "O oynadı: " + (oo.k || []).length + " kelime. 90 saniyen hazır." : "Tablo seni bekliyor · 90 saniye."; } else { badge.textContent = "onu bekle"; sub.textContent = "Sen oynadın; o da oynayınca sonuç açılır."; } return; }
           if (x[0] === "uno" && d.sira === "bot") { badge.textContent = "bot oynuyor"; sub.textContent = "Girince botun hamlesi oynanır."; return; }
           if (x[3] === "hamle") { if (d.sira === k.uid) { badge.textContent = "sıra sende"; badge.className = "qmnew qmturn"; sub.textContent = x[0] === "tepe" ? "Sıra sende · nişan al, ateşle." : x[0] === "zincir" ? "Sıra sende · sıradaki kelimeyi bil." : x[0] === "uno" ? "Sıra sende · kartını at." : x[0] === "dort" ? "Sıra sende · taşını at." : "Sıra sende · hamleni yap."; } else { badge.textContent = "sırası onda"; sub.textContent = "Hamlesini yapınca sıra sana geçer."; } return; }
           if (!d.hazir || !d.hazir[k.uid]) { badge.textContent = "sıra sende"; badge.className = "qmnew qmturn"; sub.textContent = x[0] === "sayi" ? "Gizli sayını belirle, oyun başlasın." : "Filonu yerleştir, oyun başlasın."; return; }
@@ -426,7 +433,7 @@
 (function () { var b = 0; try { b = +localStorage.getItem("stb_best") || 0; } catch (e) {} if (b > 0) document.getElementById("stilobatBadge").textContent = "rekor " + b; })();
 /* Hadi Başlayalım: son oynanan oyuna götürür (yoksa Kelime Bahçesi). Sadece menüye ait küçük bir kayıt: qg_last */
 (function () {
-  var G = { kelime: ["kelime.html", "Kelime Bahçesi"], ok: ["ok.html", "Eros'un Oku"], kase: ["kase.html", "Peki Madem (:"], oda: ["oda.html", "Şefin Odası"], plan: ["oyun.html", "Şefin Planı"], tur: ["fatih.html", "Fatih Turu"], fark: ["fark.html", "7 Farkı Bul"], gunun: ["gunun.html", "Günün Kelimesi"], hafiza: ["hafiza.html", "Hafıza Düellosu"], satranc: ["satranc.html", "Satranç"], sayi: ["sayi.html", "Sayı Düellosu"], amiral: ["amiral.html", "Amiral Battı"], asmaca: ["asmaca.html", "Adam Asmaca"], xox: ["xox.html", "XOX"], tepe: ["tepe.html", "Tepe Savaşı"], zincir: ["zincir.html", "Kelime Zinciri"], uno: ["uno.html", "UNO"], dort: ["dort.html", "Dört Taş"], ciz: ["ciz.html", "Çiz Bil"], tabu: ["tabu.html", "Tabu"], yikim: ["yikim.html", "Yıkım"], stilobat: ["stilobat.html", "Stilobat"] };
+  var G = { kelime: ["kelime.html", "Kelime Bahçesi"], ok: ["ok.html", "Eros'un Oku"], kase: ["kase.html", "Peki Madem (:"], oda: ["oda.html", "Şefin Odası"], plan: ["oyun.html", "Şefin Planı"], tur: ["fatih.html", "Fatih Turu"], fark: ["fark.html", "7 Farkı Bul"], gunun: ["gunun.html", "Günün Kelimesi"], hafiza: ["hafiza.html", "Hafıza Düellosu"], satranc: ["satranc.html", "Satranç"], sayi: ["sayi.html", "Sayı Düellosu"], amiral: ["amiral.html", "Amiral Battı"], asmaca: ["asmaca.html", "Adam Asmaca"], xox: ["xox.html", "XOX"], tepe: ["tepe.html", "Tepe Savaşı"], zincir: ["zincir.html", "Kelime Zinciri"], kelimeavi: ["kelimeavi.html", "Kelime Avı"], uno: ["uno.html", "UNO"], dort: ["dort.html", "Dört Taş"], ciz: ["ciz.html", "Çiz Bil"], tabu: ["tabu.html", "Tabu"], yikim: ["yikim.html", "Yıkım"], stilobat: ["stilobat.html", "Stilobat"] };
   var last = null; try { last = localStorage.getItem("qg_last"); } catch (e) {}
   [].forEach.call(document.querySelectorAll(".qmt[data-g]"), function (a) {
     if (window.geliyorMu && geliyorMu(a.getAttribute("data-g"))) return;
