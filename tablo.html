@@ -19,8 +19,8 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Queen Games">
 <link rel="apple-touch-icon" href="ikon/app-180.png">
-<link rel="stylesheet" href="style.css?v=1021m">
-<script src="kapi.js?v=1021m"></script>
+<link rel="stylesheet" href="style.css?v=1021o">
+<script src="kapi.js?v=1021o"></script>
 <style>
 .tbmin{gap:12px}
 .tbmin .tbvitrin{padding:16px 12px 12px;background:rgba(255,255,255,.06);box-shadow:inset 0 0 0 1px rgba(255,255,255,.12)}
@@ -56,9 +56,9 @@
   </section>
 </main>
 
-<script src="app.js?v=1021m"></script>
-<script src="hesap.js?v=1021m"></script>
-<script src="deneme.js?v=1021m"></script>
+<script src="app.js?v=1021o"></script>
+<script src="hesap.js?v=1021o"></script>
+<script src="deneme.js?v=1021o"></script>
 <script>
 (function () {
   var $ = function (id) { return document.getElementById(id); };
@@ -145,6 +145,7 @@
   function karsi() { for (var u in oyuncular) if (u !== ben) return u; return null; }
   function adOf(u) { var p = oyuncular[u] || {}; return p.ad || (p.kul ? Hesap.gorunenAd(p.kul) : "?"); }
   function sinif(u) { var p = oyuncular[u] || {}; return p.kul === "bus" ? "a" : "b"; }
+  function oynanan(se) { return se ? Math.max(0, (se.oyun || 0) - (!se.sifir ? 0 : se.taban !== undefined ? se.taban : se.eski ? (se.eski.oyun || 0) : 0)) : 0; }   /* seri sıfırlandıysa öncesi sayılmaz */
   function seriOf(k) { return k === "hafiza" ? seri : k === "satranc" ? stSeri : duSeri[k]; }
   function macOf(k) { return k === "hafiza" ? mac : k === "satranc" ? stMac : duMac[k]; }
   function sonSeri(se) {                                                 /* son oyunlardan kesintisiz kazanma serisi */
@@ -182,7 +183,7 @@
       var se = seriOf(k), gg = (se && se.g) || {}, a0 = gg[list[0].uid] || 0, a1 = list.length > 1 ? (gg[list[1].uid] || 0) : 0, ab = list.length < 2 || a0 === a1 ? -1 : (a0 > a1 ? 0 : 1), d = durumOf(k);
       if (ab >= 0) taclar[list[ab].uid] = (taclar[list[ab].uid] || 0) + 1;
       html += '<div class="tbrow"><div class="tbg">' + esc(OYUN[k]) + (d ? ' · <i>' + esc(d.t) + "</i>" : "") + '</div>' + list.map(function (p, i) {
-        var w = gg[p.uid] || 0; return '<div class="tbc' + (ab === i ? " win" : "") + '"><b>' + w + " galibiyet</b>" + (se && se.oyun ? "<small>" + se.oyun + " oyun" + (se.b ? " · " + se.b + " berabere" : "") + "</small>" : "") + "</div>";
+        var w = gg[p.uid] || 0; return '<div class="tbc' + (ab === i ? " win" : "") + '"><b>' + w + " galibiyet</b>" + (oynanan(se) ? "<small>" + oynanan(se) + " oyun" + (se.b ? " · " + se.b + " berabere" : "") + "</small>" : "") + "</div>";
       }).join("") + "</div>";
     });
     $("grid").innerHTML = html;

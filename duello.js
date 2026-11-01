@@ -74,7 +74,7 @@
             var g = {}; for (var k in s.g) g[k] = s.g[k]; if (kazanan) g[kazanan] = (g[kazanan] || 0) + 1;
             var sonlar = (s.son || []).slice(-9); sonlar.push({ n: n, k: kazanan, s: sonuc });
             var yeniS = { g: g, b: (s.b || 0) + (kazanan ? 0 : 1), oyun: n, son: sonlar, t: firebase.firestore.FieldValue.serverTimestamp() };
-            if (s.sifir) { yeniS.sifir = s.sifir; if (s.eski) yeniS.eski = s.eski; }            /* sıfırlama işareti korunur, yoksa sıfırlama tekrar çalışır */
+            if (s.sifir) { yeniS.sifir = s.sifir; if (s.eski) yeniS.eski = s.eski; if (s.taban !== undefined) yeniS.taban = s.taban; }            /* sıfırlama işareti korunur, yoksa sıfırlama tekrar çalışır */
             tx.set(D.seriRef, yeniS);
           });
         }).then(function () {
@@ -90,7 +90,8 @@
       D.db.runTransaction(function (tx) {
         return tx.get(D.seriRef).then(function (snap) {
           if (!snap.exists) return; var s = snap.data(); if (s.sifir === z.k) return;
-          tx.set(D.seriRef, { g: {}, b: 0, oyun: s.oyun || 0, son: [], sifir: z.k, eski: { g: s.g || {}, b: s.b || 0, oyun: s.oyun || 0 }, t: firebase.firestore.FieldValue.serverTimestamp() });
+          /* eski: ilk sıfırlamadan önceki skor (tekrar sıfırlanınca da korunur); taban: son sıfırlamadaki oyun numarası */
+          tx.set(D.seriRef, { g: {}, b: 0, oyun: s.oyun || 0, son: [], sifir: z.k, taban: s.oyun || 0, eski: s.sifir && s.eski ? s.eski : { g: s.g || {}, b: s.b || 0, oyun: s.oyun || 0 }, t: firebase.firestore.FieldValue.serverTimestamp() });
         });
       }).catch(function () { sifirDenendi = false; });
     }

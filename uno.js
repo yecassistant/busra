@@ -11,7 +11,7 @@
 
   var D = window.Duello({
     kol: "uno", sayfa: "uno", sub: "sub", ses: "UkSes", helpKey: "uno_help",
-    seriSifir: { k: "1101", son: Date.parse("2026-11-08T00:00:00+03:00") },   /* seri bir kereliğine 0–0'dan başlar */
+    seriSifir: { k: "1102", son: Date.parse("2026-11-08T00:00:00+03:00") },   /* seri bir kereliğine 0–0'dan başlar */
     startText: "Herkese 7 kart; rengine ya da sayısına uyanı at, elini ilk bitiren kazanır. Kimlerin oynayacağını ve modu seç.",
     yeniDoc: function (d, ME, OTHER) {
       var baslayan = d && d.baslayan ? (d.baslayan === ME ? OTHER : ME) : ME;
@@ -32,7 +32,7 @@
     seriKod: function (d) { if (d.sonuc === "pes") return 99; var t = 0; for (var k in (d.el || {})) if (k !== d.kazanan) t += d.el[k].length; return Math.min(98, t); }
   });
   /* seri sıfırlanınca Büş'e bir kerelik not */
-  var NOT = { k: "uno_not_1101", metin: "Sen mutlu uyu ve uyan, yeterliii ❤️" }, notBakildi = false;
+  var NOT = { k: "uno_not_1101", metin: "Sen mutlu uyu ve uyan, yeterliii" }, notBakildi = false;
   function notBak() {
     if (notBakildi || !D.me) return; notBakildi = true;
     try { if (localStorage.getItem(NOT.k) === "1") return; } catch (e) {}
@@ -42,8 +42,18 @@
       setTimeout(function () { var m = document.getElementById("msg"); if (m && m.textContent.indexOf("Seri 0") === 0) m.textContent = ""; }, 7000);
       return;
     }
+    var AY = '<svg viewBox="0 0 88 88"><defs><radialGradient id="uknAyR" cx="38%" cy="40%" r="70%"><stop offset="0" stop-color="#fff6cf"/><stop offset="1" stop-color="#ffcf5e"/></radialGradient></defs>' +
+      '<path d="M58 9A36 36 0 1 0 80 58A29 29 0 0 1 58 9Z" fill="url(#uknAyR)"/>' +
+      '<path d="M23 47q5 5 10 0M40 51q4 4 8 0" stroke="#8a5a22" stroke-width="2.6" fill="none" stroke-linecap="round"/>' +
+      '<circle cx="24" cy="57" r="4.5" fill="#ff9fbd" opacity=".75"/><circle cx="44" cy="61" r="4" fill="#ff9fbd" opacity=".75"/>' +
+      '<path d="M31 61q3 3 6 0" stroke="#8a5a22" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg>';
+    var YIL = [[8, 18, 0], [22, 62, .6], [80, 14, 1.2], [88, 58, .3], [14, 84, 1.7], [72, 82, .9], [50, 8, 2]];
     var el = document.createElement("div"); el.className = "gkover"; el.id = "ukNot";
-    el.innerHTML = '<div class="gkcard hdcard uknot"><div class="gkkick">Seri sıfırlandı · 0 – 0</div><h2>Bir not 🌙</h2><p class="uknotm">' + D.esc(NOT.metin) + '</p><p class="gksmall">— Yunus</p><button type="button" class="gkprimary">Tamam</button></div>';
+    el.innerHTML = '<div class="uknot" role="dialog" aria-label="Not">' +
+      '<div class="ukngok" aria-hidden="true">' + YIL.map(function (y) { return '<span class="ukny" style="left:' + y[0] + '%;top:' + y[1] + '%;animation-delay:' + y[2] + 's;-webkit-animation-delay:' + y[2] + 's">✦</span>'; }).join("") +
+      '<span class="uknay">' + AY + '</span><span class="uknz">z</span><span class="uknz z2">z</span><span class="uknz z3">Z</span></div>' +
+      '<div class="uknkagit"><span class="uknbant"></span><p class="uknotm">' + D.esc(NOT.metin) + ' <span class="uknkalp">❤️</span></p><p class="uknimza">— Yunus</p></div>' +
+      '<p class="uknalt">UNO serisi 0 – 0’dan başladı</p><button type="button" class="uknbtn">Tamam 🌙</button></div>';
     document.body.appendChild(el);
     el.querySelector("button").onclick = function () { el.hidden = true; gordu(); };
   }
