@@ -107,6 +107,25 @@ service cloud.firestore {
       allow delete: if false;
     }
 
+    match /kelimeavi/{id} {
+      allow read: if uye();
+      allow create: if uye();
+      // Herkes kendi zamanında oynar: sıra yok. Oyun sürerken her oyuncu yalnız kendi kelimelerini (oy.<kendi uid'i>) yazar;
+      // ikincisi bitirince sonuç (bitti, sonuc, kazanan) da aynı yazımla gelir. Oyun bitince ya da seri belgesinde serbest.
+      allow update: if uye() && (id == "seri" || resource.data.bitti == true
+        || (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['oy', 'bitti', 'sonuc', 'kazanan', 't', 'v'])
+          && request.resource.data.oy.diff(resource.data.get('oy', {})).affectedKeys().hasOnly([request.auth.uid])));
+      allow delete: if false;
+    }
+
+    // Oyun içi sohbet: herkes kendi belgesine (sohbet/<kendi uid'i>) son mesajını yazar, öbürü okur.
+    match /sohbet/{uid} {
+      allow read: if uye();
+      allow write: if uye() && request.auth.uid == uid
+        && request.resource.data.size() <= 6
+        && (!('y' in request.resource.data) || (request.resource.data.y is string && request.resource.data.y.size() <= 60));
+    }
+
     match /ciftlik/{uid} {
       allow read: if uye();
       allow write: if uye() && request.auth.uid == uid;
