@@ -66,7 +66,18 @@
     for (var i = 2; i < n; i += 2) ctx.lineTo(p[i] / OLCEK * BOY, p[i + 1] / OLCEK * YUK);
     ctx.stroke();
   }
-  function hepsiniCiz() { temizle(); var L = (G && G.cizim) || []; for (var i = 0; i < L.length; i++) vuruCiz(L[i]); if (canliVuru) vuruCiz(canliVuru); cizilen = L.length; }
+  function hepsiniCiz() { temizle(); var L = (G && G.cizim) || []; for (var i = 0; i < L.length; i++) vuruCiz(L[i]); if (canliVuru) vuruCiz(canliVuru); cizilen = L.length; akisSifirla(L); }
+  /* bir vurunun yalnızca a..b koordinat aralığını çizer (yuvarlak uçlarla parça parça çizim bütünle aynı görünür) */
+  function parcaCiz(v, a, b) {
+    var p = v.p; b = Math.min(b, p.length); if (b < 2 || b <= a) return;
+    var s = a >= 2 ? a - 2 : 0;
+    ctx.setTransform(DPR, 0, 0, DPR, 0, 0); ctx.lineCap = "round"; ctx.lineJoin = "round";
+    ctx.strokeStyle = v.e ? "#fffdf8" : v.c; ctx.lineWidth = v.w * (BOY / 360);
+    ctx.beginPath(); ctx.moveTo(p[s] / OLCEK * BOY, p[s + 1] / OLCEK * YUK);
+    if (b - s <= 2) ctx.lineTo(p[s] / OLCEK * BOY + 0.01, p[s + 1] / OLCEK * YUK);
+    for (var k = s + 2; k < b; k += 2) ctx.lineTo(p[k] / OLCEK * BOY, p[k + 1] / OLCEK * YUK);
+    ctx.stroke();
+  }
   /* çizen: parmakla çiz */
   var arac = { c: RENKLER[0], w: 5, e: false }, yazT = 0, yazBekle = null;
   function nokta(e) { var r = cv.getBoundingClientRect(); return [Math.round((e.clientX - r.left) / r.width * OLCEK), Math.round((e.clientY - r.top) / r.height * OLCEK)]; }
@@ -77,10 +88,11 @@
   });
   cv.addEventListener("pointermove", function (e) {
     if (!canliVuru || e.pointerId !== canliVuru.pid) return; e.preventDefault();
-    var q = nokta(e), p = canliVuru.p, lx = p[p.length - 2], ly = p[p.length - 1];
-    if (Math.abs(q[0] - lx) + Math.abs(q[1] - ly) < 4) return;
-    p.push(q[0], q[1]); vuruCiz(canliVuru, p.length); vuruCiz(canliVuru);
-    if (Date.now() - yazT > 350) cizimYaz(false);
+    var p = canliVuru.p, once = p.length, olaylar = (e.getCoalescedEvents && e.getCoalescedEvents()) || []; if (!olaylar.length) olaylar = [e];   /* telefonun kareler arasındaki dokunuş noktaları: daha pürüzsüz çizgi */
+    for (var i = 0; i < olaylar.length; i++) { var q = nokta(olaylar[i]), lx = p[p.length - 2], ly = p[p.length - 1]; if (Math.abs(q[0] - lx) + Math.abs(q[1] - ly) >= 3) p.push(q[0], q[1]); }
+    if (p.length === once) return;
+    parcaCiz(canliVuru, once, p.length);                                    /* yalnız yeni eklenen parça: uzun çizgide bile hızlı */
+    if (Date.now() - yazT > 160) cizimYaz(false);
   });
   function vuruBitir(e) {
     if (!canliVuru || (e && e.pointerId !== canliVuru.pid)) return;
@@ -121,14 +133,34 @@
 
   /* izleyen: yeni vuruları ekle; ilk açılışta baştan oynat */
   var oynatim = null;
+  /* izleyen: gelen yeni noktalar bir anda basılmaz; iki güncelleme arasındaki süreye yayılarak akıcı çizilir ("tık tık" yerine çizgi akar) */
+  var akis = { i: 0, j: 0, imza: "", raf: 0, hiz: 0.1, son: 0, gT: 0 };
+  function vImza(v) { return v ? v.c + "|" + v.w + "|" + (v.e ? 1 : 0) + "|" + v.p[0] + "," + v.p[1] : ""; }
+  function akisSifirla(L) { if (akis.raf) { cancelAnimationFrame(akis.raf); akis.raf = 0; } akis.son = 0; akis.i = L.length ? L.length - 1 : 0; akis.j = L.length ? L[L.length - 1].p.length : 0; akis.imza = L.length ? vImza(L[L.length - 1]) : ""; }
+  function akisKalan(L) { var k = 0; for (var x = akis.i; x < L.length; x++) k += L[x].p.length - (x === akis.i ? akis.j : 0); return k; }
+  function akisAdim(t) {
+    akis.raf = 0; var L = (G && G.cizim) || []; if (!L.length || cizenBen()) return;
+    var dt = akis.son ? Math.min(48, t - akis.son) : 16; akis.son = t;
+    var butce = Math.max(2, Math.round(akis.hiz * dt / 2) * 2);
+    while (butce > 0 && akis.i < L.length) {
+      var v = L[akis.i], n = v.p.length;
+      if (akis.j >= n) { if (akis.i < L.length - 1) { akis.i++; akis.j = 0; continue; } break; }
+      var b = Math.min(n, akis.j + butce); parcaCiz(v, akis.j, b); butce -= b - akis.j; akis.j = b;
+    }
+    akis.imza = vImza(L[akis.i]);
+    if (akisKalan(L) > 0) akis.raf = requestAnimationFrame(akisAdim); else akis.son = 0;
+  }
   function izle(d, ilk) {
     var L = d.cizim || [];
     if (oynatim) { if (L.length >= oynatim.hedef) { oynatim.hedef = L.length; return; } clearTimeout(oynatim.t); oynatim = null; }
     if (ilk && L.length) { oynat(L); return; }
-    if (L.length < cizilen) { hepsiniCiz(); return; }
-    for (var i = cizilen; i < L.length; i++) vuruCiz(L[i]); cizilen = L.length;
-    /* devam eden vuru (canlı): son vuru büyüyorsa tamamını yeniden çiz (eksik kısmı tamamlamak için) */
-    if (L.length && cizilen === L.length) vuruCiz(L[L.length - 1]);
+    /* geri alma, temizleme ya da değişen vuru: baştan çiz (silinen çizgi ekranda kalmasın) */
+    if (!L.length) { if (akis.i || akis.j) hepsiniCiz(); return; }
+    if (akis.i >= L.length || L[akis.i].p.length < akis.j || (akis.j > 0 && vImza(L[akis.i]) !== akis.imza)) { hepsiniCiz(); return; }
+    var kalan = akisKalan(L); if (kalan <= 0) return;
+    var simdi = performance.now(), sure = Math.max(110, Math.min(450, simdi - (akis.gT || simdi - 200))); akis.gT = simdi;
+    akis.hiz = Math.max(0.05, kalan / sure);                                  /* bu paketi bir sonraki paket gelene kadar bitir */
+    if (!akis.raf) akis.raf = requestAnimationFrame(akisAdim);
   }
   function oynat(L) {
     temizle(); cizilen = 0; var i = 0, j = 2, toplam = 0; L.forEach(function (v) { toplam += v.p.length; });
@@ -269,7 +301,7 @@
     var onceki = G; G = d; var turK = d.n + ":" + d.tur;
     var yeniTur = turK !== sonTur; sonTur = turK;
     if (!yeniTur && onceki && d.cizen === D.me && d.hazir) G.cizim = onceki.cizim;              /* çizen için yerel çizim esastır (ara yazımlar çift vuru üretmesin) */
-    if (yeniTur) { canliVuru = null; cizilen = 0; if (oynatim) { clearTimeout(oynatim.t); oynatim = null; } }
+    if (yeniTur) { canliVuru = null; cizilen = 0; if (oynatim) { clearTimeout(oynatim.t); oynatim = null; } akisSifirla([]); akis.gT = 0; }
     ciz();
     if (cizenBen()) { if (yeniTur || !onceki) hepsiniCiz(); }
     else izle(d, yeniTur || !onceki);
