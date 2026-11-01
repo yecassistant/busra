@@ -11,6 +11,7 @@
 
   var D = window.Duello({
     kol: "uno", sayfa: "uno", sub: "sub", ses: "UkSes", helpKey: "uno_help",
+    seriSifir: { k: "1101", son: Date.parse("2026-11-08T00:00:00+03:00") },   /* seri bir kereliğine 0–0'dan başlar */
     startText: "Herkese 7 kart; rengine ya da sayısına uyanı at, elini ilk bitiren kazanır. Kimlerin oynayacağını ve modu seç.",
     yeniDoc: function (d, ME, OTHER) {
       var baslayan = d && d.baslayan ? (d.baslayan === ME ? OTHER : ME) : ME;
@@ -19,8 +20,8 @@
       MOTOR.forEach(function (k) { doc[k] = S[k]; });
       return doc;
     },
-    onMac: function (d, ilk) { macGeldi(d, ilk); },
-    onYok: function () { G = null; ["rakipler", "masa", "durum", "alt"].forEach(function (x) { $(x).hidden = true; }); $("el").innerHTML = ""; },
+    onMac: function (d, ilk) { notBak(); macGeldi(d, ilk); },
+    onYok: function () { notBak(); G = null; ["rakipler", "masa", "durum", "alt"].forEach(function (x) { $(x).hidden = true; }); $("el").innerHTML = ""; },
     bitisGecikme: 1300,
     bitis: function (d) {
       var ME = D.me, ad = D.adlar[D.other] || "Rakip", kazandim = d.kazanan === ME, m = (UK.MODLAR[d.mod] || {}).ad || "";
@@ -30,6 +31,22 @@
     },
     seriKod: function (d) { if (d.sonuc === "pes") return 99; var t = 0; for (var k in (d.el || {})) if (k !== d.kazanan) t += d.el[k].length; return Math.min(98, t); }
   });
+  /* seri sıfırlanınca Büş'e bir kerelik not */
+  var NOT = { k: "uno_not_1101", metin: "Sen mutlu uyu ve uyan, yeterliii ❤️" }, notBakildi = false;
+  function notBak() {
+    if (notBakildi || !D.me) return; notBakildi = true;
+    try { if (localStorage.getItem(NOT.k) === "1") return; } catch (e) {}
+    function gordu() { try { localStorage.setItem(NOT.k, "1"); } catch (e) {} }
+    if (D.kul[D.me] !== "bus") {
+      D.msg("Seri 0 – 0'dan başladı. Notun Büşra'ya UNO'yu açınca bir kere çıkacak 🌙", true); gordu();
+      setTimeout(function () { var m = document.getElementById("msg"); if (m && m.textContent.indexOf("Seri 0") === 0) m.textContent = ""; }, 7000);
+      return;
+    }
+    var el = document.createElement("div"); el.className = "gkover"; el.id = "ukNot";
+    el.innerHTML = '<div class="gkcard hdcard uknot"><div class="gkkick">Seri sıfırlandı · 0 – 0</div><h2>Bir not 🌙</h2><p class="uknotm">' + D.esc(NOT.metin) + '</p><p class="gksmall">— Yunus</p><button type="button" class="gkprimary">Tamam</button></div>';
+    document.body.appendChild(el);
+    el.querySelector("button").onclick = function () { el.hidden = true; gordu(); };
+  }
   var G = null, gonderiyor = false, botZaman = null, benSurdum = false, sonOlay = "", bekleyenKart = null;
   function snd(n) { if (window.UkSes) try { window.UkSes.play(n); } catch (e) {} }
   function motor(d) { var S = {}; MOTOR.forEach(function (k) { S[k] = d[k] === undefined ? null : JSON.parse(JSON.stringify(d[k])); }); S.ceza = S.ceza || 0; S.yok = S.yok || {}; S.cekilen = S.cekilen || ""; return S; }

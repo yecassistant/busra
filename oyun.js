@@ -7,7 +7,7 @@
 (function () {
   "use strict";
   var N = 8, grid = [], score = 0, shown = 0, moves = 0, best = 0, tray = [], selected = -1, cellPx = 36, gap = 3, PAD = 6;
-  var combo = 0, sonTemiz = -9, kilit = false, bitti = false, gold = [], hakYenile = 1, hakDondur = 2, rekorDendi = false, best0 = 0, sonHakPuan = 0;
+  var combo = 0, sonTemiz = -9, kilit = false, bitti = false, gold = [], hakYenile = 1, hakDondur = 1, rekorDendi = false, best0 = 0, sonHakPuan = 0;
   var $ = function (id) { return document.getElementById(id); };
   var board = $("board"), vines = $("vines"), trayEl = $("tray"), msgEl = $("gmsg"), scoreEl = $("score"), bestEl = $("best"), over = $("over"), wrapEl = board.parentNode;
   var fx = document.createElement("div"); fx.className = "sfx"; fx.setAttribute("aria-hidden", "true"); wrapEl.appendChild(fx);
@@ -30,7 +30,9 @@
     [[0, 0], [1, 0], [1, 1]], [[0, 0], [0, 1], [1, 0]], [[0, 0], [0, 1], [1, 1]], [[0, 1], [1, 0], [1, 1]],
     [[0, 0], [1, 0], [2, 0], [2, 1]], [[0, 0], [0, 1], [1, 0], [2, 0]], [[0, 0], [0, 1], [1, 1], [2, 1]], [[0, 1], [1, 1], [2, 1], [2, 0]],
     [[0, 0], [0, 1], [0, 2], [1, 1]], [[0, 1], [1, 0], [1, 1], [1, 2]], [[0, 0], [1, 0], [1, 1], [2, 0]], [[0, 1], [1, 0], [1, 1], [2, 1]],
-    [[0, 0], [0, 1], [1, 1], [1, 2]], [[0, 1], [0, 2], [1, 0], [1, 1]]
+    [[0, 0], [0, 1], [1, 1], [1, 2]], [[0, 1], [0, 2], [1, 0], [1, 1]],
+    [[0, 0], [0, 1], [0, 2], [1, 0], [1, 1], [1, 2]], [[0, 0], [0, 1], [1, 0], [1, 1], [2, 0], [2, 1]],
+    [[0, 0], [1, 0], [2, 0], [2, 1], [2, 2]], [[0, 0], [0, 1], [0, 2], [1, 0], [2, 0]], [[0, 0], [0, 1], [0, 2], [1, 2], [2, 2]], [[0, 2], [1, 2], [2, 0], [2, 1], [2, 2]]
   ];
   var CLEAR = ["açtı 🏗️", "sırası tamam, mimari onay ✓", "hizaya girdi, statik tuttu 📐", "dizildi; ruhsat çıktı 😅", "tamam, şantiye tertemiz"];
   var NOPE = ["Oraya sığmaz", "Kolon çakıştı 😅", "Kat planı uymuyor", "Mimar bakışıyla tekrar dene"];
@@ -38,9 +40,15 @@
   var KOMBO = ["Kombo", "Süper", "Harika", "Muhteşem", "Efsane"];
   var OVGU = ["", "Güzel!", "Harika!", "Muhteşem!", "Efsane!", "Efsane!"];
   /* parça ağırlıkları: küçük ve orta parçalar daha sık gelir (oyun akıcı olsun), büyükler ara sıra */
-  var AGIRLIK = [6, 8, 8, 7, 7, 4, 4, 2, 2, 6, 2, 7, 7, 7, 7, 4, 4, 4, 4, 4, 4, 4, 4, 3, 3];
+  var AGIRLIK = [6, 8, 8, 7, 7, 4, 4, 2, 2, 6, 2, 7, 7, 7, 7, 4, 4, 4, 4, 4, 4, 4, 4, 3, 3, 1, 1, 1, 1, 1, 1];
   var TOPLAM_AG = AGIRLIK.reduce(function (a, b) { return a + b; }, 0);
-  function agirlikliSekil() { var r = Math.random() * TOPLAM_AG; for (var i = 0; i < SHAPES.length; i++) { r -= AGIRLIK[i]; if (r < 0) return SHAPES[i]; } return SHAPES[0]; }
+  /* zorluk: puan ya da yerleşen parça arttıkça 0 → 1 (10.000 puanda ya da ~105 parçada tam zor). Büyük parçalar sıklaşır, küçükler seyrekleşir, kurtarıcı seçim azalır */
+  var AGIRLIK_ZOR = [1, 2, 2, 4, 4, 5, 5, 4, 4, 5, 6, 4, 4, 4, 4, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 5, 5, 4, 4, 4, 4];
+  function zorluk() { return Math.max(0, Math.min(1, Math.max((score - 1000) / 9000, (moves - 15) / 90))); }
+  function agirlikliSekil() {
+    var z = zorluk(), W = AGIRLIK.map(function (a, i) { return a * (1 - z) + AGIRLIK_ZOR[i] * z; }), top = W.reduce(function (a, b) { return a + b; }, 0);
+    var r = Math.random() * top; for (var i = 0; i < SHAPES.length; i++) { r -= W[i]; if (r < 0) return SHAPES[i]; } return SHAPES[0];
+  }
   function dondurSekil(sh) { var maxR = 0; sh.forEach(function (q) { if (q[0] > maxR) maxR = q[0]; }); var out = sh.map(function (q) { return [q[1], maxR - q[0]]; }); out.sort(function (a, b) { return a[0] - b[0] || a[1] - b[1]; }); return out; }
   function pick(a) { return a[Math.floor(Math.random() * a.length)]; }
   function burst(n) { try { if (window.__burst) window.__burst(n); } catch (e) {} }
@@ -293,8 +301,8 @@
       snd("temiz", cleared.n);
       burst(10 + cleared.n * 8 + (bos ? 30 : 0));
       /* hak kazanma: 3'lü kombo → +1 yenile, her 2 hat birden → +1 döndür */
-      if (combo > 0 && combo % 3 === 0) { hakYenile++; setTimeout(function () { yazi("+1 Yenile 🔄", orta[0], orta[1] + cellPx, "kucuk"); }, 500); }
-      if (cleared.n >= 2) { hakDondur++; setTimeout(function () { yazi("+1 Döndür ⟳", orta[0], orta[1] + cellPx * 1.8, "kucuk"); }, 650); }
+      if (combo > 0 && combo % 5 === 0 && hakYenile < 2) { hakYenile++; setTimeout(function () { yazi("+1 Yenile 🔄", orta[0], orta[1] + cellPx, "kucuk"); }, 500); }
+      if (cleared.n >= 3 && hakDondur < 2) { hakDondur++; setTimeout(function () { yazi("+1 Döndür ⟳", orta[0], orta[1] + cellPx * 1.8, "kucuk"); }, 650); }
     } else {
       if (moves - sonTemiz > 3) combo = 0;
       yazi("+" + koyPuan, mb[0], mb[1], "kucuk");
@@ -303,7 +311,7 @@
       else msg(pick(PLACE));
     }
     /* her 2500 puanda bir +1 yenile */
-    while (score - sonHakPuan >= 2500) { sonHakPuan += 2500; hakYenile++; }
+    while (score - sonHakPuan >= 6000) { sonHakPuan += 6000; if (hakYenile < 2) hakYenile++; }
     if (!rekorDendi && best0 > 0 && score > best0) { rekorDendi = true; var o2 = hucreMerkez((N - 1) / 2, (N - 1) / 2); setTimeout(function () { yazi("Yeni rekor! 🏆", o2[0], o2[1] + cellPx * 0.6, "kombo rekor"); snd("rekor"); burst(40); }, cleared.n ? 700 : 150); }
     puanYaz(); kombogoster(); haklar();
     if (!tray[0] && !tray[1] && !tray[2]) setTimeout(function () { if (!bitti) { fillTray(true); checkOver(); } }, cleared.n ? 260 : 120);
@@ -377,16 +385,26 @@
     }
     return false;
   }
+  function yerPuani(ps) {
+    var n = 0;
+    ps.forEach(function (p) { for (var r = 0; r < N; r++) for (var c = 0; c < N; c++) if (canPlace(p.shape, r, c)) n++; });
+    return n;
+  }
   function fillTray(anim) {
-    /* üçü de sığacak bir set ara (akıcı oyun); bulamazsa en az biri sığan set */
-    var yedek = null;
-    for (var d = 0; d < 40; d++) {
-      var t = [newPiece(), newPiece(), newPiece()];
-      if (hepsiSigar(t)) { tray = t; yedek = null; break; }
-      if (!yedek && t.some(function (p) { return anyFits(p.shape); })) yedek = t;
-      tray = t;
+    /* başta üçü de sığan set aranır (ısınma); puan arttıkça bu yardım azalır, sonunda parçalar tamamen rastgele gelir: plan dolarsa oyun biter */
+    var z = zorluk(), hepsiDene = Math.round(40 * (1 - z) * (1 - z)), birDene = Math.round(12 * (1 - z)), yedek = null, t;
+    for (var d = 0; d < Math.max(1, hepsiDene, birDene); d++) {
+      t = [newPiece(), newPiece(), newPiece()];
+      if (d < hepsiDene && hepsiSigar(t)) { yedek = null; break; }
+      if (d < birDene && !yedek && t.some(function (p) { return anyFits(p.shape); })) yedek = t;
+      if (d >= hepsiDene && yedek) break;
     }
-    if (yedek) tray = yedek;
+    tray = yedek || t;
+    /* zor bölümde bazen birkaç set çekilir, en az yere sığanı gelir */
+    if (z > 0.5 && Math.random() < z * 0.6) {
+      var enAz = yerPuani(tray);
+      for (var k = 0; k < 2; k++) { var a = [newPiece(), newPiece(), newPiece()], sk = yerPuani(a); if (sk < enAz) { tray = a; enAz = sk; } }
+    }
     renderTray(anim);
   }
   function pieceNode(p, mini) {
@@ -530,7 +548,7 @@
 
   /* ---------- başlat ---------- */
   function start() {
-    score = 0; shown = 0; moves = 0; combo = 0; sonTemiz = -9; kilit = false; bitti = false; hakYenile = 1; hakDondur = 2; rekorDendi = false; best0 = best; sonHakPuan = 0;
+    score = 0; shown = 0; moves = 0; combo = 0; sonTemiz = -9; kilit = false; bitti = false; hakYenile = 1; hakDondur = 1; rekorDendi = false; best0 = best; sonHakPuan = 0;
     scoreEl.textContent = 0; over.hidden = true; selected = -1; fx.innerHTML = "";
     buildBoard(); fillTray(true); drawVines(); kombogoster(); haklar();
     msg("Sürükle ya da seç, sonra plana dokun 🌿");

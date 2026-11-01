@@ -73,15 +73,29 @@
             if (s.oyun >= n) throw new Error("var");
             var g = {}; for (var k in s.g) g[k] = s.g[k]; if (kazanan) g[kazanan] = (g[kazanan] || 0) + 1;
             var sonlar = (s.son || []).slice(-9); sonlar.push({ n: n, k: kazanan, s: sonuc });
-            tx.set(D.seriRef, { g: g, b: (s.b || 0) + (kazanan ? 0 : 1), oyun: n, son: sonlar, t: firebase.firestore.FieldValue.serverTimestamp() });
+            var yeniS = { g: g, b: (s.b || 0) + (kazanan ? 0 : 1), oyun: n, son: sonlar, t: firebase.firestore.FieldValue.serverTimestamp() };
+            if (s.sifir) { yeniS.sifir = s.sifir; if (s.eski) yeniS.eski = s.eski; }            /* sıfırlama işareti korunur, yoksa sıfırlama tekrar çalışır */
+            tx.set(D.seriRef, yeniS);
           });
         }).then(function () {
           D.db.collection("akis").add({ uid: D.me, o: o.kol, k: !kazanan ? "berabere" : kazanan === D.me ? "kazandi" : "kaybetti", v: n * 100 + Math.min(99, kod), t: firebase.firestore.FieldValue.serverTimestamp() }).catch(function () {});
         }).catch(function () {});
       }, ben ? 0 : 5000);
     };
+    /* seriSifir: { k, son } verilmişse seri bir kere 0–0'a döner (eski skor "eski" alanında saklanır); süre dolunca hiç çalışmaz */
+    var sifirDenendi = false;
+    function seriSifirla() {
+      var z = o.seriSifir; if (!z || sifirDenendi || !D.seri || D.seri.sifir === z.k || Date.now() > z.son) return;
+      sifirDenendi = true;
+      D.db.runTransaction(function (tx) {
+        return tx.get(D.seriRef).then(function (snap) {
+          if (!snap.exists) return; var s = snap.data(); if (s.sifir === z.k) return;
+          tx.set(D.seriRef, { g: {}, b: 0, oyun: s.oyun || 0, son: [], sifir: z.k, eski: { g: s.g || {}, b: s.b || 0, oyun: s.oyun || 0 }, t: firebase.firestore.FieldValue.serverTimestamp() });
+        });
+      }).catch(function () { sifirDenendi = false; });
+    }
     function dinle() {
-      D.seriRef.onSnapshot(function (snap) { D.seri = snap.exists ? snap.data() : null; D.altYaz(); }, function () {});
+      D.seriRef.onSnapshot(function (snap) { D.seri = snap.exists ? snap.data() : null; D.altYaz(); seriSifirla(); }, function () {});
       if (D.other) rakipIzle();
       D.ref.onSnapshot(function (snap) {
         var d = snap.exists ? snap.data() : null;

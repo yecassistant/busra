@@ -3376,3 +3376,6 @@ main.uk-sahne{height:calc(100vh - 20px);height:calc(100dvh - max(10px,env(safe-a
 .cztah.yakin{background:#fff3d6;box-shadow:0 0 0 1.5px #f2b631,0 2px 8px rgba(60,40,20,.2)}
 .cztah.yakin i{color:#d99410}
 .cztah small{margin-left:4px;font-size:.62rem;font-weight:900;letter-spacing:.04em;text-transform:uppercase;color:#d99410}
+/* UNO: seri sıfırlama notu */
+.uknot .uknotm{font-family:Fraunces,Georgia,serif;font-style:italic;font-weight:600;font-size:25px;line-height:1.25;color:#ff9ec3;margin:12px 0 4px;text-align:center}
+.uknot .gksmall{margin-top:0;text-align:center}
