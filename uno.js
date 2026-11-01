@@ -32,16 +32,12 @@
     seriKod: function (d) { if (d.sonuc === "pes") return 99; var t = 0; for (var k in (d.el || {})) if (k !== d.kazanan) t += d.el[k].length; return Math.min(98, t); }
   });
   /* seri sıfırlanınca Büş'e bir kerelik not */
-  var NOT = { k: "uno_not_1101", metin: "Sen mutlu uyu ve uyan, yeterliii" }, notBakildi = false;
+  var NOT = { k: "uno_not_1102", metin: "Sen mutlu uyu ve uyan, yeterliii" }, notBakildi = false;
   function notBak() {
     if (notBakildi || !D.me) return; notBakildi = true;
     try { if (localStorage.getItem(NOT.k) === "1") return; } catch (e) {}
     function gordu() { try { localStorage.setItem(NOT.k, "1"); } catch (e) {} }
-    if (D.kul[D.me] !== "bus") {
-      D.msg("Seri 0 – 0'dan başladı. Notun Büşra'ya UNO'yu açınca bir kere çıkacak 🌙", true); gordu();
-      setTimeout(function () { var m = document.getElementById("msg"); if (m && m.textContent.indexOf("Seri 0") === 0) m.textContent = ""; }, 7000);
-      return;
-    }
+    var bus = D.kul[D.me] === "bus";
     var AY = '<svg viewBox="0 0 88 88"><defs><radialGradient id="uknAyR" cx="38%" cy="40%" r="70%"><stop offset="0" stop-color="#fff6cf"/><stop offset="1" stop-color="#ffcf5e"/></radialGradient></defs>' +
       '<path d="M58 9A36 36 0 1 0 80 58A29 29 0 0 1 58 9Z" fill="url(#uknAyR)"/>' +
       '<path d="M23 47q5 5 10 0M40 51q4 4 8 0" stroke="#8a5a22" stroke-width="2.6" fill="none" stroke-linecap="round"/>' +
@@ -52,8 +48,8 @@
     el.innerHTML = '<div class="uknot" role="dialog" aria-label="Not">' +
       '<div class="ukngok" aria-hidden="true">' + YIL.map(function (y) { return '<span class="ukny" style="left:' + y[0] + '%;top:' + y[1] + '%;animation-delay:' + y[2] + 's;-webkit-animation-delay:' + y[2] + 's">✦</span>'; }).join("") +
       '<span class="uknay">' + AY + '</span><span class="uknz">z</span><span class="uknz z2">z</span><span class="uknz z3">Z</span></div>' +
-      '<div class="uknkagit"><span class="uknbant"></span><p class="uknotm">' + D.esc(NOT.metin) + ' <span class="uknkalp">❤️</span></p><p class="uknimza">— Yunus</p></div>' +
-      '<p class="uknalt">UNO serisi 0 – 0’dan başladı</p><button type="button" class="uknbtn">Tamam 🌙</button></div>';
+      '<div class="uknkagit"><span class="uknbant"></span><p class="uknotm">' + D.esc(NOT.metin) + ' <span class="uknkalp">❤️</span></p></div>' +
+      '<p class="uknalt">' + (bus ? "UNO serisi 0 – 0’dan başladı" : "Büşra’ya da tam böyle çıkacak · seri 0 – 0") + '</p><button type="button" class="uknbtn">Tamam 🌙</button></div>';
     document.body.appendChild(el);
     el.querySelector("button").onclick = function () { el.hidden = true; gordu(); };
   }
