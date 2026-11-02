@@ -20,7 +20,7 @@
     kb_max: "max", kb_lvl: "max", kb_bonus: "max", kb_rozet: "max", kb_hint: "max", kb_done: "flag", kb_end: "flag", kb_new31: "flag", kb_wait: "flag", kb_intro: "flag", kb_state: "new",
     ok_max: "max", ok_lvl: "max", ok_hint: "max", ok_intro: "flag", ok_stars: "stars", ok_best: "best", ok_gun: "gun", ok_state: "new",
     pm_best: "max", pm_sufle: "max", pm_muffin2: "flag", pm_tost2: "flag", pm_kalp1: "flag", pm_hediye1: "flag",
-    sef_best: "max", sef_oda: "new", fatih_best: "max", jl_best: "max", jl_max: "max",
+    sef_best: "max", sef_oda: "new", fatih_best: "max", jl_best: "max", jl_max: "max", jl_sbest: "max", jl_zbest: "max",
     fark2_best: "min", fark2_done: "flag", fark2_state: "new", fark3_best: "min", fark3_done: "flag", fark3_state: "new", fark1_intro: "flag",
     stb_best: "max", stb_oyun: "max", yk_best: "max", yk_seviye: "max",
     gk_start: "min", gk_stat: "new", gk_help: "flag", qg_last: "new"

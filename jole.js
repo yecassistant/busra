@@ -8,6 +8,7 @@
   var W = 360, H = 600, RAY_Y = 44, CIZGI = 104, PAH = 34, TUM_Y = 330, TUM_R = 24;
   /* jöle fiziği: ağır ve ağır ağır hareket eder (hava sürtünmesi gövdeye), içi ise uzun süre titrer (iç hareket az sönümlenir);
      zemine ve birbirine yapışkan (yüksek sürtünme), sekmez, yayılır; fırlatma hızı sınırlı */
+  var CEKIRDEK = 0.88, BASINC = 0.95, TEKRAR = 3, sira2 = [];   /* çekirdek: jöleler en fazla bu kadar iç içe geçer; basınç: hacim ne kadar sert korunur */
   var G = 2100, DT = 1 / 120, SURT = 0.9975, HAVA = 0.0025, SEKIL = 0.0078, AT_MAX = 760, AT_KAT = 0.8;
   var RENK = { 1: "#ff5468", 2: "#ffd84a", 4: "#4fd772", 8: "#2fe3b4", 16: "#3f8cff", 32: "#9d63ff", 64: "#ff4fae", 128: "#ff8c33", 256: "#d9f43c", 512: "#ff9fc8", 1024: "#35f0ff", 2048: "#ffd36b", 4096: "#c9b3ff", 8192: "#ffffff" };
   function renk(v) { return v === 0 ? "#8e889e" : RENK[v] || "#ffffff"; }
@@ -80,7 +81,7 @@
     /* 3) hacim (alan) korunur: jöle ezilince yanlara taşar, sönmez */
     var alan = 0, cevre = 0;
     for (i = 0; i < n; i++) { q = P[i]; w = P[(i + 1) % n]; alan += q.x * w.y - w.x * q.y; cevre += Math.sqrt((w.x - q.x) * (w.x - q.x) + (w.y - q.y) * (w.y - q.y)); }
-    alan *= 0.5; var hedef = Math.PI * this.r * this.r * s * s * 0.97, fark = (hedef - alan) / (cevre || 1) * 0.55;
+    alan *= 0.5; var hedef = Math.PI * this.r * this.r * s * s * 0.97, fark = (hedef - alan) / (cevre || 1) * BASINC;
     for (i = 0; i < n; i++) {
       var o = P[(i + n - 1) % n], nx2 = P[(i + 1) % n], ex = nx2.y - o.y, ey = -(nx2.x - o.x), el = Math.sqrt(ex * ex + ey * ey) || 1;
       P[i].x += ex / el * fark; P[i].y += ey / el * fark;
@@ -93,6 +94,9 @@
   try { best = +localStorage.getItem("jl_best") || 0; enBuyuk = +localStorage.getItem("jl_max") || 0; } catch (e) {}
   var puanEl = $("puan"), bestEl = $("best"), buyukEl = $("buyuk"), msgEl = $("jmsg");
   bestEl.textContent = best;
+  /* modlar: tek = Klasik (ara ara çöp), sakin (çöp yok), zaman (2 dakika), duello (canlı). Her tek kişilik modun kendi rekoru var. */
+  var MODBEST = { tek: "jl_best", sakin: "jl_sbest", zaman: "jl_zbest" }, MODAD = { tek: "Klasik", sakin: "Sakin", zaman: "Zamana karşı" }, ZSURE = 120, zBitis = 0, zKalan = 0;
+  function bestOku(m) { try { return +localStorage.getItem(MODBEST[m]) || 0; } catch (e) { return 0; } }
 
   /* ---------- ray: üstte bekleyen 4 jöle ---------- */
   var RAY_N = 4, sira = 0;
@@ -112,11 +116,11 @@
   function rayBoy(v) { var r = Math.min(yaricap(v), 30); return { w: Math.max(40, r * 2.2), h: Math.max(24, r * 1.15) }; }
 
   /* ---------- dokunma ---------- */
-  var olcek = 1, ofx = 0, ofy = 0, iz = [];
+  var olcek = 1, ofx = 0, ofy = 0, iz = [], sonAtis = 0;   /* iki atış arası en az 0,32 sn: makineli tıklamayla kutu doldurulmaz */
   function dunya(e) { var b = cv.getBoundingClientRect(); return { x: (e.clientX - b.left) / olcek, y: (e.clientY - b.top) / olcek }; }
   cv.addEventListener("pointerdown", function (e) {
     sesHazir();
-    if (bitti || tutulan) return;
+    if (bitti || tutulan || performance.now() - sonAtis < 320) return;
     var q = dunya(e), hedef = -1, enYakin = 1e9;
     ray.forEach(function (p, i) { if (p.bos) return; var bx = rayBoy(p.v), dx = q.x - p.x, dy = q.y - RAY_Y; if (Math.abs(dx) < bx.w / 2 + 14 && Math.abs(dy) < bx.h / 2 + 26 && Math.abs(dx) < enYakin) { enYakin = Math.abs(dx); hedef = i; } });
     if (hedef < 0) { if (q.y < CIZGI + 40) mesaj("Üstteki jölelerden birini tut 👆"); return; }
@@ -146,8 +150,9 @@
     var gvx = 0, gvy = 0; j.p.forEach(function (q) { gvx += q.x - q.px; gvy += q.y - q.py; }); gvx /= j.n; gvy /= j.n;
     j.tut = false; j.yas = 0;
     j.p.forEach(function (q) { var ix = q.x - q.px - gvx, iy = q.y - q.py - gvy; q.px = q.x - vx * DT - ix; q.py = q.y - vy * DT - iy; });
-    yuvaKapat(j); tutulan = null; isaret = null; ses.birak();
+    yuvaKapat(j); tutulan = null; isaret = null; ses.birak(); sonAtis = performance.now();
     atis++;
+    if (mod === "zaman" && !zBitis) zBitis = Date.now() + ZSURE * 1000;
     if (mod === "tek" && atis >= 10) { var aralik = Math.max(5, 10 - Math.floor(puan / 1500)); if (atis % aralik === 0) copGelsin(puan > 4000 ? 2 : 1); }
   }
   cv.addEventListener("pointerup", birak); cv.addEventListener("pointercancel", birak);
@@ -213,10 +218,13 @@
     /* çarpma algısı: gövde hızı bir adımda sert düştüyse jöle bir yere çarpmıştır */
     for (i = 0; i < jl.length; i++) { A = jl[i]; A.oncekiV = A.gV || 0; }
     temas.length = 0;
-    for (var it = 0; it < 3; it++) {
+    /* temaslar alttan üste çözülür: alttaki jöle üstündekinin ağırlığını taşır, yığın çökmez */
+    sira2 = jl.slice().sort(function (a, b) { return b.cy - a.cy; });
+    var tekrar = jl.length > 30 ? Math.min(2, TEKRAR) : TEKRAR;   /* kutu çok doluyken zayıf telefonlar yorulmasın */
+    for (var it = 0; it < tekrar; it++) {
       for (i = 0; i < jl.length; i++) { A = jl[i]; A.sekil(A.tut ? 0.045 : A.kaynas > 0 ? SEKIL + 0.03 * A.kaynas : SEKIL); for (j = 0; j < A.n; j++) duvar(A.p[j]); A.merkez(); }
-      for (i = 0; i < jl.length; i++) for (j = i + 1; j < jl.length; j++) {
-        A = jl[i]; B = jl[j];
+      for (i = 0; i < sira2.length; i++) for (j = i + 1; j < sira2.length; j++) {
+        A = sira2[i]; B = sira2[j];
         var dx = A.cx - B.cx, dy = A.cy - B.cy, rr = A.R + B.R + 2;
         if (it === 0 && A.v === B.v && A.v > 0 && !A.tut && !B.tut) {
           var ce = (A.r + B.r) * 1.35, d2 = dx * dx + dy * dy;
@@ -224,7 +232,7 @@
         }
         if (dx * dx + dy * dy > rr * rr) continue;
         /* derin iç içe geçme (birleşme büyümesi, hızlı çarpma): merkezleri ayır ki halkalar dolanmasın */
-        var dd = Math.sqrt(dx * dx + dy * dy) || 0.01, minD = (A.r * A.olcek * A.buyu + B.r * B.olcek * B.buyu) * 0.62;
+        var dd = Math.sqrt(dx * dx + dy * dy) || 0.01, minD = (A.r * A.olcek * A.buyu + B.r * B.olcek * B.buyu) * CEKIRDEK;
         if (dd < minD) {
           var it2 = (minD - dd) / dd * 0.5, wa = A.tut ? 0 : B.tut ? 1 : B.r * B.r / (A.r * A.r + B.r * B.r), wb = A.tut ? 1 : B.tut ? 0 : 1 - wa, k2;
           for (k2 = 0; k2 < A.n; k2++) { A.p[k2].x += dx * it2 * wa * 2; A.p[k2].y += dy * it2 * wa * 2; }
@@ -300,12 +308,13 @@
   var kombo = 0, sonBirlesme = 0;
   function kazan(v, x, y, rr) {
     var simdi = performance.now(); kombo = simdi - sonBirlesme < 1400 ? kombo + 1 : 1; sonBirlesme = simdi;
-    var ek = kombo > 1 ? Math.round(v * (kombo - 1) * 0.5) : 0;
-    if (kombo > 1) tekYazi("kombo", { t: 0, x: W / 2, y: 190, s: "Kombo ×" + kombo + "!", c: "#ffd36b", buyuk: true });
+    var kc = Math.min(kombo, 5), ek = kc > 1 ? Math.round(v * (kc - 1) * 0.5) : 0;   /* çarpan en fazla ×5: hızlı hızlı tıklamakla puan şişmez */
+    if (kombo > 1 && kombo <= 5) tekYazi("kombo", { t: 0, x: W / 2, y: 190, s: "Kombo ×" + kombo + "!", c: "#ffd36b", buyuk: true });
     if (typeof saldiri === "function") saldiri(v, kombo);
     birlesme++; puan += v + ek; puanEl.textContent = puan; puanEl.parentNode.classList.remove("zipla"); void puanEl.offsetWidth; puanEl.parentNode.classList.add("zipla");
     var yeniRekor = false;
-    if (puan > best) { best = puan; bestEl.textContent = best; try { localStorage.setItem("jl_best", String(best)); } catch (e) {} if (!rekorDendi && best0 > 0) { rekorDendi = true; yeniRekor = true; } }
+    var bk = MODBEST[mod];
+    if (bk && puan > best) { best = puan; bestEl.textContent = best; try { localStorage.setItem(bk, String(best)); } catch (e) {} if (mod === "zaman") $("dRakipPuan").textContent = best; if (!rekorDendi && best0 > 0) { rekorDendi = true; yeniRekor = true; } }
     if (v > enBuyuk) { enBuyuk = v; try { localStorage.setItem("jl_max", String(enBuyuk)); } catch (e) {} buyukCiz(); if (v >= 64) mesaj(v + " jölesi ilk kez! 🎉"); }
     if (yeniRekor) mesaj("Yeni rekor! 🏆");
     ses.birles(v); if (navigator.vibrate && v >= 32) try { navigator.vibrate(12); } catch (e) {}
@@ -480,7 +489,7 @@
       tasmaBak(dt);
       copIlerle(dt);
     }
-    if (mod === "duello") dSureBak();
+    if (mod === "duello") dSureBak(); else if (mod === "zaman") zamanBak();
     /* rayda birleştirme: tuttuğun jöleyi raydaki aynı sayının üstüne getirirsen orada birleşirler */
     if (tutulan && !bitti) {
       var T = tutulan; T.merkez();
@@ -519,48 +528,68 @@
     cv.width = Math.round(W * olcek * dpr); cv.height = Math.round(H * olcek * dpr); boya = {}; hapBoya = {}; katmanHazir = false;
   }
   addEventListener("resize", boyutla);
-  document.addEventListener("visibilitychange", function () { if (document.hidden) { son = 0; birak(); } });
+  /* düello düğmesi açılıp kapanınca (ya da başlık değişince) kutunun alanı değişir; kutu yeniden ölçülsün */
+  var boyutBek = 0;
+  function boyutSonra() { if (boyutBek) return; boyutBek = requestAnimationFrame(function () { boyutBek = 0; var ow = cv.style.width, oh = cv.style.height; boyutla(); if (cv.style.width !== ow || cv.style.height !== oh) katmanHazir = false; }); }
+  if (window.ResizeObserver) try { new ResizeObserver(boyutSonra).observe(wrap); } catch (e) {}
+  document.addEventListener("visibilitychange", function () {
+    if (document.hidden) { son = 0; birak(); if (mod === "zaman" && zBitis && !bitti) zKalan = zBitis - Date.now(); }
+    else if (mod === "zaman" && zKalan > 0 && !bitti) { zBitis = Date.now() + zKalan; zKalan = 0; }
+  });
 
 
   /* ---------- Jöle Düellosu (canlı) ----------
      joled/mac = { n, durum: davet|geri|bitti|iptal, davet, a, b, tohum, nabiz (davet eden bekliyor), basla, puan:{uid}, cop:{uid: yolladığı toplam çöp}, son:{uid:{puan,sebep}}, kazanan, bitti }
      İkimiz de jöle sayfasındayken biri çağırır, öbürü katılır; 3-2-1 sonra aynı tohumla aynı jöleler gelir, 2,5 dakika.
      32 ve üstü birleşme (ve 3+ kombo) karşı tarafa gri çöp jöle yollar. Süre bitince puanı yüksek olan kazanır; kutusu dolan erken durur. */
-  var DSURE = 150, dDb = null, dRef = null, dSeriRef = null, ben = null, rakip = null, rakipAd = "Rakip", dMac = null, dN = -1, gonderilen = 0, alinan = 0, dYazT = 0, dBitis = 0, dOyunda = false, dBittim = false, dSonN = -1, dRed = -1, dBekleyen = false, dNabizT = 0, dZamanAsimi = 0, dSonRakipPuan = 0, dSonTekrarT = 0;
+  var DSURE = 150, dDb = null, dRef = null, dSeriRef = null, ben = null, rakip = null, rakipAd = "Rakip", dMac = null, dN = -1, gonderilen = 0, alinan = 0, dYazT = 0, dBitis = 0, dOyunda = false, dBittim = false, dSonN = -1, dRed = -1, dBekleyen = false, dNabizT = 0, dZamanAsimi = 0, dSonRakipPuan = 0, dSonTekrarT = 0, secSure = 150, secCop = true, dAktif = 150, dCopAcik = true, dZorla = 0, dHazir = false, dSeriVeri = null;
+  function sureMetin(s) { return s === 150 ? "2,5 dakika" : s % 60 ? String(Math.round(s / 6) / 10).replace(".", ",") + " dakika" : s / 60 + " dakika"; }
+  function gelenDavet() { return !!(dMac && dMac.durum === "davet" && dMac.davet !== ben && davetTaze(dMac)); }
   function rngKur(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; var t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
   function tk(o, k, v) { var x = {}; x[k] = v; return x; }
   function zDamga() { return window.firebase && firebase.firestore && firebase.firestore.FieldValue ? firebase.firestore.FieldValue.serverTimestamp() : Date.now(); }
   function davetTaze(d) { return d && d.durum === "davet" && d.nabiz && Math.abs(Date.now() - d.nabiz) < 25000; }
   function duelloGorunum() {
-    var duel = mod === "duello";
-    $("jduel").hidden = !duel; document.querySelector(".jhead").style.display = duel ? "none" : "";
-    $("duelloBtn").hidden = duel || !rakip;
+    var duel = mod === "duello", zam = mod === "zaman";
+    $("jduel").hidden = !(duel || zam); document.querySelector(".jhead").style.display = duel || zam ? "none" : "";
+    $("dSureAlt").textContent = zam ? "zamana karşı ⏱" : "düello ⚔️";
+    if (zam) { $("dRakipAd").textContent = "En iyi"; $("dRakipPuan").textContent = best; $("dBenPuan").textContent = puan; sureYaz(ZSURE * 1000); }
+    boyutSonra();
+  }
+  function zamanBak() {
+    var simdi = Date.now(), dur = !$("modlar").hidden || !$("intro").hidden || !$("dDavet").hidden;
+    if (dur && zBitis && !bitti) zBitis += simdi - (zamanBak.t || simdi);   /* mod ekranı ya da yardım açıkken süre durur */
+    zamanBak.t = simdi;
+    if (bitti) return;
+    var kalan = zBitis ? zBitis - Date.now() : ZSURE * 1000; sureYaz(kalan); $("dBenPuan").textContent = puan;
+    if (zBitis && kalan <= 0) oyunBitti("sure");
   }
   function overGizle() { ["dDavet", "dBekle", "dSon"].forEach(function (id) { $(id).hidden = true; }); }
   function sureYaz(ms) { var s2 = Math.max(0, Math.ceil(ms / 1000)); $("dSure").textContent = Math.floor(s2 / 60) + ":" + ("0" + s2 % 60).slice(-2); $("dSure").parentNode.classList.toggle("az", s2 <= 15); }
   /* davet et */
   function dDavetEt() {
     if (!dRef || !rakip) { mesaj(rakipAd + " henüz giriş yapmadı."); return; }
-    var d = { n: (dMac && dMac.n || 0) + 1, durum: "davet", davet: ben, a: ben, b: rakip, tohum: Math.floor(Math.random() * 2147483646) + 1, nabiz: Date.now(), basla: 0, puan: {}, cop: {}, son: {}, kazanan: "", bitti: false, t: zDamga() };
+    var d = { n: (dMac && dMac.n || 0) + 1, durum: "davet", davet: ben, a: ben, b: rakip, tohum: Math.floor(Math.random() * 2147483646) + 1, nabiz: Date.now(), basla: 0, sure: dZorla || secSure, copAcik: !!secCop, puan: {}, cop: {}, son: {}, kazanan: "", bitti: false, t: zDamga() };
     dBekleyen = true; $("dBekleBaslik").textContent = rakipAd + " bekleniyor…"; $("dBekleMetin").textContent = rakipAd + " Jöle'yi açınca davetini görecek; katılınca 3-2-1 ile birlikte başlarsınız.";
-    overGizle(); $("over").hidden = true; $("dBekle").hidden = false;
-    dRef.set(d).catch(function () { $("dBekle").hidden = true; dBekleyen = false; mesaj("Davet gönderilemedi, bağlantına bak."); });
+    overGizle(); $("over").hidden = true; $("modlar").hidden = true; $("dBekle").hidden = false;
+    dRef.set(d).catch(function () { $("dBekle").hidden = true; dBekleyen = false; mesaj("Davet gönderilemedi, bağlantına bak."); modAc(); });
     clearInterval(dNabizT); dNabizT = setInterval(function () { if (dBekleyen && dMac && dMac.durum === "davet" && dMac.davet === ben) dRef.set({ nabiz: Date.now() }, { merge: true }).catch(function () {}); else clearInterval(dNabizT); }, 6000);
   }
-  function dVazgec() { dBekleyen = false; clearInterval(dNabizT); $("dBekle").hidden = true; if (dMac && dMac.durum === "davet" && dMac.davet === ben) dRef.set({ durum: "iptal" }, { merge: true }).catch(function () {}); }
+  function dVazgec() { dBekleyen = false; clearInterval(dNabizT); $("dBekle").hidden = true; modAc(); if (dMac && dMac.durum === "davet" && dMac.davet === ben) dRef.set({ durum: "iptal" }, { merge: true }).catch(function () {}); }
   function dKatil() { if (!dMac || !davetTaze(dMac)) { $("dDavet").hidden = true; mesaj("Davetin süresi geçti."); return; } $("dDavet").hidden = true; dRef.set({ durum: "geri", basla: Date.now() }, { merge: true }).catch(function () { mesaj("Katılamadım, bağlantına bak."); }); }
   /* geri sayım ve başlangıç */
   function dBaslat(d) {
-    dN = d.n; dBekleyen = false; clearInterval(dNabizT); overGizle(); $("over").hidden = true; $("intro").hidden = true;
+    dN = d.n; dBekleyen = false; clearInterval(dNabizT); overGizle(); $("over").hidden = true; $("intro").hidden = true; $("modlar").hidden = true;
+    dAktif = d.sure || DSURE; dCopAcik = d.copAcik !== false; secSure = dAktif; secCop = dCopAcik;   /* rövanş aynı ayarlarla */
     mod = "duello"; rast = rngKur(d.tohum); gonderilen = 0; alinan = (d.cop && d.cop[rakip]) || 0; dBittim = false; dOyunda = false; dSonRakipPuan = 0;
-    basla(); bitti = true; $("dBenPuan").textContent = 0; $("dRakipPuan").textContent = 0; $("dRakipAd").textContent = rakipAd; sureYaz(DSURE * 1000);
+    basla(); bitti = true; $("dBenPuan").textContent = 0; $("dRakipPuan").textContent = 0; $("dRakipAd").textContent = rakipAd; sureYaz(dAktif * 1000); $("dGeriAlt").textContent = "aynı jöleler, " + sureMetin(dAktif) + (dCopAcik ? "" : " · çöp yok");
     var g = $("dGeri"), sayi = 3; g.hidden = false; $("dGeriSayi").textContent = sayi; $("dGeriSayi").classList.remove("uzun"); ses.tut();
     var zt = setInterval(function () {
       sayi--; var b = $("dGeriSayi");
       if (sayi > 0) { b.textContent = sayi; b.style.animation = "none"; void b.offsetWidth; b.style.animation = ""; ses.tut(); return; }
       clearInterval(zt); b.textContent = "Başla!"; b.classList.add("uzun"); b.style.animation = "none"; void b.offsetWidth; b.style.animation = ""; ses.birles(64);
       setTimeout(function () { g.hidden = true; }, 600);
-      bitti = false; dOyunda = true; dBitis = Date.now() + DSURE * 1000; mesaj("Aynı jöleler ikinize de geliyor; bol şans ⚔️");
+      bitti = false; dOyunda = true; dBitis = Date.now() + dAktif * 1000; mesaj("Aynı jöleler ikinize de geliyor; bol şans ⚔️");
     }, 900);
   }
   function dSureBak() {
@@ -575,8 +604,8 @@
   /* aynı türden yazı üst üste binmesin: eskisini kaldır, yenisini koy */
   function tekYazi(tur, o) { for (var i = yazi.length - 1; i >= 0; i--) if (yazi[i].tur === tur) yazi.splice(i, 1); o.tur = tur; yazi.push(o); }
   function saldiri(v, kmb) {
-    if (mod !== "duello" || !dOyunda) return;
-    var n = v >= 32 ? Math.round(Math.log(v) / Math.LN2) - 4 : 0; if (kmb >= 3) n++;
+    if (mod !== "duello" || !dOyunda || !dCopAcik) return;
+    var n = v >= 32 ? Math.round(Math.log(v) / Math.LN2) - 4 : 0; if (kmb === 3 || kmb === 6) n++;
     if (!n) return;
     gonderilen += n; dYazT = 0;
     var top = n; yazi.forEach(function (y) { if (y.tur === "cop") top += y.n || 0; });
@@ -632,7 +661,8 @@
     var once = dMac; dMac = d;
     if (!d || !ben) { duelloBtnCiz(); return; }
     var benim = d.a === ben || d.b === ben;
-    if (d.durum === "davet" && d.davet !== ben && davetTaze(d) && dRed !== d.n && !dOyunda && !(mod === "duello" && !dBittim)) { $("dSon").hidden = true; $("dBekle").hidden = true; $("dDavetBaslik").textContent = rakipAd + (dSonN >= 0 ? " rövanş istiyor ⚔️" : " seni düelloya çağırıyor"); $("dDavet").hidden = false; }
+    if (d.durum === "davet" && d.davet !== ben && davetTaze(d) && dRed !== d.n && !dOyunda && !(mod === "duello" && !dBittim)) { $("dSon").hidden = true; $("dBekle").hidden = true; $("modlar").hidden = true; $("dDavetBaslik").textContent = rakipAd + (dSonN >= 0 ? " rövanş istiyor ⚔️" : " seni düelloya çağırıyor");
+      $("dDavetMetin").textContent = "Aynı jölelerle, aynı anda, " + sureMetin(d.sure || DSURE) + ". " + (d.copAcik === false ? "Çöp jöle yok; sadece puan yarışı." : "Büyük birleşmeler karşı tarafa gri çöp jöle yollar."); $("dDavet").hidden = false; }
     else $("dDavet").hidden = true;
     if (d.durum !== "davet" || d.davet !== ben) { if (dBekleyen && d.durum !== "geri") { dBekleyen = false; $("dBekle").hidden = true; } }
     if (d.durum === "geri" && benim && d.n !== dN && Math.abs(Date.now() - (d.basla || 0)) < 15000) { dBaslat(d); }
@@ -645,26 +675,55 @@
     }
     duelloBtnCiz();
   }
-  function duelloBtnCiz() {
-    var b = $("duelloBtn"); if (!b) return;
-    b.hidden = mod === "duello" || !rakip;
-    var gelen = dMac && dMac.durum === "davet" && dMac.davet !== ben && davetTaze(dMac);
-    b.classList.toggle("davet", !!gelen);
-    $("duelloAlt").textContent = gelen ? rakipAd + " seni çağırıyor!" : rakipAd + " ile aynı anda oyna";
+  function duelloBtnCiz() { $("modBtn").classList.toggle("davet", gelenDavet()); modDuelCiz(); }
+  function dTekeDon() { mod = "tek"; rast = Math.random; dN = -1; overGizle(); modAc(); }
+
+  /* ---------- mod ekranı: oyuna girince ilk bu çıkar ---------- */
+  function modDuelCiz() {
+    var kapali = !ben || !rakip, gelen = gelenDavet();
+    $("mDuel").classList.toggle("kapali", kapali); $("mDuel").classList.toggle("davet", gelen);
+    $("mDuelAd").textContent = rakip ? rakipAd + " ile düello" : "Düello";
+    var g = (dSeriVeri && dSeriVeri.g) || {}, bs = ben && g[ben] || 0, os = rakip && g[rakip] || 0;
+    $("mDuelAlt").textContent = gelen ? rakipAd + " seni çağırıyor! Dokun, katıl." : !dHazir ? "Bağlanıyor…" : !ben ? "Düello için giriş yapman lazım." : !rakip ? "Rakibin henüz giriş yapmadı." : "Canlı, aynı anda, aynı jöleler.";
+    $("mbduel").textContent = bs + os ? bs + " – " + os : "";
+    if (kapali) $("mDuelAyar").hidden = true;
   }
-  function dTekeDon() { mod = "tek"; rast = Math.random; dN = -1; overGizle(); basla(); }
-  $("duelloBtn").onclick = function () { sesHazir(); if (dMac && dMac.durum === "davet" && dMac.davet !== ben && davetTaze(dMac)) { dKatil(); return; } dDavetEt(); };
+  function modAc() {
+    ["tek", "sakin", "zaman"].forEach(function (m) { var b = bestOku(m); $("mb" + m).textContent = b ? "en iyi " + b : ""; });
+    $("mDevam").hidden = !(mod !== "duello" && atis > 0 && !bitti);
+    modDuelCiz(); $("over").hidden = true; $("modlar").hidden = false;
+  }
+  function modSec(m) {
+    mod = m; rast = Math.random; dN = -1; best = bestOku(m); bestEl.textContent = best;
+    $("modlar").hidden = true; overGizle(); basla();
+    mesaj(m === "zaman" ? "İlk atışla 2 dakika başlar ⏱" : m === "sakin" ? "Sakin mod: çöp yok, acele yok 🌙" : "Bir jöleyi tut, kutuya fırlat 👆");
+  }
+  function cipSec(kutu, al) { kutu.onclick = function (e) { var t = e.target; while (t && t !== kutu && t.tagName !== "BUTTON") t = t.parentNode; if (!t || t === kutu) return; [].forEach.call(kutu.children, function (c) { c.classList.toggle("on", c === t); }); al(t); }; }
+  cipSec($("mSure"), function (t) { secSure = +t.getAttribute("data-s"); });
+  cipSec($("mCop"), function (t) { secCop = t.getAttribute("data-c") === "1"; });
+  [].forEach.call(document.querySelectorAll(".jmod[data-m]"), function (b) { b.onclick = function () { sesHazir(); modSec(b.getAttribute("data-m")); }; });
+  $("mDuelBas").onclick = function () {
+    sesHazir(); if ($("mDuel").classList.contains("kapali")) return;
+    if (gelenDavet()) { $("modlar").hidden = true; dKatil(); return; }
+    $("mDuelAyar").hidden = !$("mDuelAyar").hidden;
+  };
+  $("mDavet").onclick = function () { sesHazir(); if (gelenDavet()) { $("modlar").hidden = true; dKatil(); return; } dDavetEt(); };
+  $("mDevam").onclick = function () { $("modlar").hidden = true; };
+  $("modBtn").onclick = function () { sesHazir(); modAc(); };
+  $("overMod").onclick = function () { modAc(); };
   $("dKatil").onclick = function () { sesHazir(); dKatil(); };
-  $("dReddet").onclick = function () { dRed = dMac ? dMac.n : -1; $("dDavet").hidden = true; };
+  $("dReddet").onclick = function () { dRed = dMac ? dMac.n : -1; $("dDavet").hidden = true; if (mod === "duello" || atis === 0 || bitti) { if (mod === "duello") mod = "tek"; modAc(); } };
   $("dVazgec").onclick = dVazgec;
   $("dRovans").onclick = function () { sesHazir(); if (dMac && dMac.durum === "davet" && dMac.davet !== ben && davetTaze(dMac)) { $("dSon").hidden = true; dKatil(); return; } dDavetEt(); };
   $("dTek").onclick = function () { dTekeDon(); };
   if (window.Hesap) Hesap.izle(function (k) {
-    if (!k || !k.kesin || ben) return; ben = k.uid;
+    if (!k) { dHazir = true; modDuelCiz(); return; }
+    if (!k.kesin || ben) return; ben = k.uid;
     rakipAd = Hesap.gorunenAd ? Hesap.gorunenAd(k.kul === "bus" ? "yec" : "bus") : (k.kul === "bus" ? "Yunus" : "Büşra");
     Hesap.db().then(function (db) {
       dDb = db; dRef = db.collection("joled").doc("mac"); dSeriRef = db.collection("joled").doc("seri");
-      db.collection("oyuncular").get().then(function (sn) { sn.forEach(function (doc) { if (doc.id !== ben) rakip = doc.id; }); duelloGorunum(); duelloBtnCiz(); }).catch(function () {});
+      db.collection("oyuncular").get().then(function (sn) { sn.forEach(function (doc) { if (doc.id !== ben) rakip = doc.id; }); dHazir = true; duelloBtnCiz(); }).catch(function () { dHazir = true; duelloBtnCiz(); });
+      dSeriRef.onSnapshot(function (sn) { dSeriVeri = sn.exists ? sn.data() : null; modDuelCiz(); }, function () {});
       dRef.onSnapshot(function (sn) { dGeldi(sn.exists ? sn.data() : null); }, function () {});
       setInterval(duelloBtnCiz, 5000);
     }).catch(function () {});
@@ -674,17 +733,18 @@
   function mesaj(t) { msgEl.textContent = t; clearTimeout(mesaj.z); if (t) mesaj.z = setTimeout(function () { msgEl.textContent = ""; }, 2600); }
   function buyukCiz() { var v = enBuyuk || 0; buyukEl.textContent = v || "–"; buyukEl.style.background = v ? renk(v) : ""; buyukEl.parentNode.classList.toggle("var", !!v); }
   function basla() {
-    jl = []; ray = []; fx = []; yazi = []; copKuyruk = []; tutulan = null; isaret = null; puan = 0; tasma = 0; birlesme = 0; atis = 0; kombo = 0; bitti = false; best0 = best; rekorDendi = false;
+    jl = []; ray = []; fx = []; yazi = []; copKuyruk = []; tutulan = null; isaret = null; puan = 0; tasma = 0; birlesme = 0; atis = 0; kombo = 0; bitti = false; best0 = best; rekorDendi = false; zBitis = 0; zKalan = 0;
     puanEl.textContent = 0; $("over").hidden = true; rayDoldur(true); duelloGorunum(); mesaj("Bir jöleyi tut, kutuya fırlat 👆");
   }
-  function oyunBitti() {
+  function oyunBitti(sebep) {
     if (mod === "duello") { dBitir("tasma"); return; }
+    $("overUst").textContent = sebep === "sure" ? "süre bitti ⏱" : "kutu doldu 🫧";
     if (bitti) return; bitti = true; birak(); ses.bitti();
     var rek = puan > best0 && best0 > 0;
     $("overPuan").textContent = puan;
     var enIyiJ = 0; jl.forEach(function (j) { if (j.v > enIyiJ) enIyiJ = j.v; });
-    $("overText").textContent = rek ? "Yeni rekor! 🏆" : enIyiJ >= 1024 ? "Kutuda " + enIyiJ + " vardı, efsane 🌟" : enIyiJ >= 256 ? "Kutuda " + enIyiJ + " vardı, fena değil 😌" : "Kutu doldu, bir daha?";
-    $("overBest").textContent = "En iyi: " + best + " · " + birlesme + " birleşme";
+    $("overText").textContent = rek ? "Yeni rekor! 🏆" : enIyiJ >= 1024 ? "Kutuda " + enIyiJ + " vardı, efsane 🌟" : enIyiJ >= 256 ? "Kutuda " + enIyiJ + " vardı, fena değil 😌" : (sebep === "sure" ? "Süre doldu, bir daha?" : "Kutu doldu, bir daha?");
+    $("overBest").textContent = (MODAD[mod] || "") + " · en iyi " + best + " · " + birlesme + " birleşme";
     setTimeout(function () { $("over").hidden = false; }, 650);
     if (window.Hesap && Hesap.planla) try { Hesap.planla(); } catch (e) {}
   }
@@ -692,9 +752,10 @@
   $("sesBtn").onclick = function () { sesAcik = !sesAcik; try { localStorage.setItem("jl_ses", sesAcik ? "1" : "0"); } catch (e) {} this.textContent = sesAcik ? "🔊" : "🔈"; sesHazir(); };
   $("sesBtn").textContent = sesAcik ? "🔊" : "🔈";
   $("yardimBtn").onclick = function () { $("intro").hidden = false; };
-  $("introGo").onclick = function () { sesHazir(); $("intro").hidden = true; try { localStorage.setItem("jl_intro", "1"); } catch (e) {} };
-  try { if (localStorage.getItem("jl_intro") !== "1") $("intro").hidden = false; } catch (e) {}
+  $("introGo").onclick = function () { sesHazir(); $("intro").hidden = true; try { localStorage.setItem("jl_intro", "1"); } catch (e) {} if (mod !== "duello" && atis === 0 && $("dDavet").hidden && $("dBekle").hidden) modAc(); };
+  var introVar = false; try { if (localStorage.getItem("jl_intro") !== "1") { $("intro").hidden = false; introVar = true; } } catch (e) {}
   buyukCiz(); boyutla(); basla();
+  if (!introVar) modAc();
   calisiyor = true; requestAnimationFrame(kare);
   setTimeout(boyutla, 60);
 
@@ -704,7 +765,13 @@
     durum: function () { return { n: jl.length, puan: puan, bitti: bitti, tasma: tasma, ray: ray.map(function (r) { return r.bos ? 0 : r.v; }), jole: jl.map(function (j) { j.merkez(); return { v: j.v, x: Math.round(j.cx), y: Math.round(j.cy), r: Math.round(j.r) }; }) }; },
     olcek: function () { return olcek; }, coz: function () { return cozunurluk; },
     oranlar: function () { return jl.map(function (j) { var a = 1e9, b = -1e9, c = 1e9, d = -1e9; j.p.forEach(function (q) { a = Math.min(a, q.x); b = Math.max(b, q.x); c = Math.min(c, q.y); d = Math.max(d, q.y); }); return j.v + ":" + ((b - a) / (d - c)).toFixed(2); }); },
-    cop: function (n) { copGelsin(n || 1); }, dSure: function (sn) { DSURE = sn; }, dDurum: function () { return { mod: mod, dN: dN, oyunda: dOyunda, bittim: dBittim, gonderilen: gonderilen, alinan: alinan, mac: dMac, rakip: rakip, kuyruk: copKuyruk.length }; }, cop0: function (x, y) { jl.push(new Jole(0, x, y, 1)); },
+    cop: function (n) { copGelsin(n || 1); }, dSure: function (sn) { dZorla = sn; }, ayar: function (c, b, t) { if (c) CEKIRDEK = c; if (b) BASINC = b; if (t) TEKRAR = t; }, sikisma: function () {
+      var oran = [], ust = 1e9, kap = 0, cift = 0, x, y, i, k;
+      jl.forEach(function (A) { var al = 0, P = A.p; for (var i2 = 0; i2 < A.n; i2++) { var q = P[i2], w = P[(i2 + 1) % A.n]; al += q.x * w.y - w.x * q.y; if (q.y < ust) ust = q.y; } oran.push(+(al * 0.5 / (Math.PI * A.r * A.r * A.olcek * A.olcek * A.buyu * A.buyu)).toFixed(2)); });
+      for (y = 0; y < H; y += 4) for (x = 0; x < W; x += 4) { k = 0; for (i = 0; i < jl.length; i++) if (jl[i].icinde(x, y)) k++; if (k) kap++; if (k > 1) cift++; }
+      var ort = oran.reduce(function (a2, b2) { return a2 + b2; }, 0) / (oran.length || 1);
+      return { n: jl.length, ort: +ort.toFixed(2), enAz: Math.min.apply(null, oran), ortusme: kap ? +(cift / kap).toFixed(3) : 0, ust: Math.round(ust), tasma: +tasma.toFixed(2), bitti: bitti };
+    }, mod: function () { return mod; }, zaman: function (ms) { zBitis = Date.now() + ms; }, dDurum: function () { return { mod: mod, dN: dN, oyunda: dOyunda, bittim: dBittim, gonderilen: gonderilen, alinan: alinan, mac: dMac, rakip: rakip, kuyruk: copKuyruk.length }; }, cop0: function (x, y) { jl.push(new Jole(0, x, y, 1)); },
     rayKur: function (L) { ray = L.map(function (v, i) { return { v: v, x: raySlot(i), gir: 1, faz: i, id: ++sira }; }); }, tutulanY: function () { if (!tutulan) return null; tutulan.merkez(); return Math.round(tutulan.cy); }, bitir: oyunBitti, basla: basla,
     olc: function () { var t0 = performance.now(), i; for (i = 0; i < 60; i++) adim(); var t1 = performance.now(); for (i = 0; i < 20; i++) ciz(performance.now()); var t2 = performance.now(); return { adim: (t1 - t0) / 60, ciz: (t2 - t1) / 20 }; }
   };
