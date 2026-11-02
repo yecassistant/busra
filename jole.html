@@ -24,8 +24,8 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Queen Games">
 <link rel="apple-touch-icon" href="ikon/app-180.png">
-<link rel="stylesheet" href="style.css?v=1021v">
-<script src="kapi.js?v=1021v"></script>
+<link rel="stylesheet" href="style.css?v=1021y">
+<script src="kapi.js?v=1021y"></script>
 </head>
 <body data-page="jole" data-tone="lav">
 
@@ -42,7 +42,7 @@
     <div class="jdug"><button type="button" id="sesBtn" aria-label="Ses">🔊</button><button type="button" id="yardimBtn" aria-label="Nasıl oynanır">?</button></div>
   </div>
 
-  <div class="kutuwrap" id="kutuwrap"><canvas id="kutu" aria-label="Jöle kutusu"></canvas></div>
+  <div class="kutuwrap" id="kutuwrap"><div class="kutuyigin" id="kutuYigin"><canvas id="kutuArka" aria-hidden="true"></canvas><canvas id="kutu" aria-label="Jöle kutusu"></canvas><canvas id="kutuOn" aria-hidden="true"></canvas></div></div>
 
   <p class="jmsg" id="jmsg"></p>
 </main>
@@ -62,8 +62,8 @@
     <div class="eyebrow">yeni oyun 🫧</div>
     <h2><em>Jöle</em></h2>
     <ul class="howto">
-      <li>Üstteki jölelerden birini parmağınla tut.</li>
-      <li>Kutuda istediğin yere sürükle; bırakınca düşer, hızlı bırakırsan fırlar.</li>
+      <li>Üstteki jölelerden birini parmağınla tut, sağa sola gezdir; bırakınca düşer, hızlı bırakırsan fırlar.</li>
+      <li>Rayda iki aynı sayı varsa birini öbürünün üstüne getir, orada birleşirler.</li>
       <li>Aynı iki sayı değince birleşir: 1+1=2, 2+2=4 … 2048'e kadar.</li>
       <li>Kesikli çizginin üstünde jöle birikirse kutu dolar, oyun biter.</li>
     </ul>
@@ -71,8 +71,8 @@
   </div>
 </div>
 
-<script src="app.js?v=1021v"></script>
-<script src="hesap.js?v=1021v"></script>
-<script>(window.Hesap ? Hesap.oyun : function (l) { l.forEach(function (x) { document.write('<script src="' + x + '"><\/script>'); }); })(["jole.js?v=1021v"]);</script>
+<script src="app.js?v=1021y"></script>
+<script src="hesap.js?v=1021y"></script>
+<script>(window.Hesap ? Hesap.oyun : function (l) { l.forEach(function (x) { document.write('<script src="' + x + '"><\/script>'); }); })(["jole.js?v=1021y"]);</script>
 </body>
 </html>
