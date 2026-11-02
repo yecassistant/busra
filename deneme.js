@@ -29,6 +29,7 @@
       id: id,
       get: function () { return Promise.resolve(snap(col, id)); },
       set: function (data, opts) { var st = oku(); st[col] = st[col] || {}; if (opts && opts.merge && st[col][id]) birles(st[col][id], data); else st[col][id] = kopya(data); yaz(st); bildir(); return Promise.resolve(); },
+      delete: function () { var st = oku(); if (st[col]) delete st[col][id]; yaz(st); bildir(); return Promise.resolve(); },
       onSnapshot: function (cb, err) { var f = function () { cb(snap(col, id)); }; dinleyiciler.push(f); setTimeout(f, 0); return function () { var i = dinleyiciler.indexOf(f); if (i >= 0) dinleyiciler.splice(i, 1); }; }
     };
   }

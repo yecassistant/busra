@@ -24,8 +24,8 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Queen Games">
 <link rel="apple-touch-icon" href="ikon/app-180.png">
-<link rel="stylesheet" href="style.css?v=1021p">
-<script src="kapi.js?v=1021p"></script>
+<link rel="stylesheet" href="style.css?v=1021s">
+<script src="kapi.js?v=1021s"></script>
 </head>
 <body data-page="oyunlar">
 
@@ -78,6 +78,20 @@
     <svg class="qmchev" aria-hidden="true"><use href="#qmChev"/></svg>
   </a>
   </div>
+
+  <button type="button" class="qmc qmwide qm-notlar" id="toNotlar" hidden>
+    <span class="qmico qmico-notlar"><svg viewBox="0 0 46 36" aria-hidden="true"><rect x="3" y="5" width="40" height="27" rx="5" fill="#fff8fb"/><path d="M4 8l19 13L42 8" fill="none" stroke="#eaa3c2" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round"/><path d="M23 30c-4.6-3-7-5.4-7-7.8a3.5 3.5 0 0 1 7-1.4 3.5 3.5 0 0 1 7 1.4c0 2.4-2.4 4.8-7 7.8z" fill="#e8457f"/></svg></span>
+    <span class="qmtx"><b>Notlar</b><small id="notlarSub">Küçük bir not bırak; menüyü açınca görür.</small></span>
+    <i class="qmnew" id="notlarBadge" hidden>not yolda</i>
+    <svg class="qmchev" aria-hidden="true"><use href="#qmChev"/></svg>
+  </button>
+
+  <button type="button" class="qmc qmwide qm-kediler" id="toKediler" hidden>
+    <span class="qmico qmico-kediler"><svg viewBox="0 0 50 46" aria-hidden="true"><path d="M8 20l2-16 11 9zM42 20l-2-16-11 9z" fill="#f2a65a"/><path d="M11 17l1-8 6 5zM39 17l-1-8-6 5z" fill="#ffb3c7"/><ellipse cx="25" cy="26" rx="18" ry="15" fill="#f2a65a"/><path d="M21 12l1 5M25 11.5v5.5M29 12l-1 5" stroke="#d9853a" stroke-width="2" stroke-linecap="round"/><ellipse cx="18.5" cy="25" rx="2.6" ry="3.2" fill="#3a2410"/><ellipse cx="31.5" cy="25" rx="2.6" ry="3.2" fill="#3a2410"/><circle cx="19.3" cy="24" r=".9" fill="#fff"/><circle cx="32.3" cy="24" r=".9" fill="#fff"/><path d="M23 30h4l-2 2z" fill="#ff8fb3"/><path d="M25 32q-2 2.6-4.6.6M25 32q2 2.6 4.6.6" stroke="#3a2410" stroke-width="1.2" fill="none" stroke-linecap="round"/><circle cx="13" cy="31" r="2.6" fill="#ff8fb0" opacity=".5"/><circle cx="37" cy="31" r="2.6" fill="#ff8fb0" opacity=".5"/></svg></span>
+    <span class="qmtx"><b>Mahalle Kedileri</b><small id="kedilerSub">Bir sokak kedisi doydu 🐾</small></span>
+    <i class="qmnew" id="kedilerBadge" hidden>mama bekliyor</i>
+    <svg class="qmchev" aria-hidden="true"><use href="#qmChev"/></svg>
+  </button>
 
   <a class="qmacct" id="qmAcct" href="giris.html" hidden>
     <span class="hsava a" id="qmAva">?</span>
@@ -295,8 +309,9 @@
   </div>
 </div>
 
-<script src="app.js?v=1021p"></script>
-<script src="hesap.js?v=1021p"></script>
+<script src="app.js?v=1021s"></script>
+<script src="hesap.js?v=1021s"></script>
+<script src="deneme.js?v=1021s"></script>
 <script>
 /* hesap çubuğu: giriş yoksa "Giriş yap", varsa ad + Skor Tablosu */
 (function () {
@@ -496,6 +511,8 @@
   document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !sheet.hidden) close(); });
 })();
 </script>
+<script src="notlar.js?v=1021s"></script>
+<script src="kediler.js?v=1021s"></script>
 <script>
 /* açılış: yaklaşık 1,2 sn (oturum başına bir kez), sonra kaybolur */
 (function () {
