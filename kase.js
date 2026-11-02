@@ -148,6 +148,36 @@
   function now() { return performance.now(); }
   function randLevel() { var s = 0, i; for (i = 0; i <= DROP_MAX; i++) s += DROP_W[i]; var r = Math.random() * s; for (i = 0; i <= DROP_MAX; i++) { r -= DROP_W[i]; if (r <= 0) return i; } return 0; }
 
+  /* ---------- kalbin gerçek şekli ----------
+     Kalp çizimde iki kıvrımlı; fizikte tek daire olunca üstteki girintide meyveler kalbe değmeden havada duruyordu.
+     Kalbin çizgisi SVG yolundan örneklenir (sprite birimi: merkez (50,52), yarıçap 44 = b.r) ve kalbe değen meyve bu çizgiyle çarpışır. */
+  var KALP_P = (function () {
+    var C = [[50, 93, 30, 78, 8, 63, 8, 40], [8, 40, 8, 26, 18.5, 16, 31, 16], [31, 16, 39.5, 16, 46, 20.5, 50, 28], [50, 28, 54, 20.5, 60.5, 16, 69, 16], [69, 16, 81.5, 16, 92, 26, 92, 40], [92, 40, 92, 63, 70, 78, 50, 93]], P = [];
+    C.forEach(function (c) { for (var i = 0; i < 8; i++) { var t = i / 8, u = 1 - t; P.push([u * u * u * c[0] + 3 * u * u * t * c[2] + 3 * u * t * t * c[4] + t * t * t * c[6] - 50, u * u * u * c[1] + 3 * u * u * t * c[3] + 3 * u * t * t * c[5] + t * t * t * c[7] - 52]); } });
+    return P;
+  })();
+  function kalpTemas(h, c) {                                  /* kalp–daire teması: [nx, ny, batma] (n kalpten daireye) ya da null */
+    var dx = c.x - h.x, dy = c.y - h.y; if (dx * dx + dy * dy >= (h.r + c.r) * (h.r + c.r)) return null;
+    var k = h.r / 44, ca = Math.cos(h.a), sa = Math.sin(h.a), lx = (dx * ca + dy * sa) / k, ly = (-dx * sa + dy * ca) / k, rr = c.r / k;
+    var P = KALP_P, n = P.length, en = 1e9, qx = 0, qy = 0, ic = false, i, j;
+    for (i = 0, j = n - 1; i < n; j = i++) {
+      var a = P[j], b = P[i], ex = b[0] - a[0], ey = b[1] - a[1], L = ex * ex + ey * ey, t = L ? ((lx - a[0]) * ex + (ly - a[1]) * ey) / L : 0; t = t < 0 ? 0 : t > 1 ? 1 : t;
+      var px = a[0] + ex * t, py = a[1] + ey * t, d = (px - lx) * (px - lx) + (py - ly) * (py - ly);
+      if (d < en) { en = d; qx = px; qy = py; }
+      if ((a[1] > ly) !== (b[1] > ly) && lx < (b[0] - a[0]) * (ly - a[1]) / (b[1] - a[1]) + a[0]) ic = !ic;
+    }
+    en = Math.sqrt(en); if (!ic && en >= rr) return null;
+    var nx, ny;
+    if (en < 1e-6) { var l0 = Math.sqrt(lx * lx + ly * ly) || 1; nx = lx / l0; ny = ly / l0; }
+    else if (ic) { nx = (qx - lx) / en; ny = (qy - ly) / en; } else { nx = (lx - qx) / en; ny = (ly - qy) / en; }
+    return [nx * ca - ny * sa, nx * sa + ny * ca, (ic ? rr + en : rr - en) * k];
+  }
+  function kalpUzan(h, ux, uy) {                              /* kalbin (ux,uy) yönündeki en uzak noktası: kase duvarına değme mesafesi */
+    var k = h.r / 44, ca = Math.cos(h.a), sa = Math.sin(h.a), lx = ux * ca + uy * sa, ly = -ux * sa + uy * ca, m = -1e9;
+    for (var i = 0; i < KALP_P.length; i++) { var v = KALP_P[i][0] * lx + KALP_P[i][1] * ly; if (v > m) m = v; }
+    return m * k;
+  }
+
   /* ---------- fizik ---------- */
   /* Uyku yok: her meyve her karede yerçekimi ve temas kuvvetlerine tabi; altta kalan meyve üsttekilerin baskısıyla kayabilir.
      Titreşimi önleyen şeyler: slop'lu yumuşak konum düzeltmesi, düşük hızda sekme yok, çok küçük hızın sıfırlanması (sürünme yok).
@@ -164,10 +194,16 @@
       /* meyve–meyve */
       for (i = 0; i < n; i++) for (j = i + 1; j < n; j++) {
         b = bodies[i]; o = bodies[j];
-        var dx = o.x - b.x, dy = o.y - b.y, d2 = dx * dx + dy * dy, R = b.r + o.r;
-        if (d2 >= R * R) continue;
-        if (d2 < 0.0001) { dx = 0.01; dy = -0.01; d2 = 0.0002; }
-        var d = Math.sqrt(d2), nx = dx / d, ny = dy / d, pen = R - d;
+        var kb = !!FRUITS[b.L].kalp, ko = !!FRUITS[o.L].kalp, nx, ny, pen;
+        if (kb !== ko) {                                       /* biri kalpse: kalbin gerçek çizgisiyle */
+          var kt = kb ? kalpTemas(b, o) : kalpTemas(o, b); if (!kt) continue;
+          nx = kb ? kt[0] : -kt[0]; ny = kb ? kt[1] : -kt[1]; pen = kt[2];
+        } else {
+          var dx = o.x - b.x, dy = o.y - b.y, d2 = dx * dx + dy * dy, R = b.r + o.r;
+          if (d2 >= R * R) continue;
+          if (d2 < 0.0001) { dx = 0.01; dy = -0.01; d2 = 0.0002; }
+          var d = Math.sqrt(d2); nx = dx / d; ny = dy / d; pen = R - d;
+        }
         var mb = b.mass, mo = o.mass, tot = mb + mo;
         var push = Math.max(0, pen - SLOP) * corr;
         var sb = Math.abs(b.vx) + Math.abs(b.vy), so = Math.abs(o.vx) + Math.abs(o.vy);
@@ -183,6 +219,7 @@
         var rvx = o.vx - b.vx, rvy = o.vy - b.vy, vn = rvx * nx + rvy * ny;
         if (vn < 0 && invM > 0) {
           if (vn < -35) { wake(b); wake(o); ib = 1 / mb; io = 1 / mo; invM = ib + io; }   /* gerçek bir çarpma: ikisi de uyanır */
+          if (vn < -110 && it === 0) { ez(b, nx, ny, -vn * Math.min(1.4, mo / mb)); ez(o, nx, ny, -vn * Math.min(1.4, mb / mo)); }   /* sulu his: çarpışan meyveler temas yönünde ezilip esner (sadece görsel) */
           var e = vn < -80 ? REST : 0, jn = -(1 + e) * vn / invM;
           b.vx -= jn * nx * ib; b.vy -= jn * ny * ib; o.vx += jn * nx * io; o.vy += jn * ny * io;
           /* yığının içindekiler (çok temas) daha "tutucu", serbest yuvarlananlar kaygan: yığın akmaz, tek meyve yuvarlanır */
@@ -205,11 +242,14 @@
           var t = ((b.x - w.x1) * ex + (b.y - w.y1) * ey) / len2; t = Math.max(0, Math.min(1, t));
           var px = w.x1 + ex * t, py = w.y1 + ey * t, ddx = b.x - px, ddy = b.y - py, dd = Math.sqrt(ddx * ddx + ddy * ddy);
           if (dd >= b.r || dd === 0) continue;
-          var wnx = ddx / dd, wny = ddy / dd, wpen = b.r - dd;
+          var wnx = ddx / dd, wny = ddy / dd, wr = FRUITS[b.L].kalp ? kalpUzan(b, -wnx, -wny) : b.r;
+          if (dd >= wr) continue;
+          var wpen = wr - dd;
           b.x += wnx * Math.max(0, wpen - SLOP * 0.5) * 0.85; b.y += wny * Math.max(0, wpen - SLOP * 0.5) * 0.85;
           var vn2 = b.vx * wnx + b.vy * wny;
           if (vn2 < 0) {
             var e2 = vn2 < -80 ? REST * 0.8 : 0, jn2 = -(1 + e2) * vn2;
+            if (vn2 < -110 && it === 0) ez(b, wnx, wny, -vn2);
             b.vx += jn2 * wnx; b.vy += jn2 * wny;
             var ttx = -wny, tty = wnx, vt2 = b.vx * ttx + b.vy * tty, jt2 = -vt2, lim2 = (b.nfp >= 3 ? MUP : MUW) * Math.abs(jn2);
             if (jt2 > lim2) jt2 = lim2; else if (jt2 < -lim2) jt2 = -lim2;
@@ -274,7 +314,8 @@
       return;
     }
     var nb = addBody(L + 1, x, y, vx, vy - 60); nb.happy = tnow + 650; nb.pop = tnow;
-    addScore(FRUITS[L + 1].pts, x, y - nb.r); popFx(x, y, nb.r, FRUITS[L + 1].c);
+    nb.sqA = 0.2; nb.sqT = tnow; nb.sqN = Math.atan2(o.y - b.y, o.x - b.x) + Math.PI / 2;
+    addScore(FRUITS[L + 1].pts, x, y - nb.r); popFx(x, y, nb.r, FRUITS[L + 1].c, true); suFx(x, y, nb.r, L);
     snd("merge", { L: L + 1, c: combo });
     if (combo >= 2) floats.push({ x: x, y: y - nb.r - 22, t: tnow + 40, txt: "Kombo ×" + combo, k: 1 });
     if (L + 1 >= 6) shake(L + 1 >= 8 ? 3.4 : 2.4);
@@ -295,10 +336,44 @@
   }
 
   /* ---------- efektler ---------- */
-  function popFx(x, y, r, color) {
+  /* ---------- sulu his (sadece görsel) ----------
+     ez: çarpışan meyve temas yönünde kısa bir an basılır, yanlara taşar, sonra sönümlü titreşerek toparlanır.
+     suFx: birleşmede patlayan iki meyvenin suyu: yayılan leke, uzayan damlalar, yavaş düşen iri damlalar; muffin ve tostta kırıntı, kalpte minik kalpler. */
+  /* meyvenin içinin rengi (kabuğu değil): [ana su rengi, ikinci ton, seyrek tane/çekirdek] — damlalar bunlardan seçer */
+  var SU = {
+    yabanmersini: ["#6b2d7e", "#a77cc4", "#d9cfe8"],   /* koyu mor suyu, açık eflatun etli kısım */
+    kiraz: ["#9c0f2e", "#c8203f", "#e4566c"],          /* koyu vişne kırmızısı */
+    cilek: ["#ff4f66", "#ffb3bd", "#ffe9a8"],          /* pembe-kırmızı, açık pembe göbek, sarı tohum */
+    uzum: ["#dcef9e", "#f3fad6", "#c4dc7c"],           /* yarı saydam açık yeşil */
+    nektarin: ["#ffb02e", "#ffd36b", "#e8632f"],       /* sarı-turuncu etli kısım, çekirdeğe yakın kırmızımsı */
+    nar: ["#c0102e", "#ff3d5f", "#ffd1d8"],            /* yakut taneler */
+    karpuz: ["#ff4a60", "#ff8b97", "#2a1717"],         /* kırmızı içi, açık pembe, siyah çekirdek */
+    muffin: ["#e0a548", "#f2cf86", "#4e3f9c"],         /* kek kırıntısı, içindeki yaban mersini */
+    tost: ["#e8b25e", "#b87532", "#ffd54f"],           /* ekmek içi, kızarmış kenar, eriyen kaşar */
+    kalp: ["#ff5c7c", "#ffb3c4", "#ffffff"]
+  };
+  function suRenk(su) { var q = Math.random(); return q < 0.62 ? su[0] : q < 0.92 ? su[1] : su[2]; }
+  function ez(b, nx, ny, v) {
+    var a = Math.min(0.14, (v - 90) / 1600) * Math.min(1.25, 30 / b.r + 0.55); if (a < 0.025) return;
+    var t = now(); if (b.sqA && t - b.sqT < 140) return;
+    b.sqA = a; b.sqT = t; b.sqN = Math.atan2(ny, nx);
+  }
+  function suFx(x, y, r, L) {
+    var id = FRUITS[L].id, su = SU[id] || [FRUITS[L].c, FRUITS[L].c, FRUITS[L].c], c = su[0], t = now(), i, a, sp, kir = id === "muffin" || id === "tost", kal = !!(FRUITS[L + 1] && FRUITS[L + 1].kalp);   /* iki tost kalbe dönüşürken kırıntıyla minik kalpler */
+    if (!kir || kal) fx.push({ k: "leke", x: x, y: y, r: r, t: t, c: kal ? "#ff8fa8" : c, s: Math.random() * 6 });   /* kırıntıda leke olmaz; kalp doğarken pembe ışık */
+    var n = Math.round(9 + r / 5);
+    for (i = 0; i < n; i++) {
+      a = Math.random() * 6.28; sp = 160 + Math.random() * 260;
+      fx.push({ k: kal && i % 2 ? "kalpcik" : kir ? "kirinti" : "su", x: x + Math.cos(a) * r * 0.5, y: y + Math.sin(a) * r * 0.5, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp - 140, t: t, c: kal && i % 2 ? (i % 4 === 1 ? "#ff5c7c" : "#ffb3c4") : suRenk(su), s: (kal ? 4 : 2.2) + Math.random() * (kal ? 3 : 2.8), d: Math.random() * 6.28 });
+    }
+    if (!kir || kal) for (i = 0; i < 4; i++) { a = -Math.PI / 2 + (Math.random() - 0.5) * 2.2; sp = 70 + Math.random() * 110; fx.push({ k: kal ? "kalpcik" : "su", x: x, y: y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, t: t + 30, c: kal ? "#ff5c7c" : su[0], s: kal ? 6.5 : 4.2 + Math.random() * 2, iri: 1, d: 0 }); }
+    if (fx.length > 140) fx.splice(0, fx.length - 140);
+  }
+  function kalpYol(s) { ctx.beginPath(); ctx.moveTo(0, s * 0.9); ctx.bezierCurveTo(-s * 1.2, 0, -s * 0.9, -s, 0, -s * 0.35); ctx.bezierCurveTo(s * 0.9, -s, s * 1.2, 0, 0, s * 0.9); ctx.closePath(); }
+  function popFx(x, y, r, color, damlaRenk) {
     var t = now(), i, n = 8 + Math.min(6, Math.round(r / 10));
     fx.push({ k: "ring", x: x, y: y, r: r, t: t, c: color });
-    for (i = 0; i < n; i++) { var a = Math.random() * 6.28, sp = 120 + Math.random() * 180; fx.push({ k: "drop", x: x, y: y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp - 80, t: t, c: color, s: 2.5 + Math.random() * 3 }); }
+    if (!damlaRenk) for (i = 0; i < n; i++) { var a = Math.random() * 6.28, sp = 120 + Math.random() * 180; fx.push({ k: "drop", x: x, y: y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp - 80, t: t, c: color, s: 2.5 + Math.random() * 3 }); }   /* birleşmede damlaları meyve suyu (suFx) verir */
     for (i = 0; i < 3; i++) fx.push({ k: "star", x: x + (Math.random() - .5) * r * 2.4, y: y + (Math.random() - .5) * r * 2.4, t: t + Math.random() * 150, c: "#f6b73c", s: 4 + Math.random() * 4 });
     if (fx.length > 90) fx.splice(0, fx.length - 90);
   }
@@ -307,6 +382,25 @@
     for (var i = 0; i < fx.length; i++) {
       var e = fx[i], age = (tnow - e.t) / 1000; if (age < 0) { keep.push(e); continue; }
       if (e.k === "ring") { if (age > 0.45) continue; ctx.globalAlpha = (1 - age / 0.45) * 0.8; ctx.lineWidth = 4 * (1 - age / 0.45) + 1; ctx.strokeStyle = e.c; ctx.beginPath(); ctx.arc(e.x, e.y, e.r * (0.7 + age * 2.2), 0, 6.28); ctx.stroke(); }
+      else if (e.k === "leke") {                       /* meyve suyu lekesi: hızla yayılır, solar */
+        if (age > 0.38) continue; var lp = age / 0.38, lr = e.r * (0.55 + 0.75 * eOut(lp * 1.6));
+        ctx.globalAlpha = 0.42 * (1 - lp) * (1 - lp); ctx.fillStyle = e.c; ctx.beginPath();
+        for (var m = 0; m <= 14; m++) { var la = m / 14 * 6.2832, rr2 = lr * (0.82 + 0.2 * Math.sin(m * 2.7 + e.s) + 0.08 * Math.sin(m * 5.3 + e.s * 2)); if (m === 0) ctx.moveTo(e.x + Math.cos(la) * rr2, e.y + Math.sin(la) * rr2); else ctx.lineTo(e.x + Math.cos(la) * rr2, e.y + Math.sin(la) * rr2); }
+        ctx.closePath(); ctx.fill();
+      }
+      else if (e.k === "su" || e.k === "kirinti" || e.k === "kalpcik") {   /* damla: hızı yönünde uzar; iri damla yavaş düşer */
+        var omr = e.iri ? 1.1 : 0.75; if (age > omr) continue;
+        var g2 = e.iri ? 620 : 980, vx2 = e.vx * (1 - age * 0.6), vy2 = e.vy + g2 * age, dx2 = e.x + e.vx * age * (1 - age * 0.3), dy2 = e.y + e.vy * age + g2 * 0.5 * age * age;
+        var al = age < omr * 0.6 ? 1 : 1 - (age - omr * 0.6) / (omr * 0.4), ss = e.s * (1 - age / omr * 0.45);
+        ctx.save(); ctx.globalAlpha = al; ctx.translate(dx2, dy2); ctx.fillStyle = e.c;
+        if (e.k === "su") {
+          var hz = Math.sqrt(vx2 * vx2 + vy2 * vy2), uz = 1 + Math.min(1.6, hz / 380);
+          ctx.rotate(Math.atan2(vy2, vx2)); ctx.beginPath(); ctx.ellipse(0, 0, ss * uz, ss * 0.85, 0, 0, 6.2832); ctx.fill();
+          ctx.globalAlpha = al * 0.55; ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.ellipse(ss * uz * 0.25, -ss * 0.3, ss * 0.35, ss * 0.22, 0, 0, 6.2832); ctx.fill();
+        } else if (e.k === "kirinti") { ctx.rotate(e.d + age * 9); ctx.fillRect(-ss, -ss * 0.75, ss * 2, ss * 1.5); }
+        else { ctx.rotate(Math.sin(age * 8 + e.d) * 0.4); kalpYol(ss); ctx.fill(); }
+        ctx.restore();
+      }
       else if (e.k === "drop") { if (age > 0.7) continue; var x = e.x + e.vx * age, y = e.y + e.vy * age + 500 * age * age; ctx.globalAlpha = 1 - age / 0.7; ctx.fillStyle = e.c; ctx.beginPath(); ctx.arc(x, y, e.s * (1 - age * 0.6), 0, 6.28); ctx.fill(); }
       else if (e.k === "star") { if (age > 0.5) continue; var s = e.s * (age < 0.2 ? age / 0.2 : 1 - (age - 0.2) / 0.3); ctx.globalAlpha = 0.95; ctx.fillStyle = e.c; ctx.beginPath(); ctx.moveTo(e.x, e.y - s); ctx.lineTo(e.x + s * 0.35, e.y - s * 0.35); ctx.lineTo(e.x + s, e.y); ctx.lineTo(e.x + s * 0.35, e.y + s * 0.35); ctx.lineTo(e.x, e.y + s); ctx.lineTo(e.x - s * 0.35, e.y + s * 0.35); ctx.lineTo(e.x - s, e.y); ctx.lineTo(e.x - s * 0.35, e.y - s * 0.35); ctx.closePath(); ctx.fill(); }
       keep.push(e);
@@ -343,7 +437,12 @@
     var sp = sprites[b.L] && (sprites[b.L][face] || sprites[b.L].n); if (!sp) return;
     if (b.pop) { var p = (tnow - b.pop) / 320; if (p < 1) s *= p < 0.5 ? 0.6 + p * 1.1 : 1.15 - (p - 0.5) * 0.3; else b.pop = 0; }
     var vc = FRUITS[b.L].vc, size = b.r * s * 100 / vc[2], ox = (50 - vc[0]) / 100 * size, oy = (50 - vc[1]) / 100 * size;
-    ctx.save(); ctx.translate(b.x, b.y); ctx.rotate(b.a); ctx.drawImage(sp, -size / 2 + ox, -size / 2 + oy, size, size);
+    ctx.save(); ctx.translate(b.x, b.y);
+    var qk = 0, qn = 0;
+    if (b.sqA) { var qp = (tnow - b.sqT) / 1000; if (qp > 0.6) b.sqA = 0; else { qk = b.sqA * Math.exp(-qp * 7) * Math.cos(qp * 27); qn = b.sqN; } }
+    if (!qk && !b.touch && !dead) { var qv = Math.sqrt(b.vx * b.vx + b.vy * b.vy); if (qv > 260) { qk = -Math.min(0.06, (qv - 260) / 9000); qn = Math.atan2(b.vy, b.vx); } }   /* hızla düşerken düşüş yönünde hafif uzar */
+    if (qk) { ctx.rotate(qn); ctx.scale(1 - qk, 1 + qk * 0.75); ctx.rotate(-qn); }
+    ctx.rotate(b.a); ctx.drawImage(sp, -size / 2 + ox, -size / 2 + oy, size, size);
     if (face === "n" && b.wf > 0.001 && sprites[b.L].w) { ctx.globalAlpha = b.wf; ctx.drawImage(sprites[b.L].w, -size / 2 + ox, -size / 2 + oy, size, size); ctx.globalAlpha = 1; }   /* endişe yüzü üstte solarak belirir/kaybolur */
     ctx.restore();
   }

@@ -112,10 +112,20 @@
       return p.then(function () { senk = true; duzelt(); });
     }).catch(function (e) { if (!bulut) setTimeout(function () { if (user && !bulut) esitle().then(bitti, bitti); }, 8000); throw e; });
   }
-  /* tek seferlik düzeltme (2 Kasım): Yunus'un Kelime Bahçesi bonus kelimesi 512; zaten fazlaysa dokunmaz, 9 Kasım'dan sonra hiç çalışmaz */
+  /* tek seferlik düzeltmeler (2 Kasım), yalnız Yunus'ta:
+     1) Kelime Bahçesi bonus kelimesi 512 (zaten fazlaysa dokunmaz; 9 Kasım'dan sonra çalışmaz)
+     2) Jöle rekoru sıfırlanır: hızlı tıklama hatasıyla şişen 650 binlik puan. Yalnız 100 binin üstündeyse sıfırlar,
+        böylece sonradan kurulan gerçek rekora dokunmaz; her cihazda kendiliğinden düzelir (16 Kasım'dan sonra çalışmaz). */
   function duzelt() {
-    if (!user || kulAdi(user) !== "yec" || Date.now() > Date.parse("2026-11-09T00:00:00+03:00")) return;
-    if (num(ls("kb_bonus")) < 512) ls("kb_bonus", "512");
+    if (!user || kulAdi(user) !== "yec") return;
+    var t = Date.now();
+    if (t < Date.parse("2026-11-09T00:00:00+03:00") && num(ls("kb_bonus")) < 512) ls("kb_bonus", "512");
+    if (t < Date.parse("2026-11-16T00:00:00+03:00") && (num(ls("jl_best")) > 100000 || (bulut && bulut.d && num(bulut.d.jl_best) > 100000))) {
+      sessiz = true; ls("jl_best", "0"); T.jl_best = now(); ls("hs_t", JSON.stringify(T)); sessiz = false;
+      if (bulut && bulut.d) { bulut.d.jl_best = "0"; if (bulut.dt) bulut.dt.jl_best = T.jl_best; }
+      var o = {}; o.d = { jl_best: "0" }; o.dt = { jl_best: T.jl_best };
+      db.collection("oyuncular").doc(user.uid).set(o, { merge: true }).catch(function () {});
+    }
   }
   var planT = 0;
   function planla() { if (!user || !db) return; clearTimeout(planT); planT = setTimeout(gonder, DEBOUNCE); }
