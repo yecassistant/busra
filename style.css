@@ -3674,3 +3674,17 @@ main.uk-sahne{height:calc(100vh - 20px);height:calc(100dvh - max(10px,env(safe-a
 .kdfotoon b{position:relative;z-index:1;margin:0 0 12px;padding:6px 14px;border-radius:999px;background:rgba(255,255,255,.92);color:#a8582a;font:800 14px Nunito,system-ui,sans-serif}
 .kdin{margin-top:0}
 .kdduzen{position:relative;z-index:1;display:block;width:100%;margin:14px 0 8px;min-height:40px;border:0;border-radius:12px;background:rgba(255,255,255,.7);color:#a8582a;font:800 13px Nunito,system-ui,sans-serif;cursor:pointer}
+/* menü: Notlar ve Mahalle Kedileri kartları Takvim gibi ferah dursun (button.qmc sıfırlamasının üstüne) */
+button.qmc.qmwide{padding:16px 46px 16px 16px;min-height:100px;border-radius:22px;gap:16px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.16),0 14px 30px -18px rgba(0,0,0,.6)}
+button.qmc.qmwide .qmtx small{line-height:1.35}
+.qm-notlar,.qm-kediler{margin-top:14px}
+.qm-notlar.kilitli .qmico,.qm-notlar.kilitli .qmtx{-webkit-filter:blur(5px);filter:blur(5px);opacity:.85}
+.qm-notlar.kilitli:after{content:"🔒 Yakında";position:absolute;z-index:3;left:50%;top:50%;-webkit-transform:translate(-50%,-50%);transform:translate(-50%,-50%);padding:7px 16px;border-radius:999px;background:rgba(255,255,255,.92);color:#8a2f66;font:900 14px Nunito,system-ui,sans-serif;box-shadow:0 6px 18px -8px rgba(0,0,0,.45);white-space:nowrap}
+.qm-notlar.kilitli .qmchev{opacity:.35}
+.qm-notlar.salla{-webkit-animation:qmSalla .45s ease-in-out;animation:qmSalla .45s ease-in-out}
+@-webkit-keyframes qmSalla{0%,100%{-webkit-transform:none}25%{-webkit-transform:translateX(-6px)}50%{-webkit-transform:translateX(5px)}75%{-webkit-transform:translateX(-3px)}}
+@keyframes qmSalla{0%,100%{transform:none}25%{transform:translateX(-6px)}50%{transform:translateX(5px)}75%{transform:translateX(-3px)}}
+.nkkilit{display:flex;align-items:center;gap:10px;margin:0 0 12px;padding:10px 12px;border-radius:16px;background:#f6eef4}
+.nkkilit span{flex:1;min-width:0}.nkkilit b{display:block;font-size:14px;color:#3b2440}.nkkilit small{display:block;margin-top:2px;font-size:12px;font-weight:700;color:#9a7a96;line-height:1.3}
+.nkkilitbtn{flex:none;min-height:40px;padding:0 14px;border:0;border-radius:12px;background:#ec6f9a;color:#fff;font:800 13px Nunito,system-ui,sans-serif;box-shadow:0 3px 0 #b84a74;cursor:pointer}
+.nkkilitbtn.kapat{background:#fff;color:#8a5a7e;box-shadow:inset 0 0 0 1.5px #e8d2e0}

@@ -16,7 +16,8 @@
     kedi: { ad: "Kedi", emo: "🐱" }, uykucu: { ad: "Uykucu", emo: "😺" }, sifa: { ad: "Şifa", emo: "🍵" }
   };
   var SIRA = ["gece", "gunes", "cicek", "kahve", "tatli", "kutlama", "kalp", "deniz", "yagmur", "sonbahar", "kar", "sinema", "kedi", "uykucu", "sifa"];
-  var db = null, ben = null, oteki = null, otekiAd = "", notlar = [], gosterilen = {}, kartAcik = false, basladi = false;
+  var db = null, ben = null, benKul = "", oteki = null, otekiAd = "", notlar = [], gosterilen = {}, kartAcik = false, basladi = false;
+  var acik = false;                                                  /* Büş için notlar kilitli mi: Yunus'un oyuncu kaydındaki notlarAcik */
 
   function $(id) { return document.getElementById(id); }
   function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
@@ -164,7 +165,7 @@
       .sort(function (a, b) { return (a.acilis || yaziZamani(a)) - (b.acilis || yaziZamani(b)); });
   }
   function sirayaBak() {
-    if (kartAcik || !ben) return;
+    if (kartAcik || !ben || (benKul === "bus" && !acik)) return;
     if ($("qmAcilis") || document.querySelector(".kdov")) { setTimeout(sirayaBak, 600); return; }      /* açılış animasyonu ya da kedi kartı bitsin */
     var L = bekleyenler(); if (!L.length) return;
     var n = L[0]; gosterilen[n.id] = true; kartAcik = true;
@@ -178,6 +179,9 @@
   /* ---------- menü kartı ---------- */
   function menuyuCiz() {
     var sub = $("notlarSub"), rozet = $("notlarBadge"); if (!sub) return;
+    kart.classList.toggle("kilitli", benKul === "bus" && !acik);
+    if (benKul === "bus" && !acik) { rozet.hidden = true; sub.textContent = "Burada küçük bir şey hazırlanıyor…"; return; }
+    if (benKul !== "bus" && !acik) { rozet.hidden = true; sub.textContent = "Büşra'da şimdilik kilitli 🔒 Açmak için dokun."; return; }
     var gelenYolda = notlar.filter(function (n) { return n.kime === ben && !acikMi(n); }).sort(function (a, b) { return a.acilis - b.acilis; });
     var giden = notlar.filter(function (n) { return n.kimden === ben; }).sort(function (a, b) { return yaziZamani(b) - yaziZamani(a); })[0];
     rozet.hidden = !gelenYolda.length;
@@ -253,6 +257,7 @@
     if (!ov) {
       ov = document.createElement("div"); ov.className = "gkover nkov"; ov.id = "nkListe"; ov.hidden = true;
       ov.innerHTML = '<div class="nkpanel" role="dialog" aria-label="Notlar"><h2>Notlar 💌</h2>' +
+        (benKul === "bus" ? "" : '<div class="nkkilit" id="nkKilit"><span id="nkKilitTx"></span><button type="button" id="nkKilitBtn"></button></div>') +
         '<button type="button" class="nkana nkyeni" id="nkYeni">＋ Yeni not yaz</button>' +
         '<div class="nkseg nksekme" id="nkSekme"><button type="button" data-s="gelen">Gelen</button><button type="button" data-s="giden">Giden</button></div>' +
         '<ul class="nkl" id="nkL"></ul><button type="button" class="nkkapat" id="nkListeKapat">Kapat</button></div>';
@@ -261,8 +266,21 @@
       $("nkListeKapat").onclick = function () { ov.hidden = true; liste.silinecek = null; };
       $("nkSekme").onclick = function (e) { var b = e.target.closest ? e.target.closest("button") : null; if (b) { liste.sekme = b.getAttribute("data-s"); liste.silinecek = null; listeCiz(); } };
       $("nkL").onclick = listeTik;
+      if ($("nkKilitBtn")) $("nkKilitBtn").onclick = function () {
+        var b = this, yeni = !acik; b.disabled = true;
+        db.collection("oyuncular").doc(ben).set({ notlarAcik: yeni }, { merge: true }).then(function () {
+          b.disabled = false; acik = yeni; kilitCiz(); menuyuCiz();
+          tost(yeni ? "Notlar Büşra'ya açıldı 💌" : "Notlar Büşra'da yine kilitli 🔒");
+        }, function () { b.disabled = false; tost("Kaydedilemedi; tekrar dene."); });
+      };
     }
+    kilitCiz();
     listeCiz(); ov.hidden = false;
+  }
+  function kilitCiz() {
+    var tx = $("nkKilitTx"), b = $("nkKilitBtn"); if (!tx) return;
+    tx.innerHTML = acik ? "<b>Büşra'da açık ✓</b><small>Notları görüyor, o da yazabiliyor.</small>" : "<b>Büşra'da kilitli 🔒</b><small>Kartı bulanık görüyor. Yazdıkların, açınca ona gider.</small>";
+    b.textContent = acik ? "Kilitle" : "Büşra'ya aç"; b.className = acik ? "nkkilitbtn kapat" : "nkkilitbtn";
   }
   function listeCiz() {
     var ul = $("nkL"); if (!ul) return;
@@ -299,13 +317,21 @@
   }
 
   /* ---------- başlat ---------- */
-  kart.onclick = function () { if (db) listeAc(); };
+  kart.onclick = function () {
+    if (!db) return;
+    if (benKul === "bus" && !acik) { kart.classList.remove("salla"); void kart.offsetWidth; kart.classList.add("salla"); tost("Yakında açılacak 🔒"); return; }
+    listeAc();
+  };
   Hesap.izle(function (k) {
     if (!k || !k.kesin || basladi) return; basladi = true;
-    ben = k.uid; otekiAd = Hesap.gorunenAd ? Hesap.gorunenAd(k.kul === "bus" ? "yec" : "bus") : (k.kul === "bus" ? "Yunus" : "Büşra");
+    ben = k.uid; benKul = k.kul || ""; otekiAd = Hesap.gorunenAd ? Hesap.gorunenAd(k.kul === "bus" ? "yec" : "bus") : (k.kul === "bus" ? "Yunus" : "Büşra");
     Hesap.db().then(function (d) {
       db = d; kart.hidden = false; menuyuCiz();
-      d.collection("oyuncular").get().then(function (snap) { snap.forEach(function (doc) { if (doc.id !== ben) oteki = doc.id; }); }).catch(function () {});
+      d.collection("oyuncular").onSnapshot(function (snap) {
+        var yAcik = false;
+        snap.forEach(function (doc) { var x = doc.data() || {}; if (doc.id !== ben) oteki = doc.id; if (x.kul === "yec" || (benKul === "yec" && doc.id === ben)) yAcik = !!x.notlarAcik; });
+        var once = acik; acik = yAcik; menuyuCiz(); kilitCiz(); if (!once && acik) sirayaBak();
+      }, function () {});
       d.collection("notlar").onSnapshot(function (snap) {
         var L = []; snap.forEach(function (doc) { var x = doc.data(); x.id = doc.id; if (x.kimden === ben || x.kime === ben) L.push(x); });
         notlar = L; menuyuCiz(); listeCiz(); sirayaBak();
