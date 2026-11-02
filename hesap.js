@@ -20,7 +20,7 @@
     kb_max: "max", kb_lvl: "max", kb_bonus: "max", kb_rozet: "max", kb_hint: "max", kb_done: "flag", kb_end: "flag", kb_new31: "flag", kb_wait: "flag", kb_intro: "flag", kb_state: "new",
     ok_max: "max", ok_lvl: "max", ok_hint: "max", ok_intro: "flag", ok_stars: "stars", ok_best: "best", ok_gun: "gun", ok_state: "new",
     pm_best: "max", pm_sufle: "max", pm_muffin2: "flag", pm_tost2: "flag", pm_kalp1: "flag", pm_hediye1: "flag",
-    sef_best: "max", sef_oda: "new", fatih_best: "max",
+    sef_best: "max", sef_oda: "new", fatih_best: "max", jl_best: "max", jl_max: "max",
     fark2_best: "min", fark2_done: "flag", fark2_state: "new", fark3_best: "min", fark3_done: "flag", fark3_state: "new", fark1_intro: "flag",
     stb_best: "max", stb_oyun: "max", yk_best: "max", yk_seviye: "max",
     gk_start: "min", gk_stat: "new", gk_help: "flag", qg_last: "new"
@@ -109,8 +109,13 @@
       var degisti = !cl || !ayni(cl.d || {}, m.d);
       ls("hs_last", user.uid);
       var p = degisti ? ref.set({ kul: kulAdi(user), ad: gorunenAd(kulAdi(user)), d: m.d, dt: m.dt, t: firebase.firestore.FieldValue.serverTimestamp(), son: { o: oyunKodu, t: firebase.firestore.FieldValue.serverTimestamp() } }, { merge: true }).then(function () { if (ilk) return olay("hesap", "ilk", 0); }) : nabiz();
-      return p.then(function () { senk = true; });
+      return p.then(function () { senk = true; duzelt(); });
     }).catch(function (e) { if (!bulut) setTimeout(function () { if (user && !bulut) esitle().then(bitti, bitti); }, 8000); throw e; });
+  }
+  /* tek seferlik düzeltme (2 Kasım): Yunus'un Kelime Bahçesi bonus kelimesi 512; zaten fazlaysa dokunmaz, 9 Kasım'dan sonra hiç çalışmaz */
+  function duzelt() {
+    if (!user || kulAdi(user) !== "yec" || Date.now() > Date.parse("2026-11-09T00:00:00+03:00")) return;
+    if (num(ls("kb_bonus")) < 512) ls("kb_bonus", "512");
   }
   var planT = 0;
   function planla() { if (!user || !db) return; clearTimeout(planT); planT = setTimeout(gonder, DEBOUNCE); }
@@ -146,6 +151,8 @@
     ["pm_muffin2", "pm_tost2", "pm_kalp1"].forEach(function (k) { if (b[k] === "1" && a[k] !== "1") olay("kase", k, 1); });
     if (artti("fatih_best")) olay("tur", "rekor", num(b.fatih_best));
     if (artti("sef_best")) olay("plan", "rekor", num(b.sef_best));
+    if (artti("jl_best")) olay("jole", "rekor", num(b.jl_best));
+    if (artti("jl_max") && num(b.jl_max) >= 256) olay("jole", "buyuk", num(b.jl_max));
     if (b.fark2_done === "1" && a.fark2_done !== "1") olay("fark", "bitti", 1);
     if (b.fark3_done === "1" && a.fark3_done !== "1") olay("fark", "bitti", 2);
     if (num(b.stb_best) > num(a.stb_best) && num(b.stb_best) >= 5) olay("stilobat", "rekor", num(b.stb_best));

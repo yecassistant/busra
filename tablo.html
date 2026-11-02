@@ -19,8 +19,8 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Queen Games">
 <link rel="apple-touch-icon" href="ikon/app-180.png">
-<link rel="stylesheet" href="style.css?v=1021t">
-<script src="kapi.js?v=1021t"></script>
+<link rel="stylesheet" href="style.css?v=1021v">
+<script src="kapi.js?v=1021v"></script>
 <style>
 .tbmin{gap:12px}
 .tbmin .tbvitrin{padding:16px 12px 12px;background:rgba(255,255,255,.06);box-shadow:inset 0 0 0 1px rgba(255,255,255,.12)}
@@ -56,9 +56,9 @@
   </section>
 </main>
 
-<script src="app.js?v=1021t"></script>
-<script src="hesap.js?v=1021t"></script>
-<script src="deneme.js?v=1021t"></script>
+<script src="app.js?v=1021v"></script>
+<script src="hesap.js?v=1021v"></script>
+<script src="deneme.js?v=1021v"></script>
 <script>
 (function () {
   var $ = function (id) { return document.getElementById(id); };
@@ -74,7 +74,7 @@
     if (d < 60000) return "az önce"; if (d < 3600000) return Math.round(d / 60000) + " dk önce"; if (d < 86400000) return Math.round(d / 3600000) + " sa önce";
     var t = new Date(ms); return t.getDate() + " " + AYLAR[t.getMonth()] + " " + pad(t.getHours()) + ":" + pad(t.getMinutes());
   }
-  var OYUN = { kelime: "Kelime Bahçesi", ok: "Eros'un Oku", kase: "Peki Madem", gunun: "Günün Kelimesi", tur: "Fatih Turu", plan: "Şefin Planı", oda: "Şefin Odası", fark: "7 Farkı Bul", hafiza: "Hafıza Düellosu", satranc: "Satranç", kelimeavi: "Kelime Avı", sayi: "Sayı Düellosu", amiral: "Amiral Battı", asmaca: "Adam Asmaca", tabu: "Tabu", xox: "XOX", tepe: "Tepe Savaşı", zincir: "Kelime Zinciri", uno: "UNO", dort: "Dört Taş", ciz: "Çiz Bil", yikim: "Yıkım", stilobat: "Stilobat", takvim: "takvimde", oyunlar: "menüde", tablo: "skor tablosunda", giris: "girişte", index: "ana sayfada" };
+  var OYUN = { kelime: "Kelime Bahçesi", ok: "Eros'un Oku", kase: "Peki Madem", jole: "Jöle", gunun: "Günün Kelimesi", tur: "Fatih Turu", plan: "Şefin Planı", oda: "Şefin Odası", fark: "7 Farkı Bul", hafiza: "Hafıza Düellosu", satranc: "Satranç", kelimeavi: "Kelime Avı", sayi: "Sayı Düellosu", amiral: "Amiral Battı", asmaca: "Adam Asmaca", tabu: "Tabu", xox: "XOX", tepe: "Tepe Savaşı", zincir: "Kelime Zinciri", uno: "UNO", dort: "Dört Taş", ciz: "Çiz Bil", yikim: "Yıkım", stilobat: "Stilobat", takvim: "takvimde", oyunlar: "menüde", tablo: "skor tablosunda", giris: "girişte", index: "ana sayfada" };
   function yildiz(n) { var s = ""; for (var i = 0; i < 3; i++) s += i < n ? "★" : "☆"; return s; }
 
   /* ---- bir oyuncunun özeti ---- */
@@ -91,6 +91,7 @@
       { o: "gunun", ad: "Günün Kelimesi", v: gkSeri * 1000 + num(gs.w), t: bugun && bugun.s === "w" ? bugun.g.length + " tahminde" : bugun && bugun.s === "l" ? "bulamadı" : bugun && bugun.g && bugun.g.length ? bugun.g.length + " tahmin yaptı" : "—", alt: (bugun && bugun.g && bugun.g.length ? "bugün" : "bugün oynamadı") + (gkSeri ? " · " + gkSeri + " günlük seri" : "") + (num(gs.p) ? " · " + num(gs.w) + "/" + num(gs.p) + " kazanma" : "") },
       { o: "tur", ad: "Fatih Turu", v: num(d.fatih_best), t: num(d.fatih_best) ? num(d.fatih_best) + "/12 durak" : "—", alt: "" },
       { o: "plan", ad: "Şefin Planı", v: num(d.sef_best), t: num(d.sef_best) ? num(d.sef_best) + " puan" : "—", alt: "" },
+      { o: "jole", ad: "Jöle", v: num(d.jl_best), t: num(d.jl_best) ? num(d.jl_best) + " puan" : "—", alt: num(d.jl_max) ? "en büyük jöle " + num(d.jl_max) : "" },
       { o: "yikim", ad: "Yıkım", v: num(d.yk_best), t: num(d.yk_best) ? num(d.yk_best) + " puan" : "—", alt: num(d.yk_seviye) > 1 ? (num(d.yk_seviye) - 1) + " seviye geçti" : "" },
       { o: "stilobat", ad: "Stilobat", v: num(d.stb_best), t: num(d.stb_best) ? num(d.stb_best) + " kat" : "—", alt: num(d.stb_oyun) ? num(d.stb_oyun) + " oyun" : "" },
       { o: "fark", ad: "7 Farkı Bul", v: (d.fark2_done === "1" ? 1 : 0) + (d.fark3_done === "1" ? 1 : 0), t: ((d.fark2_done === "1" ? 1 : 0) + (d.fark3_done === "1" ? 1 : 0)) + "/2 bölüm", alt: [num(d.fark2_best) > 0 ? "Oda " + Math.floor(num(d.fark2_best) / 60000) + ":" + pad(Math.round(num(d.fark2_best) / 1000) % 60) : "", num(d.fark3_best) > 0 ? "Balat " + Math.floor(num(d.fark3_best) / 60000) + ":" + pad(Math.round(num(d.fark3_best) / 1000) % 60) : ""].filter(Boolean).join(" · ") }
@@ -108,6 +109,8 @@
     if (o === "kelime" && k === "bolum") return ad + " Kelime Bahçesi'nde " + v + ". bölümü bitirdi.";
     if (o === "kelime" && k === "rozet") return ad + " Kelime Bahçesi'nde " + (v === 3 ? "altın" : v === 2 ? "gümüş" : "bronz") + " rozeti kazandı 🏅";
     if (o === "kase" && k === "rekor") return ad + " Peki Madem'de yeni rekor kırdı: " + v + " puan.";
+    if (o === "jole" && k === "rekor") return ad + " Jöle'de yeni rekor kırdı: " + v + " puan 🫧";
+    if (o === "jole" && k === "buyuk") return ad + " Jöle'de ilk kez " + v + " jölesini yaptı 🫧";
     if (o === "kase" && k === "sufle") return ad + " Peki Madem'de büyük boy sufle kazandı 🍫" + (v > 1 ? " (" + v + ". sufle)" : "");
     if (o === "kase" && k === "pm_muffin2") return ad + " Peki Madem'de sürpriz muffini açtı 🧁";
     if (o === "kase" && k === "pm_tost2") return ad + " Peki Madem'de atom tosta ulaştı 🍞";
@@ -137,8 +140,8 @@
   var oyuncular = {}, ben = null, akis = [], seri = null, mac = null, stSeri = null, stMac = null;
   var DUEL = ["hafiza", "sayi", "kelimeavi", "zincir", "uno", "dort", "ciz", "xox", "tepe", "satranc", "amiral", "asmaca"];
   var duSeri = {}, duMac = {}; DUEL.forEach(function (k) { duSeri[k] = null; duMac[k] = null; });
-  var IK = { hafiza: "🃏", sayi: "🔢", kelimeavi: "🔡", xox: "❌", tepe: "💥", zincir: "⛓️", uno: "🎴", dort: "🔵", ciz: "🎨", satranc: "♟️", amiral: "⚓", asmaca: "🔤", gunun: "🟩", kelime: "🌸", ok: "🏹", kase: "🍫", oda: "🛋️", plan: "🌿", tur: "🏰", fark: "🔍", yikim: "🔨", stilobat: "🏛️", takvim: "📅", hesap: "🔑", tabu: "🃏" };
-  var LINK = { hafiza: "hafiza.html", sayi: "sayi.html", kelimeavi: "kelimeavi.html", xox: "xox.html", tepe: "tepe.html", zincir: "zincir.html", uno: "uno.html", dort: "dort.html", ciz: "ciz.html", satranc: "satranc.html", amiral: "amiral.html", asmaca: "asmaca.html" };
+  var IK = { hafiza: "🃏", sayi: "🔢", kelimeavi: "🔡", xox: "❌", tepe: "💥", zincir: "⛓️", uno: "🎴", dort: "🔵", ciz: "🎨", satranc: "♟️", amiral: "⚓", asmaca: "🔤", gunun: "🟩", kelime: "🌸", ok: "🏹", kase: "🍫", jole: "🫧", oda: "🛋️", plan: "🌿", tur: "🏰", fark: "🔍", yikim: "🔨", stilobat: "🏛️", takvim: "📅", hesap: "🔑", tabu: "🃏" };
+  var LINK = { hafiza: "hafiza.html", sayi: "sayi.html", kelimeavi: "kelimeavi.html", xox: "xox.html", tepe: "tepe.html", zincir: "zincir.html", uno: "uno.html", dort: "dort.html", ciz: "ciz.html", satranc: "satranc.html", amiral: "amiral.html", asmaca: "asmaca.html" , jole: "jole.html" };
   var filtreO = ""; try { filtreO = sessionStorage.getItem("tb_filtre") || ""; } catch (e) {}
   function ekDe(ad) { var m = String(ad).toLowerCase().match(/[aeıioöuü](?![\s\S]*[aeıioöuü])/), v = m ? m[0] : "a"; return ad + "'" + (/[fstkçşhp]$/i.test(ad) ? "t" : "d") + (/[aıou]/.test(v) ? "a" : "e"); }
   function liste() { var L = [], u; for (u in oyuncular) L.push(oyuncular[u]); L.sort(function (a, b) { return (a.uid === ben ? 1 : 0) - (b.uid === ben ? 1 : 0) || (a.ad > b.ad ? 1 : -1); }); return L; }
