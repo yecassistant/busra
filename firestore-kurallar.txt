@@ -8,6 +8,11 @@ service cloud.firestore {
       allow write: if uye() && request.auth.uid == uid;
     }
 
+    match /sohbet/{uid} {
+      allow read: if uye();
+      allow write: if uye() && request.auth.uid == uid && request.resource.data.size() <= 6 && request.resource.data.e is string && request.resource.data.e.size() <= 16 && (!('y' in request.resource.data) || (request.resource.data.y is string && request.resource.data.y.size() <= 60));
+    }
+
     match /akis/{id} {
       allow read: if uye();
       allow create: if uye() && request.resource.data.uid == request.auth.uid && request.resource.data.size() <= 6;
@@ -100,6 +105,15 @@ service cloud.firestore {
       allow delete: if false;
     }
 
+    match /kelimeavi/{id} {
+      allow read: if uye();
+      allow create: if uye();
+      allow update: if uye() && (id == "seri" || resource.data.bitti == true
+        || (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['oy', 'bitti', 'sonuc', 'kazanan', 't', 'v'])
+          && request.resource.data.oy.diff(resource.data.oy).affectedKeys().hasOnly([request.auth.uid])));
+      allow delete: if false;
+    }
+
     match /ciz/{id} {
       allow read: if uye();
       allow create: if uye();
@@ -107,23 +121,10 @@ service cloud.firestore {
       allow delete: if false;
     }
 
-    match /kelimeavi/{id} {
+    match /joled/{id} {
       allow read: if uye();
-      allow create: if uye();
-      // Herkes kendi zamanında oynar: sıra yok. Oyun sürerken her oyuncu yalnız kendi kelimelerini (oy.<kendi uid'i>) yazar;
-      // ikincisi bitirince sonuç (bitti, sonuc, kazanan) da aynı yazımla gelir. Oyun bitince ya da seri belgesinde serbest.
-      allow update: if uye() && (id == "seri" || resource.data.bitti == true
-        || (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['oy', 'bitti', 'sonuc', 'kazanan', 't', 'v'])
-          && request.resource.data.oy.diff(resource.data.get('oy', {})).affectedKeys().hasOnly([request.auth.uid])));
+      allow create, update: if uye();
       allow delete: if false;
-    }
-
-    // Oyun içi sohbet: herkes kendi belgesine (sohbet/<kendi uid'i>) son mesajını yazar, öbürü okur.
-    match /sohbet/{uid} {
-      allow read: if uye();
-      allow write: if uye() && request.auth.uid == uid
-        && request.resource.data.size() <= 6
-        && (!('y' in request.resource.data) || (request.resource.data.y is string && request.resource.data.y.size() <= 60));
     }
 
     match /ciftlik/{uid} {
@@ -134,6 +135,36 @@ service cloud.firestore {
     match /takvim/{uid} {
       allow read: if uye();
       allow write: if uye() && request.auth.uid == uid;
+    }
+
+    match /notlar/{id} {
+      allow read: if uye();
+      allow create: if uye() && request.resource.data.kimden == request.auth.uid
+        && request.resource.data.keys().hasOnly(['kimden', 'kime', 'metin', 'tema', 't', 'acilis', 'okundu'])
+        && request.resource.data.metin is string && request.resource.data.metin.size() > 0 && request.resource.data.metin.size() <= 300
+        && request.resource.data.acilis is number && request.resource.data.okundu == null;
+      allow update: if uye() && resource.data.kime == request.auth.uid && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['okundu']);
+      allow delete: if uye() && resource.data.kimden == request.auth.uid && resource.data.okundu == null;
+    }
+
+    match /kediler/{id} {
+      allow read: if uye();
+      allow create: if uye() && request.resource.data.keys().hasOnly(['durum', 'isteyen', 'istendi', 'gun'])
+        && request.resource.data.durum == 'bekliyor' && request.resource.data.isteyen == request.auth.uid;
+      allow update: if uye() && (
+        (resource.data.durum == 'bekliyor' && request.resource.data.durum == 'doydu' && request.resource.data.besleyen == request.auth.uid
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['durum', 'besleyen', 'doydu', 'foto', 'yer', 'ad']))
+        || (resource.data.durum == 'doydu' && resource.data.besleyen == request.auth.uid
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['foto', 'yer', 'ad']))
+        || (resource.data.isteyen == request.auth.uid && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['gordu'])));
+      allow delete: if false;
+    }
+
+    match /kedifoto/{id} {
+      allow read: if uye();
+      allow create, update: if uye() && request.resource.data.keys().hasOnly(['v', 't'])
+        && request.resource.data.v is string && request.resource.data.v.size() < 900000;
+      allow delete: if false;
     }
 
     match /{rest=**} { allow read, write: if false; }

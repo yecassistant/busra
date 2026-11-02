@@ -24,8 +24,8 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Queen Games">
 <link rel="apple-touch-icon" href="ikon/app-180.png">
-<link rel="stylesheet" href="style.css?v=1021y">
-<script src="kapi.js?v=1021y"></script>
+<link rel="stylesheet" href="style.css?v=1021z">
+<script src="kapi.js?v=1021z"></script>
 </head>
 <body data-page="jole" data-tone="lav">
 
@@ -41,6 +41,12 @@
     <div class="jpuan"><small>Puan</small><b id="puan">0</b></div>
     <div class="jdug"><button type="button" id="sesBtn" aria-label="Ses">🔊</button><button type="button" id="yardimBtn" aria-label="Nasıl oynanır">?</button></div>
   </div>
+  <div class="jduel" id="jduel" hidden>
+    <div class="jdk"><small>Sen</small><b id="dBenPuan">0</b></div>
+    <div class="jdsure"><b id="dSure">2:30</b><small>düello ⚔️</small></div>
+    <div class="jdk o"><small id="dRakipAd">Rakip</small><b id="dRakipPuan">0</b></div>
+  </div>
+  <button type="button" class="jduelbtn" id="duelloBtn" hidden>⚔️ Düello <small id="duelloAlt">birlikte oynayalım</small></button>
 
   <div class="kutuwrap" id="kutuwrap"><div class="kutuyigin" id="kutuYigin"><canvas id="kutuArka" aria-hidden="true"></canvas><canvas id="kutu" aria-label="Jöle kutusu"></canvas><canvas id="kutuOn" aria-hidden="true"></canvas></div></div>
 
@@ -57,6 +63,35 @@
   </div>
 </div>
 
+<!-- düello -->
+<div class="over" id="dDavet" hidden>
+  <div class="overcard">
+    <div class="eyebrow">jöle düellosu ⚔️</div>
+    <h2 id="dDavetBaslik">Düelloya çağrıldın</h2>
+    <p class="lead">Aynı jölelerle, aynı anda, 2,5 dakika. Büyük birleşmelerin karşı tarafa gri çöp jöle yollar.</p>
+    <div class="btns"><button type="button" class="btn pink" id="dKatil">Katıl ⚔️</button><button type="button" class="btn ghost" id="dReddet">Şimdi değil</button></div>
+  </div>
+</div>
+<div class="over" id="dBekle" hidden>
+  <div class="overcard">
+    <div class="eyebrow">jöle düellosu ⚔️</div>
+    <h2 id="dBekleBaslik">Bekliyorum…</h2>
+    <p class="lead" id="dBekleMetin">Jöle'yi açınca davetini görecek; katılınca 3-2-1 ile birlikte başlarsınız.</p>
+    <div class="jbekle" aria-hidden="true"><i></i><i></i><i></i></div>
+    <div class="btns"><button type="button" class="btn ghost" id="dVazgec">Vazgeç</button></div>
+  </div>
+</div>
+<div class="jgeri" id="dGeri" hidden><b id="dGeriSayi">3</b><small>aynı jöleler, 2,5 dakika</small></div>
+<div class="over" id="dSon" hidden>
+  <div class="overcard">
+    <div class="eyebrow" id="dSonUst">düello bitti ⚔️</div>
+    <h2 id="dSonBaslik">…</h2>
+    <div class="jsonskor"><div><b id="dSonBen">0</b><small>Sen</small></div><div><b id="dSonO">0</b><small id="dSonOAd">Rakip</small></div></div>
+    <p class="small" id="dSonMetin"></p>
+    <div class="btns"><button type="button" class="btn pink" id="dRovans" hidden>Rövanş ⚔️</button><button type="button" class="btn ghost" id="dTek" hidden>Tek başına oyna</button></div>
+  </div>
+</div>
+
 <div class="over intro" id="intro" hidden>
   <div class="overcard">
     <div class="eyebrow">yeni oyun 🫧</div>
@@ -65,14 +100,18 @@
       <li>Üstteki jölelerden birini parmağınla tut, sağa sola gezdir; bırakınca düşer, hızlı bırakırsan fırlar.</li>
       <li>Rayda iki aynı sayı varsa birini öbürünün üstüne getir, orada birleşirler.</li>
       <li>Aynı iki sayı değince birleşir: 1+1=2, 2+2=4 … 2048'e kadar.</li>
+      <li>Gri çöp jöleler birleşmez; yanında bir birleşme olursa erir. Ara ara gökten düşerler.</li>
+      <li>Arka arkaya birleştirirsen kombo yaparsın, puan katlanır.</li>
       <li>Kesikli çizginin üstünde jöle birikirse kutu dolar, oyun biter.</li>
+      <li>⚔️ Düello: ikiniz aynı anda, aynı jölelerle 2,5 dakika oynarsınız; büyük birleşmelerin karşı tarafa çöp jöle yollar.</li>
     </ul>
     <div class="btns"><button type="button" class="btn pink" id="introGo">Başla 🫧</button></div>
   </div>
 </div>
 
-<script src="app.js?v=1021y"></script>
-<script src="hesap.js?v=1021y"></script>
-<script>(window.Hesap ? Hesap.oyun : function (l) { l.forEach(function (x) { document.write('<script src="' + x + '"><\/script>'); }); })(["jole.js?v=1021y"]);</script>
+<script src="app.js?v=1021z"></script>
+<script src="hesap.js?v=1021z"></script>
+<script src="deneme.js?v=1021z"></script>
+<script>(window.Hesap ? Hesap.oyun : function (l) { l.forEach(function (x) { document.write('<script src="' + x + '"><\/script>'); }); })(["jole.js?v=1021z"]);</script>
 </body>
 </html>
