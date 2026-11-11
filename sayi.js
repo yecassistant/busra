@@ -68,8 +68,10 @@
     $("numMe").textContent = benimSayi ? benimSayi.split("").join(" ") : "· · · ·";
     $("numOther").textContent = G.bitti ? (coz(G, OTHER) || "····").split("").join(" ") : (G.hazir && G.hazir[OTHER] ? "● ● ● ●" : "· · · ·");
     var onunSayi = G.bitti ? (coz(G, OTHER) || "") : "";
-    $("colMeT").innerHTML = "Senin tahminlerin<b>" + (benimSayi ? benimSayi.split("").join(" ") : "· · · ·") + "</b>";
-    $("colOtT").innerHTML = D.esc(OTHER && D.adlar[OTHER] ? D.ekIn(D.adlar[OTHER]) : "Onun") + " tahminleri<b" + (onunSayi ? "" : ' class="gizli"') + ">" + (onunSayi ? onunSayi.split("").join(" ") : (G.hazir && G.hazir[OTHER] ? "●●●●" : "····")) + "</b>";
+    /* her sütunun başında, o tahminlerin hedefi olan sayı: senin tahminlerin onun (gizli) sayısına, onun tahminleri senin sayına */
+    var onunAd = OTHER && D.adlar[OTHER] ? D.ekIn(D.adlar[OTHER]) : "Onun";
+    $("colMeT").innerHTML = "Senin tahminlerin<b" + (onunSayi ? "" : ' class="gizli"') + ">" + (onunSayi ? onunSayi.split("").join(" ") : (G.hazir && G.hazir[OTHER] ? "●●●●" : "····")) + "<small>" + D.esc(onunAd) + " sayısı</small></b>";
+    $("colOtT").innerHTML = D.esc(onunAd) + " tahminleri<b>" + (benimSayi ? benimSayi.split("").join(" ") : "· · · ·") + "<small>senin sayın</small></b>";
     var tm = (G.tahmin && G.tahmin[ME]) || [], to = (G.tahmin && OTHER && G.tahmin[OTHER]) || [];
     $("listMe").innerHTML = tm.map(function (x) { return satir(x, true); }).join("") || '<li class="bos">Henüz tahmin yok</li>';
     $("listOther").innerHTML = to.map(function (x) { return satir(x, false); }).join("") || '<li class="bos">Henüz tahmin yok</li>';

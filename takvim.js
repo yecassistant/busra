@@ -18,6 +18,31 @@
 
   /* ---- çizim ---- */
   function ortak() { var l = []; for (var k in benim) if (benim[k] && onun[k] && kacGun(k) >= 0) l.push(k); l.sort(); return l; }
+  var yon = 0, sonTik = null, ilkCizim = true, oncekiOrtak = null;
+  function haftaSonu(n) {                                              /* n=0 bu, n=1 gelecek hafta sonu: [cmt, paz] (geçmiş gün yok) */
+    var d = new Date(bugun), gun = (d.getDay() + 6) % 7, l = [];        /* pzt=0 … paz=6 */
+    var cmt = new Date(d); cmt.setDate(d.getDate() + (5 - gun) + n * 7); var paz = new Date(cmt); paz.setDate(cmt.getDate() + 1);
+    if (cmt >= bugun) l.push(iso(cmt)); if (paz >= bugun) l.push(iso(paz));
+    return l;
+  }
+  function hizliCiz() {
+    [].forEach.call($("hizli").children, function (b) {
+      var l = haftaSonu(+b.getAttribute("data-h")), hepsi = l.length && l.every(function (k) { return benim[k]; });
+      b.className = hepsi ? "on" : ""; b.setAttribute("aria-pressed", hepsi ? "true" : "false"); b.disabled = !ME || !db || !l.length;
+    });
+  }
+  function patlat(el) {                                                /* ortak gün olunca küçük kalp patlaması */
+    if (!el || (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches)) return;
+    var r = el.getBoundingClientRect(), kap = document.createElement("div"), i, RENK = ["#f2c35b", "#ff8fb0", "#fff", "#9d8cff"];
+    kap.className = "tkpatla"; kap.style.left = (r.left + r.width / 2) + "px"; kap.style.top = (r.top + r.height / 2) + "px";
+    for (i = 0; i < 12; i++) {
+      var a = (i / 12) * 6.283 + Math.random() * 0.4, u = 46 + Math.random() * 40, p = document.createElement("i");
+      p.style.setProperty("--dx", Math.round(Math.cos(a) * u) + "px"); p.style.setProperty("--dy", Math.round(Math.sin(a) * u - 18) + "px");
+      p.style.color = RENK[i % 4]; p.textContent = i % 3 ? "♥" : "✦"; p.style.fontSize = (10 + Math.random() * 8) + "px";
+      kap.appendChild(p);
+    }
+    document.body.appendChild(kap); setTimeout(function () { if (kap.parentNode) kap.parentNode.removeChild(kap); }, 1100);
+  }
   function ciz() {
     var y = gorunenAy.getFullYear(), m = gorunenAy.getMonth();
     $("ay").textContent = AYLAR[m] + " " + y;
@@ -26,11 +51,21 @@
     for (i = 0; i < bosluk; i++) html += '<span class="tkd bos"></span>';
     for (i = 1; i <= son; i++) {
       var d = new Date(y, m, i), k = iso(d), gecmis = d < bugun, b = !!benim[k], o = !!onun[k];
-      var cls = "tkd" + (gecmis ? " gecmis" : "") + (d.getTime() === bugun.getTime() ? " bugun" : "") + (b && o ? " ikisi" : b ? " ben" : o ? " o" : "") + ((d.getDay() === 0 || d.getDay() === 6) ? " hs" : "");
-      html += '<button type="button" class="' + cls + '" data-k="' + k + '"' + (gecmis ? " disabled" : "") + ' aria-label="' + esc(uzun(k)) + (b && o ? ", ikimiz de müsaitiz" : b ? ", sen müsaitsin" : o ? ", " + esc(ADLAR[OTHER] || "o") + " müsait" : "") + '"><i>' + i + '</i>' + (b && o ? '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-5.2-9.5-10A5.3 5.3 0 0 1 12 6a5.3 5.3 0 0 1 9.5 5c-2 4.8-9.5 10-9.5 10z"/></svg>' : "") + "</button>";
+      var cls = "tkd" + (k === sonTik ? " tik" : "") + (gecmis ? " gecmis" : "") + (d.getTime() === bugun.getTime() ? " bugun" : "") + (b && o ? " ikisi" : b ? " ben" : o ? " o" : "") + ((d.getDay() === 0 || d.getDay() === 6) ? " hs" : "");
+      html += '<button type="button" class="' + cls + '" data-k="' + k + '"' + (gecmis ? " disabled" : "") + ' aria-label="' + esc(uzun(k)) + (b && o ? ", ikimiz de müsaitiz" : b ? ", sen müsaitsin" : o ? ", " + esc(ADLAR[OTHER] || "o") + " müsait" : "") + '"><i>' + i + '</i>' + (b && !o ? '<u class="n ben"></u>' : o && !b ? '<u class="n o"></u>' : "") + (b && o ? '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-5.2-9.5-10A5.3 5.3 0 0 1 12 6a5.3 5.3 0 0 1 9.5 5c-2 4.8-9.5 10-9.5 10z"/></svg>' : "") + "</button>";
     }
-    $("grid").innerHTML = html;
-    var ort = ortak(), hero = $("hero");
+    var grid = $("grid");
+    grid.innerHTML = html;
+    grid.className = "tkgrid" + (yon > 0 ? " sag" : yon < 0 ? " sol" : ilkCizim && benimYuklendi ? " ilk" : "");
+    if (benimYuklendi) ilkCizim = false;
+    yon = 0; sonTik = null;
+    var ort = ortak(), hero = $("hero"), hg = $("heroGun");
+    if (benimYuklendi && ort.length) {
+      var od = tarih(ort[0]); $("hgAy").textContent = AYLAR[od.getMonth()].slice(0, 3); $("hgN").textContent = od.getDate(); $("hgG").textContent = KISA[(od.getDay() + 6) % 7];
+      if (oncekiOrtak !== ort[0]) { hg.classList.remove("yeni"); void hg.offsetWidth; hg.classList.add("yeni"); }
+    }
+    hg.hidden = !(benimYuklendi && ort.length); oncekiOrtak = benimYuklendi && ort.length ? ort[0] : null;
+    hizliCiz();
     if (!benimYuklendi) { hero.className = "tkhero"; $("heroKick").textContent = "Yaklaşan"; $("heroT").textContent = "Yükleniyor…"; $("heroS").textContent = ""; }
     else if (ort.length) { hero.className = "tkhero var"; $("heroKick").textContent = ort.length === 1 ? "İkimizin de boş olduğu gün" : ort.length + " ortak gün · en yakını"; $("heroT").textContent = uzun(ort[0]); $("heroS").textContent = nezaman(ort[0]); }
     else {
@@ -40,19 +75,42 @@
       $("heroS").textContent = !benS ? "İkimizin de boş olduğu günler burada görünür." : !onS ? (OTHER ? "O da işaretleyince ortak günler burada görünür." : "Giriş yapıp işaretleyince ortak günler burada görünür.") : "İkimiz de birkaç gün daha işaretleyelim.";
     }
     var list = $("list"), say = $("sayac");
-    if (ort.length > 1) { list.hidden = false; list.innerHTML = ort.slice(0, 8).map(function (k) { return "<li><b>" + esc(uzun(k)) + "</b><span>" + esc(nezaman(k)) + "</span></li>"; }).join(""); }
+    if (ort.length > 1) { list.hidden = false; list.innerHTML = ort.slice(0, 8).map(function (k, n) { return '<li style="--i:' + n + '"><b>' + esc(uzun(k)) + "</b><span>" + esc(nezaman(k)) + "</span></li>"; }).join(""); }
     else list.hidden = true;
     var bs = 0, os = 0, k3; for (k3 in benim) if (benim[k3] && kacGun(k3) >= 0) bs++; for (k3 in onun) if (onun[k3] && kacGun(k3) >= 0) os++;
     say.innerHTML = '<span class="ben">' + bs + " gün sen</span><span class=\"o\">" + os + " gün " + esc(OTHER ? (ADLAR[OTHER] || "o") : digerAd) + "</span>" + (ort.length ? '<span class="ikisi">' + ort.length + " ortak</span>" : "");
   }
-  $("geri").onclick = function () { gorunenAy = new Date(gorunenAy.getFullYear(), gorunenAy.getMonth() - 1, 1); ciz(); };
-  $("ileri").onclick = function () { gorunenAy = new Date(gorunenAy.getFullYear(), gorunenAy.getMonth() + 1, 1); ciz(); };
+  function ayGit(n) {
+    if (n < 0 && $("geri").disabled) return;
+    gorunenAy = new Date(gorunenAy.getFullYear(), gorunenAy.getMonth() + n, 1); yon = n; ciz();
+  }
+  $("geri").onclick = function () { ayGit(-1); };
+  $("ileri").onclick = function () { ayGit(1); };
+  /* parmakla sağa sola kaydırınca ay değişir */
+  var kx = null, ky = 0;
+  $("grid").addEventListener("touchstart", function (e) { if (e.touches.length === 1) { kx = e.touches[0].clientX; ky = e.touches[0].clientY; } }, { passive: true });
+  $("grid").addEventListener("touchend", function (e) {
+    if (kx === null) return; var t = e.changedTouches[0], dx = t.clientX - kx, dy = t.clientY - ky; kx = null;
+    if (Math.abs(dx) > 56 && Math.abs(dx) > Math.abs(dy) * 1.6) ayGit(dx < 0 ? 1 : -1);
+  }, { passive: true });
+  /* hafta sonu kısayolları: iki günü birden işaretler, hepsi işaretliyse kaldırır */
+  $("hizli").addEventListener("click", function (e) {
+    var b = e.target && e.target.closest ? e.target.closest("button") : null; if (!b || b.disabled || !ME || !db) return;
+    var l = haftaSonu(+b.getAttribute("data-h")); if (!l.length) return;
+    var hepsi = l.every(function (k) { return benim[k]; }), yeniOrtak = null;
+    l.forEach(function (k) { if (hepsi) delete benim[k]; else { if (!benim[k] && onun[k]) yeniOrtak = k; benim[k] = true; } });
+    snd(hepsi ? "kapa" : yeniOrtak ? "ortak" : "ac");
+    var hd = tarih(l[0]); if (hd.getMonth() !== gorunenAy.getMonth() || hd.getFullYear() !== gorunenAy.getFullYear()) { yon = hd > gorunenAy ? 1 : -1; gorunenAy = new Date(hd.getFullYear(), hd.getMonth(), 1); }
+    sonTik = l[0]; ciz();
+    if (yeniOrtak) { msg(uzun(yeniOrtak) + " — ikimiz de boşuz!"); patlat($("grid").querySelector('[data-k="' + yeniOrtak + '"]')); }
+    l.forEach(function (k) { kaydet(k, !hepsi); });
+  });
   $("grid").addEventListener("click", function (e) {
     var b = e.target && e.target.closest ? e.target.closest("button.tkd") : null; if (!b || b.disabled || !ME || !db) return;
     var k = b.getAttribute("data-k"); benim[k] = !benim[k]; if (!benim[k]) delete benim[k];
     snd(benim[k] ? (onun[k] ? "ortak" : "ac") : "kapa");
-    ciz();
-    if (benim[k] && onun[k]) { msg(uzun(k) + " — ikimiz de boşuz!"); var el = $("grid").querySelector('[data-k="' + k + '"]'); if (el) { el.classList.add("pat"); setTimeout(function () { el.classList.remove("pat"); }, 700); } }
+    sonTik = k; ciz();
+    if (benim[k] && onun[k]) { msg(uzun(k) + " — ikimiz de boşuz!"); var el = $("grid").querySelector('[data-k="' + k + '"]'); if (el) { el.classList.add("pat"); setTimeout(function () { el.classList.remove("pat"); }, 700); patlat(el); } }
     kaydet(k, benim[k]);
   });
   function msg(t) { var m = $("msg"); m.textContent = t; clearTimeout(msg.t); msg.t = setTimeout(function () { m.textContent = ""; }, 2800); }

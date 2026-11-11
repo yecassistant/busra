@@ -24,8 +24,8 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Queen Games">
 <link rel="apple-touch-icon" href="ikon/app-180.png">
-<link rel="stylesheet" href="style.css?v=1022c">
-<script src="kapi.js?v=1022c"></script>
+<link rel="stylesheet" href="style.css?v=1022h">
+<script src="kapi.js?v=1022h"></script>
 </head>
 <body data-page="oyunlar">
 
@@ -47,7 +47,7 @@
     <span class="qmac-sp a1"></span><span class="qmac-sp a2"></span><span class="qmac-sp a3"></span><span class="qmac-sp a4"></span><span class="qmac-sp a5"></span>
     <svg class="qmac-tac" viewBox="0 0 64 44"><use href="#qmCrown"/></svg>
     <div class="qmac-logo"><span class="qmq">Queen</span><span class="qmg">Games</span></div>
-    <div class="qmac-ik"><span>🃏</span><span>🔢</span><span>🟩</span><span>❌</span><span>💥</span><span>♟️</span></div>
+    <div class="qmac-ik"><span>🫧</span><span>🃏</span><span>🔢</span><span>🎨</span><span>♟️</span><span>🍉</span></div>
     <div class="qmac-bar"><i style="-webkit-animation-duration:1.8s;animation-duration:1.8s"></i></div>
     <p class="qmac-imza">made for <b>Büş</b> <em>♥</em> by <b>Nunu</b></p>
     <small class="qmac-alt" lang="en">rien que pour toi · solo para ti</small>
@@ -55,6 +55,8 @@
 </div>
 <main class="qm">
   <a class="qmback" href="index.html" aria-label="Ana sayfaya dön"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></a>
+
+  <a class="qmskor" id="qmSkor" href="tablo.html" aria-label="Skor Tablosu" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M7 6H4v1a3 3 0 0 0 3 3M17 6h3v1a3 3 0 0 1-3 3M12 14v4M8.5 20h7"/></svg></a>
 
   <header class="qmhead">
     <svg class="qmdoodle qmd-crown" viewBox="0 0 64 48" aria-hidden="true"><path d="M8 40L4 12l15 12L32 4l13 20 15-12-4 28z" fill="none" stroke="#a98bf0" stroke-width="2.6" stroke-linejoin="round"/><path d="M8 40h48" stroke="#a98bf0" stroke-width="2.6" stroke-linecap="round"/></svg>
@@ -66,8 +68,11 @@
     <svg class="qmsp s5" aria-hidden="true"><use href="#qmSpark"/></svg>
     <svg class="qmsp s6" aria-hidden="true"><use href="#qmSpark"/></svg>
 
+    <span class="qmhale" aria-hidden="true"></span>
+    <span class="qmuc" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>
     <svg class="qmcrown" aria-hidden="true"><use href="#qmCrown"/></svg>
     <h1 class="qmlogo"><span class="qmq">Queen</span><span class="qmg">Games</span></h1>
+    <p class="qmselam" id="qmSelam" hidden><svg id="qmSelamIk" viewBox="0 0 24 24" aria-hidden="true"></svg><span id="qmSelamTx"></span></p>
   </header>
 
   <div class="qmherosar"><span class="qmherokalp" aria-hidden="true"></span><span class="qmherokalp k2" aria-hidden="true"></span><span class="qmherokalp k3" aria-hidden="true"></span>
@@ -75,10 +80,12 @@
     <span class="qmico qmico-takvim"><svg viewBox="0 0 92 56" aria-hidden="true"><rect x="18" y="8" width="56" height="44" rx="8" fill="#fbf7fd"/><rect x="18" y="8" width="56" height="13" rx="7" fill="#f2c35b"/><rect x="18" y="15" width="56" height="6" fill="#f2c35b"/><rect x="28" y="3" width="5" height="11" rx="2.5" fill="#3b2a08"/><rect x="59" y="3" width="5" height="11" rx="2.5" fill="#3b2a08"/><g fill="#d9d1e3"><rect x="24" y="26" width="8" height="6" rx="2"/><rect x="36" y="26" width="8" height="6" rx="2"/><rect x="48" y="26" width="8" height="6" rx="2"/><rect x="60" y="26" width="8" height="6" rx="2"/><rect x="24" y="36" width="8" height="6" rx="2"/><rect x="36" y="36" width="8" height="6" rx="2"/><rect x="60" y="36" width="8" height="6" rx="2"/></g><path d="M52 45s-6-3.8-6-7.4a3.1 3.1 0 0 1 6-1.2 3.1 3.1 0 0 1 6 1.2c0 3.6-6 7.4-6 7.4z" fill="#ec4b5f"/><use href="#qmSpark" x="78" y="6" width="10" height="10" fill="#ffe08a"/><use href="#qmSpark" x="4" y="38" width="8" height="8" fill="#ffe08a"/></svg></span>
     <span class="qmtx"><b>Buluşma Takvimi</b><small id="takvimSub">Müsait olduğun günleri işaretle; ikimizin de boş olduğu ilk gün buluşalım.</small></span>
     <i class="qmnew qmturn" id="takvimBadge">işaretle</i>
+    <span class="qmtkhafta" id="takvimHafta" hidden></span>
     <svg class="qmchev" aria-hidden="true"><use href="#qmChev"/></svg>
   </a>
   </div>
 
+  <div class="qmikili">
   <button type="button" class="qmc qmwide qm-notlar" id="toNotlar" hidden>
     <span class="qmico qmico-notlar"><svg viewBox="0 0 46 36" aria-hidden="true"><rect x="3" y="5" width="40" height="27" rx="5" fill="#fff8fb"/><path d="M4 8l19 13L42 8" fill="none" stroke="#eaa3c2" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round"/><path d="M23 30c-4.6-3-7-5.4-7-7.8a3.5 3.5 0 0 1 7-1.4 3.5 3.5 0 0 1 7 1.4c0 2.4-2.4 4.8-7 7.8z" fill="#e8457f"/></svg></span>
     <span class="qmtx"><b>Notlar</b><small id="notlarSub">Küçük bir not bırak; menüyü açınca görür.</small></span>
@@ -92,19 +99,11 @@
     <i class="qmnew" id="kedilerBadge" hidden>mama bekliyor</i>
     <svg class="qmchev" aria-hidden="true"><use href="#qmChev"/></svg>
   </button>
+  </div>
 
-  <a class="qmacct" id="qmAcct" href="giris.html" hidden>
-    <span class="hsava a" id="qmAva">?</span>
-    <span class="qmatx"><b id="qmAname">Giriş yap</b><small id="qmAsub">İlerlemen her cihazda seninle gelsin.</small></span>
-    <span class="qmabtn" id="qmAbtn">Giriş yap</span>
-  </a>
+  <div class="qmdevam" id="qmDevam" hidden><p class="qmdevamt">Kaldığın yerden</p><div class="qmdevamr" id="qmDevamR"></div></div>
 
-  <button type="button" class="qmtam" id="qmTam" hidden>
-    <span class="qmtamico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></span>
-    <span class="qmtamtx"><b>Tam ekran oyna</b><small id="qmTamSub">Adres çubuğu gitsin, ekranın hepsi oyunun olsun.</small></span>
-    <span class="qmtamx" id="qmTamX" role="button" aria-label="Gizle">×</span>
-  </button>
-
+  <nav class="qmnav" id="qmNav" aria-label="Bölümler" hidden><div class="qmnavin" id="qmNavIn"></div></nav>
 
   <div class="qmsec qmsec-yeni" id="secYeni"><span>Yeni</span><small>son eklenenler</small></div>
   <div class="qmgrid" id="qmYeni">
@@ -150,7 +149,7 @@
     </a>
   </div>
 
-  <div class="qmsec qmsec-iki"><span>İkimiz</span><small>2 kişilik · uzaktan da olur</small></div>
+  <div class="qmsec qmsec-iki" id="secIki"><span>İkimiz</span><small>2 kişilik · uzaktan da olur</small></div>
   <div class="qmgrid" id="qmIkimiz">
     <a class="qmc qmt qmkurdeleli qm-hafiza" href="hafiza.html" data-g="hafiza" id="toHafiza">
       <span class="qmart"><svg viewBox="0 0 92 56" aria-hidden="true"><g transform="rotate(-8 30 30)"><rect x="12" y="8" width="30" height="40" rx="6" fill="#4a2456" stroke="#f3a3c0" stroke-width="1.6"/><path d="M27 18l-9 7 3 11h12l3-11z" fill="none" stroke="#f3a3c0" stroke-width="1.6" stroke-linejoin="round"/></g><g transform="rotate(8 60 30)"><rect x="46" y="8" width="30" height="40" rx="6" fill="#fbf7fd"/><circle cx="61" cy="28" r="9" fill="#ec4b5f"/><path d="M61 19c-3-4-8-5-12-3 4 1 6 3 7 5-4 0-7 1-9 3 4 0 8-1 12-1-1 2-1 5 0 7 1-3 2-4 2-4s1 1 2 4c1-2 1-5 0-7 4 0 8 1 12 1-2-2-5-3-9-3 1-2 3-4 7-5-4-2-9-1-12 3z" fill="#5fa36f"/><circle cx="57" cy="30" r="1.2" fill="#ffe08a"/><circle cx="64" cy="26" r="1.2" fill="#ffe08a"/><circle cx="63" cy="33" r="1.2" fill="#ffe08a"/></g><use href="#qmSpark" x="78" y="4" width="10" height="10" fill="#f3a3c0"/><use href="#qmSpark" x="4" y="40" width="8" height="8" fill="#f3a3c0"/></svg></span>
@@ -207,7 +206,7 @@
     </a>
   </div>
 
-  <div class="qmsec qmsec-tek"><span>Tek başına</span><small>rekorunu geç</small></div>
+  <div class="qmsec qmsec-tek" id="secTek"><span>Tek başına</span><small>rekorunu geç</small></div>
   <div class="qmgrid" id="qmTek">
     <a class="qmc qmt qmkurdeleli qm-gunun" href="gunun.html" data-g="gunun" id="toGunun">
       <span class="qmart"><svg viewBox="0 0 92 56" aria-hidden="true"><g font-family="Nunito,sans-serif" font-weight="800" font-size="13" text-anchor="middle"><rect x="2" y="16" width="16" height="18" rx="4" fill="#3fb86a"/><text x="10" y="30" fill="#fff">K</text><rect x="20" y="16" width="16" height="18" rx="4" fill="#f2c35b"/><text x="28" y="30" fill="#5a3a06">A</text><rect x="38" y="16" width="16" height="18" rx="4" fill="rgba(255,255,255,.28)"/><text x="46" y="30" fill="#fff">L</text><rect x="56" y="16" width="16" height="18" rx="4" fill="#3fb86a"/><text x="64" y="30" fill="#fff">E</text><rect x="74" y="16" width="16" height="18" rx="4" fill="rgba(255,255,255,.28)"/><text x="82" y="30" fill="#fff">M</text></g><g fill="rgba(255,255,255,.22)"><rect x="2" y="38" width="16" height="6" rx="2"/><rect x="20" y="38" width="16" height="6" rx="2"/><rect x="38" y="38" width="16" height="6" rx="2"/><rect x="56" y="38" width="16" height="6" rx="2"/><rect x="74" y="38" width="16" height="6" rx="2"/></g></svg></span>
@@ -229,7 +228,7 @@
     </a>
   </div>
 
-  <div class="qmsec qmsec-ani"><span>İlk oyunlarımız</span><small>beni unutma</small></div>
+  <div class="qmsec qmsec-ani" id="secIlk"><span>İlk oyunlarımız</span><small>beni unutma</small></div>
   <p class="qmaninot"><svg class="qmanicicek" aria-hidden="true"><use href="#qmUnutma"/></svg><span>Her şey bunlarla başladı. Eskidi ama hâlâ aklımızda <em>♥</em></span></p>
   <div class="qmgrid qmgrid-ani" id="qmIlk">
     <a class="qmc qmt qm-kelime" href="kelime.html" data-g="kelime" id="toKelime">
@@ -282,10 +281,10 @@
     </a>
   </div>
 
-  <div class="qmsec" id="secGeliyor" hidden><span>Geliyor</span></div>
+  <div class="qmsec qmsec-gel" id="secGeliyor" hidden><span>Geliyor</span></div>
   <div class="qmgrid" id="qmGeliyor" hidden></div>
 
-  <div class="qmsec qmsec-yolda"><span>Yolda</span><small>kapısı kodla açılıyor</small></div>
+  <div class="qmsec qmsec-yolda" id="secYolda"><span>Yolda</span><small>kapısı kodla açılıyor</small></div>
   <div class="qmgrid" id="qmYolda">
     <a class="qmc qmt qm-ciftlik" href="ciftlik.html" data-g="ciftlik" id="toCiftlik">
       <span class="qmart"><svg viewBox="0 0 92 56" aria-hidden="true"><path d="M0 46c14-6 30-8 46-8s32 2 46 8v10H0z" fill="#7ec850"/><path d="M8 50l14-6 14 6-14 6z" fill="#8d5f35"/><path d="M12 50l10-4 10 4M16 52l10-4 10 4" stroke="#a06f42" stroke-width="1.4" fill="none"/><path d="M50 44V26l13-9 13 9v18z" fill="#d64541"/><path d="M47 28l16-11 16 11" fill="none" stroke="#fff8ee" stroke-width="2.6" stroke-linejoin="round"/><path d="M58 44v-10h10v10" fill="#fff8ee"/><path d="M58 34l10 10M68 34l-10 10" stroke="#d64541" stroke-width="1.4"/><circle cx="20" cy="20" r="9" fill="#ffd15c"/><path d="M84 40c0-4 3-7 3-7s3 3 3 7" fill="#4caf50"/><use href="#qmSpark" x="34" y="6" width="10" height="10" fill="#fff3b0"/></svg></span>
@@ -302,6 +301,20 @@
     <svg class="qmchev" aria-hidden="true"><use href="#qmChev"/></svg>
   </a>
 
+  <div class="qmalt">
+  <a class="qmacct" id="qmAcct" href="giris.html" hidden>
+    <span class="hsava a" id="qmAva">?</span>
+    <span class="qmatx"><b id="qmAname">Giriş yap</b><small id="qmAsub">İlerlemen her cihazda seninle gelsin.</small></span>
+    <span class="qmabtn" id="qmAbtn">Giriş yap</span>
+  </a>
+
+  <button type="button" class="qmtam" id="qmTam" hidden>
+    <span class="qmtamico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></span>
+    <span class="qmtamtx"><b>Tam ekran oyna</b><small id="qmTamSub">Adres çubuğu gitsin, ekranın hepsi oyunun olsun.</small></span>
+    <span class="qmtamx" id="qmTamX" role="button" aria-label="Gizle">×</span>
+  </button>
+  </div>
+
   <div class="qmfoot" aria-hidden="true"><i></i><svg viewBox="0 0 64 44"><path d="M8 38L4 12l14 11L32 4l14 19 14-11-4 26z" fill="none" stroke="#9b7fe0" stroke-width="3" stroke-linejoin="round"/></svg><i></i></div>
 </main>
 
@@ -315,9 +328,9 @@
   </div>
 </div>
 
-<script src="app.js?v=1022c"></script>
-<script src="hesap.js?v=1022c"></script>
-<script src="deneme.js?v=1022c"></script>
+<script src="app.js?v=1022h"></script>
+<script src="hesap.js?v=1022h"></script>
+<script src="deneme.js?v=1022h"></script>
 <script>
 /* hesap çubuğu: giriş yoksa "Giriş yap", varsa ad + Skor Tablosu */
 (function () {
@@ -339,9 +352,18 @@
       for (var d in benim) if (benim[d] && onun[d]) { var p = d.split("-"), t = new Date(+p[0], +p[1] - 1, +p[2]); if (t >= bugun) ort.push(d); }
       var bensay = 0, onsay = 0, bugunK = bugun.getFullYear() + "-" + String(bugun.getMonth() + 1).padStart(2, "0") + "-" + String(bugun.getDate()).padStart(2, "0"), dd;
       for (dd in benim) if (benim[dd] && dd >= bugunK) bensay++; for (dd in onun) if (onun[dd] && dd >= bugunK) onsay++;
+      /* kartın içinde önümüzdeki 7 gün: kim hangi günü işaretlemiş, bir bakışta */
+      var hf = document.getElementById("takvimHafta"), oAd = Hesap.gorunenAd(k.kul === "bus" ? "yec" : "bus") || "O", G2 = ["Pz", "Pt", "Sa", "Ça", "Pe", "Cu", "Ct"], hh = "", gi;
+      for (gi = 0; gi < 7; gi++) {
+        var gd = new Date(bugun); gd.setDate(bugun.getDate() + gi);
+        var gk = gd.getFullYear() + "-" + String(gd.getMonth() + 1).padStart(2, "0") + "-" + String(gd.getDate()).padStart(2, "0"), gb = !!benim[gk], go = !!onun[gk];
+        hh += '<span class="' + (gb && go ? "ikisi" : gb ? "ben" : go ? "o" : "") + (gi === 0 ? " bugun" : "") + '" style="--i:' + gi + '"><small>' + G2[gd.getDay()] + "</small><b>" + gd.getDate() + "</b></span>";
+      }
+      hf.innerHTML = hh; hf.hidden = false;
+      var kart = document.getElementById("toTakvim"); kart.classList.toggle("bekliyor", !bensay && onsay > 0); kart.classList.toggle("ortakvar", ort.length > 0);
       if (!ort.length) {
         var tb = document.getElementById("takvimBadge"), ts = document.getElementById("takvimSub");
-        if (!bensay) { tb.textContent = "işaretle"; ts.textContent = onsay ? "O " + onsay + " gün işaretledi; sen de boş günlerini seç, ortak günü bulalım." : "Henüz gün işaretlemedin; boş olduğun günleri seç, ortak günü bulalım."; }
+        if (!bensay) { tb.textContent = onsay ? oAd + " işaretledi" : "işaretle"; ts.textContent = onsay ? oAd + " " + onsay + " gün işaretledi; sen de boş günlerini seç, ortak günü bulalım." : "Henüz gün işaretlemedin; boş olduğun günleri seç, ortak günü bulalım."; }
         else { tb.textContent = onsay ? "ortak yok" : "onu bekle"; tb.className = "qmnew"; ts.textContent = onsay ? "İşaretlediğimiz günler çakışmıyor; birkaç gün daha ekle." : bensay + " gün işaretledin; onun işaretlemesini bekliyoruz."; }
         return;
       }
@@ -531,8 +553,199 @@
   document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !sheet.hidden) close(); });
 })();
 </script>
-<script src="notlar.js?v=1022c"></script>
-<script src="kediler.js?v=1022c"></script>
+<script>
+/* menü: saate göre selam, "Kaldığın yerden" sırası, yapışkan bölüm çubuğu */
+(function () {
+  var azHareket = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  /* selam: saate göre söz, simge ve başlığın ışık rengi */
+  var sel = document.getElementById("qmSelam"), selTx = document.getElementById("qmSelamTx"), selIk = document.getElementById("qmSelamIk"), skor = document.getElementById("qmSkor");
+  var GUNES = '<circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M5.3 18.7l2.1-2.1M16.6 7.4l2.1-2.1"/>';
+  var AY = '<path d="M19.5 14.6A8 8 0 0 1 9.4 4.5a8 8 0 1 0 10.1 10.1z"/><path class="yildiz" d="M17 4.2l.7 1.6 1.6.7-1.6.7-.7 1.6-.7-1.6-1.6-.7 1.6-.7z"/>';
+  function selam(k) {
+    if (!sel) return;
+    var h = new Date().getHours(), z = h < 5 ? "gece" : h < 11 ? "sabah" : h < 17 ? "gun" : h < 22 ? "aksam" : "gece";
+    var s = { gece: "İyi geceler", sabah: "Günaydın", gun: "Merhaba", aksam: "İyi akşamlar" }[z];
+    selTx.textContent = s + (k && k.ad ? ", " + k.ad : "");
+    selIk.innerHTML = z === "sabah" || z === "gun" ? GUNES : AY;
+    document.querySelector(".qm").setAttribute("data-zaman", z);
+    sel.hidden = false;
+    if (skor) skor.hidden = !k;
+  }
+  if (window.Hesap) Hesap.izle(selam); else selam(null);
+
+  /* Kaldığın yerden: son oynanan oyun + sırası sende olanlar */
+  var devam = document.getElementById("qmDevam"), dr = document.getElementById("qmDevamR"), sonAnahtar = "";
+  function devamCiz() {
+    if (!devam) return;
+    var last = null; try { last = localStorage.getItem("qg_last"); } catch (e) {}
+    var list = [], gor = {};
+    function ekle(a, durum, sira) {
+      var g = a && a.getAttribute("data-g"); if (!g || gor[g] || !a.getAttribute("href")) return;
+      gor[g] = 1; list.push({ a: a, g: g, durum: durum, sira: sira });
+    }
+    if (last) {
+      var la = document.querySelector('.qmt[data-g="' + last + '"]'), lb = la && la.querySelector(".qmnew.qmturn");
+      if (la) ekle(la, lb ? lb.textContent : "kaldığın yer", !!lb);
+    }
+    [].forEach.call(document.querySelectorAll(".qmt[data-g] .qmnew.qmturn"), function (b) { ekle(b.parentNode, b.textContent, true); });
+    list = list.slice(0, 4);
+    var anahtar = list.map(function (x) { return x.g + ":" + x.durum; }).join("|");
+    if (anahtar === sonAnahtar) return; sonAnahtar = anahtar;
+    dr.innerHTML = "";
+    list.forEach(function (x) {
+      var a = document.createElement("a"), renk = [].filter.call(x.a.classList, function (c) { return /^qm-/.test(c); })[0] || "";
+      a.className = "qmdv " + renk + (x.sira ? " sira" : ""); a.href = x.a.getAttribute("href");
+      var art = document.createElement("span"); art.className = "qmdvart"; art.setAttribute("aria-hidden", "true");
+      var kaynak = x.a.querySelector(".qmart svg, .qmart img"); if (kaynak) art.appendChild(kaynak.cloneNode(true));
+      var tx = document.createElement("span"); tx.className = "qmdvtx";
+      var b = document.createElement("b"), sm = document.createElement("small"), ad = x.a.querySelector(".qmtx b");
+      b.textContent = ad ? ad.textContent : x.g; sm.textContent = x.durum;
+      tx.appendChild(b); tx.appendChild(sm); a.appendChild(art); a.appendChild(tx);
+      a.addEventListener("click", function () { try { localStorage.setItem("qg_last", x.g); } catch (e) {} });
+      dr.appendChild(a);
+    });
+    devam.hidden = !list.length;
+  }
+  var devamT = 0;
+  function devamSonra() { clearTimeout(devamT); devamT = setTimeout(devamCiz, 250); }
+  devamCiz();
+  if (window.MutationObserver) {
+    var mo = new MutationObserver(devamSonra);
+    ["qmYeni", "qmIkimiz", "qmTek", "qmIlk", "qmYolda"].forEach(function (id) { var el = document.getElementById(id); if (el) mo.observe(el, { subtree: true, childList: true, characterData: true, attributes: true, attributeFilter: ["class"] }); });
+  }
+
+  /* bölüm sekmeleri: her seferinde tek bölüm görünür; seçim hatırlanır, sırası sende olan bölümde nokta yanar */
+  var nav = document.getElementById("qmNav"), navIn = document.getElementById("qmNavIn"), KISA = { ani: "İlkler" }, qm = document.querySelector(".qm");
+  var secs = [].filter.call(document.querySelectorAll(".qm > .qmsec[id]"), function (s) { return !s.hidden; });
+  if (!nav || secs.length < 2) return;
+  var grup = {}, cipler = {}, secili = null;
+  secs.forEach(function (s) {
+    var g = [s], el = s.nextElementSibling;
+    while (el && !/qmsec|qmalt|qmfoot/.test(el.className)) { g.push(el); el = el.nextElementSibling; }
+    grup[s.id] = g;
+    var t = s.querySelector("span"), c = (s.className.match(/qmsec-(\w+)/) || [])[1] || "gel";
+    var a = document.createElement("a"); a.href = "#" + s.id; a.className = "qmnc nc-" + c; a.setAttribute("data-s", s.id); a.setAttribute("role", "tab");
+    a.textContent = KISA[c] || (t ? t.textContent : s.id);
+    a.addEventListener("click", function (e) { e.preventDefault(); sec(s.id, true); });
+    navIn.appendChild(a); cipler[s.id] = a;
+  });
+  navIn.setAttribute("role", "tablist");
+  nav.hidden = false; qm.classList.add("sekmeli");
+  var pil = document.createElement("i"); pil.className = "qmnpil"; pil.setAttribute("aria-hidden", "true"); navIn.insertBefore(pil, navIn.firstChild);
+  function pilKoy() {
+    var a = cipler[secili]; if (!a) return;
+    pil.style.width = a.offsetWidth + "px";
+    pil.style.webkitTransform = pil.style.transform = "translateX(" + a.offsetLeft + "px)";
+    pil.style.background = getComputedStyle(a).getPropertyValue("--cb") || "rgba(205,184,255,.16)";
+    pil.style.opacity = "1";
+    if (navIn.scrollWidth > navIn.clientWidth + 2) {
+      var x = a.offsetLeft - (navIn.clientWidth - a.offsetWidth) / 2;
+      try { navIn.scrollTo({ left: x, behavior: azHareket ? "auto" : "smooth" }); } catch (er) { navIn.scrollLeft = x; }
+    }
+  }
+  function bitti() { this.classList.remove("gor"); this.style.removeProperty("--gd"); this.removeEventListener("animationend", bitti); }
+  function sec(id, elle) {
+    if (!grup[id]) id = secs[0].id;
+    if (id === secili) return;
+    var yapisik = nav.classList.contains("yapisik");
+    secili = id;
+    secs.forEach(function (s) {
+      var on = s.id === id;
+      grup[s.id].forEach(function (el) { el.classList.toggle("kapali", !on); });
+      cipler[s.id].classList.toggle("on", on); cipler[s.id].setAttribute("aria-selected", on ? "true" : "false");
+    });
+    pilKoy();
+    if (!elle) return;
+    try { localStorage.setItem("qg_sekme", id); } catch (e) {}
+    if (qm.classList.contains("anim")) {
+      var n = 0;
+      grup[id].forEach(function (el) {
+        var liste = /qmgrid/.test(el.className) ? [].slice.call(el.children) : [el];
+        liste.forEach(function (k) {
+          if (k.hidden || k.classList.contains("bekle")) return;
+          k.classList.remove("gor"); void k.offsetWidth;
+          k.style.setProperty("--gd", (n++ * 45) + "ms"); k.addEventListener("animationend", bitti); k.classList.add("gor");
+        });
+      });
+    }
+    if (yapisik) { try { document.getElementById(id).scrollIntoView({ behavior: "auto", block: "start" }); } catch (er) {} }
+  }
+  var ilk = null; try { ilk = localStorage.getItem("qg_sekme"); } catch (e) {}
+  sec(ilk && grup[ilk] ? ilk : secs[0].id, false);
+  /* sırası sende olan oyun başka sekmedeyse o sekmede küçük nokta */
+  function noktaBak() {
+    secs.forEach(function (s) {
+      var var_ = grup[s.id].some(function (el) { return !!(el.querySelector && el.querySelector(".qmt .qmnew.qmturn")); });
+      cipler[s.id].classList.toggle("bekliyor", var_);
+    });
+  }
+  noktaBak();
+  if (window.MutationObserver) {
+    var nt = 0, mo2 = new MutationObserver(function () { clearTimeout(nt); nt = setTimeout(noktaBak, 300); });
+    secs.forEach(function (s) { grup[s.id].forEach(function (el) { if (/qmgrid/.test(el.className)) mo2.observe(el, { subtree: true, childList: true, attributes: true, attributeFilter: ["class"] }); }); });
+  }
+  var bekle = false;
+  function bak() {
+    bekle = false;
+    var nr = nav.getBoundingClientRect(), ust = parseFloat(getComputedStyle(nav).top) || 0;
+    nav.classList.toggle("yapisik", nr.top <= ust + 0.5 && window.pageYOffset > 0);
+  }
+  addEventListener("scroll", function () { if (!bekle) { bekle = true; requestAnimationFrame(bak); } }, { passive: true });
+  addEventListener("resize", function () { bak(); pilKoy(); });
+  bak();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(pilKoy);
+})();
+
+/* menü animasyonları: açılışta sırayla giriş, kaydırdıkça beliren kartlar, oyuna geçiş */
+(function () {
+  var qm = document.querySelector(".qm");
+  if (!qm || !window.IntersectionObserver || (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches)) return;
+  var ust = [], c = qm.firstElementChild, i = 0;
+  while (c && !/qmsec/.test(c.className)) {
+    if (!/qmback/.test(c.className)) { c.classList.add("ust"); c.style.setProperty("--i", i++); ust.push(c); }
+    c = c.nextElementSibling;
+  }
+  var bekleyen = [].slice.call(qm.querySelectorAll(".qm > .qmsec, .qm > .qmaninot, .qmgrid .qmc, .qm > .qmsoon"));
+  bekleyen.forEach(function (el) { el.classList.add("bekle"); });
+  qm.classList.add("anim");
+  var basladi = false;
+  function bitti(e) { if (e.target === this) { this.classList.remove("gor"); this.style.removeProperty("--gd"); this.removeEventListener("animationend", bitti); } }
+  function basla() {
+    if (basladi) return; basladi = true;
+    qm.classList.add("gir");
+    setTimeout(function () { ust.forEach(function (el) { el.classList.remove("ust"); el.style.removeProperty("--i"); }); qm.classList.add("canli"); }, 1900);
+    var io = new IntersectionObserver(function (es) {
+      var n = 0;
+      es.forEach(function (en) {
+        if (!en.isIntersecting) return;
+        var el = en.target; io.unobserve(el);
+        el.style.setProperty("--gd", (n++ * 70) + "ms");
+        el.addEventListener("animationend", bitti);
+        el.classList.remove("bekle"); el.classList.add("gor");
+      });
+    }, { rootMargin: "0px 0px -5% 0px", threshold: 0.08 });
+    bekleyen.forEach(function (el) { io.observe(el); });
+  }
+  (function bak() { if (document.getElementById("qmAcilis")) setTimeout(bak, 120); else basla(); })();
+  setTimeout(function () { basla(); setTimeout(function () { bekleyen.forEach(function (el) { el.classList.remove("bekle"); }); }, 1500); }, 9000);
+
+  /* oyuna dokununca kart öne çıkar, menü söner, sonra sayfa açılır */
+  document.addEventListener("click", function (e) {
+    if (e.defaultPrevented || e.button || e.metaKey || e.ctrlKey || e.shiftKey) return;
+    var a = e.target.closest && e.target.closest("a.qmt[href], a.qmdv[href]"); if (!a || a.target === "_blank") return;
+    var h = a.getAttribute("href"); if (!h || h.charAt(0) === "#") return;
+    e.preventDefault(); a.classList.add("aciliyor"); qm.classList.add("gidiyor");
+    setTimeout(function () { location.href = a.href; }, 200);
+  });
+  addEventListener("pageshow", function () {
+    qm.classList.remove("gidiyor");
+    [].forEach.call(qm.querySelectorAll(".aciliyor"), function (a) { a.classList.remove("aciliyor"); });
+  });
+})();
+</script>
+<script src="notlar.js?v=1022h"></script>
+<script src="kediler.js?v=1022h"></script>
 <script>
 /* açılış: yaklaşık 1,2 sn (oturum başına bir kez), sonra kaybolur */
 (function () {

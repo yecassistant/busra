@@ -21,8 +21,8 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Queen Games">
 <link rel="apple-touch-icon" href="ikon/app-180.png">
-<link rel="stylesheet" href="style.css?v=1022c">
-<script src="kapi.js?v=1022c"></script>
+<link rel="stylesheet" href="style.css?v=1022h">
+<script src="kapi.js?v=1022h"></script>
 </head>
 <body data-page="takvim">
 
@@ -34,6 +34,7 @@
   </header>
 
   <section class="tkhero" id="hero" aria-live="polite">
+    <div class="tkgun" id="heroGun" hidden aria-hidden="true"><small id="hgAy"></small><b id="hgN"></b><i id="hgG"></i></div>
     <svg class="tkheart" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-5.2-9.5-10A5.3 5.3 0 0 1 12 6a5.3 5.3 0 0 1 9.5 5c-2 4.8-9.5 10-9.5 10z"/></svg>
     <div class="tkherotx"><small id="heroKick">Yaklaşan</small><b id="heroT">Yükleniyor…</b><span id="heroS"></span></div>
   </section>
@@ -47,6 +48,7 @@
   <div class="tkgrid" id="grid" aria-label="Takvim"></div>
 
   <div class="tklegend"><span class="ben">sen</span><span class="o" id="legO">o</span><span class="ikisi">ikimiz</span></div>
+  <div class="tkhizli" id="hizli"><button type="button" data-h="0">Bu hafta sonu</button><button type="button" data-h="1">Gelecek hafta sonu</button></div>
   <p class="tksayac" id="sayac"></p>
   <ol class="tklist" id="list" hidden></ol>
   <p class="hdmsg tkmsg" id="msg" role="status" aria-live="polite"></p>
@@ -70,10 +72,10 @@
   </div>
 </div>
 
-<script src="app.js?v=1022c"></script>
-<script src="hesap.js?v=1022c"></script>
-<script src="deneme.js?v=1022c"></script>
-<script src="takvim.js?v=1022c"></script>
-<script src="takvim-ses.js?v=1022c"></script>
+<script src="app.js?v=1022h"></script>
+<script src="hesap.js?v=1022h"></script>
+<script src="deneme.js?v=1022h"></script>
+<script src="takvim.js?v=1022h"></script>
+<script src="takvim-ses.js?v=1022h"></script>
 </body>
 </html>
