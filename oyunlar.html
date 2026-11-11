@@ -24,8 +24,8 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Queen Games">
 <link rel="apple-touch-icon" href="ikon/app-180.png">
-<link rel="stylesheet" href="style.css?v=1022h">
-<script src="kapi.js?v=1022h"></script>
+<link rel="stylesheet" href="style.css?v=1022i">
+<script src="kapi.js?v=1022i"></script>
 </head>
 <body data-page="oyunlar">
 
@@ -55,8 +55,6 @@
 </div>
 <main class="qm">
   <a class="qmback" href="index.html" aria-label="Ana sayfaya dön"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></a>
-
-  <a class="qmskor" id="qmSkor" href="tablo.html" aria-label="Skor Tablosu" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M7 6H4v1a3 3 0 0 0 3 3M17 6h3v1a3 3 0 0 1-3 3M12 14v4M8.5 20h7"/></svg></a>
 
   <header class="qmhead">
     <svg class="qmdoodle qmd-crown" viewBox="0 0 64 48" aria-hidden="true"><path d="M8 40L4 12l15 12L32 4l13 20 15-12-4 28z" fill="none" stroke="#a98bf0" stroke-width="2.6" stroke-linejoin="round"/><path d="M8 40h48" stroke="#a98bf0" stroke-width="2.6" stroke-linecap="round"/></svg>
@@ -100,6 +98,18 @@
     <svg class="qmchev" aria-hidden="true"><use href="#qmChev"/></svg>
   </button>
   </div>
+
+  <a class="qmacct" id="qmAcct" href="giris.html" hidden>
+    <span class="hsava a" id="qmAva">?</span>
+    <span class="qmatx"><b id="qmAname">Giriş yap</b><small id="qmAsub">İlerlemen her cihazda seninle gelsin.</small></span>
+    <span class="qmabtn" id="qmAbtn">Giriş yap</span>
+  </a>
+
+  <button type="button" class="qmtam" id="qmTam" hidden>
+    <span class="qmtamico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></span>
+    <span class="qmtamtx"><b>Tam ekran oyna</b><small id="qmTamSub">Adres çubuğu gitsin, ekranın hepsi oyunun olsun.</small></span>
+    <span class="qmtamx" id="qmTamX" role="button" aria-label="Gizle">×</span>
+  </button>
 
   <div class="qmdevam" id="qmDevam" hidden><p class="qmdevamt">Kaldığın yerden</p><div class="qmdevamr" id="qmDevamR"></div></div>
 
@@ -301,20 +311,6 @@
     <svg class="qmchev" aria-hidden="true"><use href="#qmChev"/></svg>
   </a>
 
-  <div class="qmalt">
-  <a class="qmacct" id="qmAcct" href="giris.html" hidden>
-    <span class="hsava a" id="qmAva">?</span>
-    <span class="qmatx"><b id="qmAname">Giriş yap</b><small id="qmAsub">İlerlemen her cihazda seninle gelsin.</small></span>
-    <span class="qmabtn" id="qmAbtn">Giriş yap</span>
-  </a>
-
-  <button type="button" class="qmtam" id="qmTam" hidden>
-    <span class="qmtamico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></span>
-    <span class="qmtamtx"><b>Tam ekran oyna</b><small id="qmTamSub">Adres çubuğu gitsin, ekranın hepsi oyunun olsun.</small></span>
-    <span class="qmtamx" id="qmTamX" role="button" aria-label="Gizle">×</span>
-  </button>
-  </div>
-
   <div class="qmfoot" aria-hidden="true"><i></i><svg viewBox="0 0 64 44"><path d="M8 38L4 12l14 11L32 4l14 19 14-11-4 26z" fill="none" stroke="#9b7fe0" stroke-width="3" stroke-linejoin="round"/></svg><i></i></div>
 </main>
 
@@ -328,9 +324,9 @@
   </div>
 </div>
 
-<script src="app.js?v=1022h"></script>
-<script src="hesap.js?v=1022h"></script>
-<script src="deneme.js?v=1022h"></script>
+<script src="app.js?v=1022i"></script>
+<script src="hesap.js?v=1022i"></script>
+<script src="deneme.js?v=1022i"></script>
 <script>
 /* hesap çubuğu: giriş yoksa "Giriş yap", varsa ad + Skor Tablosu */
 (function () {
@@ -744,8 +740,8 @@
   });
 })();
 </script>
-<script src="notlar.js?v=1022h"></script>
-<script src="kediler.js?v=1022h"></script>
+<script src="notlar.js?v=1022i"></script>
+<script src="kediler.js?v=1022i"></script>
 <script>
 /* açılış: yaklaşık 1,2 sn (oturum başına bir kez), sonra kaybolur */
 (function () {

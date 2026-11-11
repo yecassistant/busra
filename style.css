@@ -3994,3 +3994,4 @@ body[data-page="takvim"] .tkherotx b{font-size:1.36rem}
 .qm .qmhero .qmchev{top:52px}
 .qmtkhafta{margin-right:-32px}
 .qmtkhafta{flex:none;width:calc(100% + 32px);margin-right:-32px}
+.qmskor,.qmskor:not([hidden]){display:none}
