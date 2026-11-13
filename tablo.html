@@ -244,8 +244,9 @@
   try { kapsam = sessionStorage.getItem("tb_kapsam") || "ay"; } catch (e) {}
   var AYUZUN = ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"];
   function ekIn2(ad) { var m = String(ad).toLowerCase().match(/[aeıioöuü](?![\s\S]*[aeıioöuü])/), v = m ? m[0] : "a", son = /[aeıioöuü]$/i.test(ad); return ad + "'" + (son ? "n" : "") + ({ a: "ı", "ı": "ı", e: "i", i: "i", o: "u", u: "u", "ö": "ü", "ü": "ü" }[v] || "ı") + "n"; }
-  /* her oyun 10 puan dağıtır: pay = (galibiyet + beraberliğin yarısı + 1) / (oyun + 2). Tek oyunu çok oynamak skoru uçurmaz, tek maç 10-0 yapmaz. */
-  function pay(w0, br, n) { return Math.round(10 * (w0 + br / 2 + 1) / (n + 2)); }
+  /* az maç az puan: oyun maç başına 2 puan dağıtır, 5 maçta 10'a dolar; pay yine (galibiyet + beraberliğin yarısı + 1) / (maç + 2) */
+  function kasa(n) { return Math.min(10, 2 * n); }
+  function pay(w0, br, n) { return Math.round(kasa(n) * (w0 + br / 2 + 1) / (n + 2)); }
   function gununSay(list, y, m) {                                     /* Günün Kelimesi: ikinizin de bitirdiği her gün bir maç (y,m verilirse sadece o ay) */
     var d0 = list[0].d || {}, d1 = list[1].d || {}, r = { w0: 0, w1: 0, n: 0, br: 0 }, on = y === undefined ? "gk_d" : "gk_d" + y + "-" + pad(m + 1) + "-", gun;
     for (gun in d0) {
@@ -279,8 +280,9 @@
       if (durumlu) { if (k === "gunun") { var br = obj(((list[0].uid === ben ? list[0].d : list[1].d) || {})["gk_d" + ymd(new Date())]); d = !br || br.s === "p" ? { ben: true, t: "bugünkü kelime" } : null; } else d = durumOf(k); }
       if (!x.n) { T.bos.push({ k: k, d: d }); return; }
       var p0 = pay(x.w0, x.br, x.n);
-      T.p0 += p0; T.p1 += 10 - p0;
-      T.oynandi.push({ k: k, d: d, w0: x.w0, w1: x.w1, n: x.n, br: x.br, p0: p0, p1: 10 - p0 });
+      var p1 = kasa(x.n) - p0;
+      T.p0 += p0; T.p1 += p1;
+      T.oynandi.push({ k: k, d: d, w0: x.w0, w1: x.w1, n: x.n, br: x.br, p0: p0, p1: p1 });
     });
     T.oynandi.sort(function (x, y) { return ((y.d && y.d.ben) ? 1 : 0) - ((x.d && x.d.ben) ? 1 : 0) || y.n - x.n; });
     return T;
@@ -304,7 +306,7 @@
       }
     }
     if (T.oynandi.length) {
-      html += '<div class="tbbas">' + (ayMod ? "Bu ay oynadıklarımız" : "Oynadıklarımız") + "<small>her oyun 10 puan</small></div>";
+      html += '<div class="tbbas">' + (ayMod ? "Bu ay oynadıklarımız" : "Oynadıklarımız") + "<small>maç başına 2 puan, en çok 10</small></div>";
       T.oynandi.forEach(function (x, i) {
         var yuzde = Math.round(100 * (x.w0 + x.br / 2 + 1) / (x.n + 2));
         html += '<a class="tbd' + (x.d && x.d.ben ? " sira" : "") + '" style="--i:' + i + '" href="' + (LINK[x.k] || "oyunlar.html") + '">' +
@@ -342,7 +344,7 @@
       (top ? '<span class="tbbar buyuk"><i class="' + sinif(sol) + '" style="width:' + Math.round(100 * a / top) + '%"></i><i class="' + sinif(sag) + '" style="width:' + (100 - Math.round(100 * a / top)) + '%"></i></span>' : "") +
       '<p class="tbvalt">' + alt + "</p>" +
       (ayMod ? '<div class="tbay"><span class="tbayb"><i style="width:' + Math.round(100 * bugun.getDate() / gunSay) + '%"></i></span><small>' + (kalan > 0 ? "kupanın sahibi " + kalan + " gün sonra belli olur" : "bugün son gün, kupa bu gece sahibini bulur") + "</small></div>" : "") +
-      '<p class="tbnasil">' + (ayMod ? "Her ay 0–0'dan başlar. " : "") + "Her iki kişilik oyun 10 puan dağıtır; o oyunda kazandıkça payın büyür. Bütün oyunlar eşit sayılır.</p>";
+      '<p class="tbnasil">' + (ayMod ? "Her ay 0–0'dan başlar. " : "") + "Her oyun maç başına 2 puan dağıtır, 5 maçta 10 puana dolar. Tek maç skoru uçurmaz; fark ancak çok kazandıkça açılır.</p>";
     if (say) sayAnim();
   }
   function sayAnim() {                                                /* skor rakamları 0'dan yukarı sayar */
