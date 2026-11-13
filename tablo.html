@@ -32,6 +32,11 @@
 .tbmin .tbvk small.on{color:#9ef0b0;font-weight:700}
 .tbmin .tbskor{display:flex;flex-wrap:wrap;justify-content:center;align-items:baseline;gap:6px}
 .tbmin .tbskor b{font-size:2.2rem}
+.tbbas{grid-column:1/-1;display:flex;align-items:baseline;gap:8px;margin:14px 4px 2px;font-weight:900;font-size:1rem;color:#f2c35b}
+.tbbas:first-child{margin-top:0}
+.tbbas small{font-weight:700;font-size:.74rem;color:rgba(235,225,255,.55)}
+.tbbas.tek{color:#cdb8ff}
+.tbrek .tbc b{color:rgba(255,255,255,.85)}
 .tbmin .tbskor small{flex-basis:100%;text-align:center;font-size:.64rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:rgba(242,195,91,.8)}
 .tbmin .tbvalt{margin:10px 0 0;font-size:.78rem}
 </style>
@@ -174,15 +179,8 @@
     var list = liste();
     if (!list.length) { $("grid").innerHTML = '<p class="tbempty">Henüz veri yok. Oyunlardan birini oyna, burada görünsün.</p>'; return; }
     var now = Date.now(), o = karsi(), sol = o || ben, sag = ben, taclar = {}; taclar[sol] = 0; taclar[sag] = 0;
-    /* satırlar (eski düzen): tek kişilik rekorlar, sonra düellolar — her satırın tacı (👑) o satırı kazananda */
-    var oz = list.map(function (p) { return ozet(p.d); }), html = "";
-    for (var r = 0; r < oz[0].length; r++) {
-      var best = -1; if (list.length > 1) { var m = Math.max(oz[0][r].v, oz[1][r].v); if (m > 0 && oz[0][r].v !== oz[1][r].v) best = oz[0][r].v > oz[1][r].v ? 0 : 1; }
-      if (best >= 0) taclar[list[best].uid] = (taclar[list[best].uid] || 0) + 1;
-      html += '<div class="tbrow"><div class="tbg">' + esc(oz[0][r].ad) + '</div>' + list.map(function (p, i) {
-        var c = oz[i][r]; return '<div class="tbc' + (best === i ? " win" : "") + '"><b>' + esc(c.t) + '</b>' + (c.alt ? '<small>' + esc(c.alt) + '</small>' : "") + '</div>';
-      }).join("") + "</div>";
-    }
+    /* skor (taç) sadece iki kişilik oyunlardan: her düelloda önde olan bir taç alır */
+    var oz = list.map(function (p) { return ozet(p.d); }), html = '<div class="tbbas">İkimiz<small>skora sayılır</small></div>';
     DUEL.forEach(function (k) {
       if (kapali(k)) return;
       var se = seriOf(k), gg = (se && se.g) || {}, a0 = gg[list[0].uid] || 0, a1 = list.length > 1 ? (gg[list[1].uid] || 0) : 0, ab = list.length < 2 || a0 === a1 ? -1 : (a0 > a1 ? 0 : 1), d = durumOf(k);
@@ -191,6 +189,13 @@
         var w = gg[p.uid] || 0; return '<div class="tbc' + (ab === i ? " win" : "") + '"><b>' + w + " galibiyet</b>" + (oynanan(se) ? "<small>" + oynanan(se) + " oyun" + (se.b ? " · " + se.b + " berabere" : "") + "</small>" : "") + "</div>";
       }).join("") + "</div>";
     });
+    /* tek kişilik rekorlar: sadece bilgi, skora sayılmaz, kazanan işaretlenmez */
+    html += '<div class="tbbas tek">Kendi rekorlarımız<small>skora sayılmaz</small></div>';
+    for (var r = 0; r < oz[0].length; r++) {
+      html += '<div class="tbrow tbrek"><div class="tbg">' + esc(oz[0][r].ad) + '</div>' + list.map(function (p, i) {
+        var c = oz[i][r]; return '<div class="tbc"><b>' + esc(c.t) + '</b>' + (c.alt ? '<small>' + esc(c.alt) + '</small>' : "") + '</div>';
+      }).join("") + "</div>";
+    }
     $("grid").innerHTML = html;
     /* vitrin: toplam taç (yeni) */
     var a = taclar[sol] || 0, b = taclar[sag] || 0, onde = !o || a === b ? null : a > b ? sol : sag;
