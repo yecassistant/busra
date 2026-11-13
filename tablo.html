@@ -32,11 +32,54 @@
 .tbmin .tbvk small.on{color:#9ef0b0;font-weight:700}
 .tbmin .tbskor{display:flex;flex-wrap:wrap;justify-content:center;align-items:baseline;gap:6px}
 .tbmin .tbskor b{font-size:2.2rem}
-.tbbas{grid-column:1/-1;display:flex;align-items:baseline;gap:8px;margin:14px 4px 2px;font-weight:900;font-size:1rem;color:#f2c35b}
-.tbbas:first-child{margin-top:0}
+.tbmin .tbvitrin{position:-webkit-sticky;position:sticky;top:calc(env(safe-area-inset-top,0px) + 6px);z-index:20;background:rgba(48,24,92,.94);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);box-shadow:inset 0 0 0 1px rgba(255,255,255,.14),0 14px 28px -16px rgba(0,0,0,.8)}
+.tbmin .tbvitrin.kucuk{padding:8px 12px 10px}
+.tbvitrin.kucuk .tbvk small,.tbvitrin.kucuk .tbvalt,.tbvitrin.kucuk .tbnasil,.tbvitrin.kucuk .tbskor small{display:none}
+.tbmin .tbvitrin.kucuk .tbvk{flex-direction:row;justify-content:center;gap:8px}
+.tbmin .tbvitrin.kucuk .tbvk .hsava{width:30px;height:30px;font-size:.9rem}
+.tbmin .tbvitrin.kucuk .tbskor b{font-size:1.6rem}
+.tbvitrin.kucuk .tbbar.buyuk{margin-top:8px;height:6px}
+.tbvitrin.kucuk .tbtac{display:none}
+.tbnasil{margin:6px 0 0;font-size:.7rem;line-height:1.35;text-align:center;color:rgba(235,225,255,.55)}
+.tbbar{display:flex;height:8px;border-radius:99px;overflow:hidden;background:rgba(255,255,255,.1)}
+.tbbar i{display:block;height:100%;transition:width .5s cubic-bezier(.2,.8,.3,1)}
+.tbbar i.a{background:linear-gradient(90deg,#ff8fb3,#ffb3cc)}
+.tbbar i.b{background:linear-gradient(90deg,#b79cf2,#8f6fe0)}
+.tbbar i+i{box-shadow:-2px 0 0 #2a1650}
+.tbbar.buyuk{height:10px;margin:12px 4px 0}
+.tbbas{display:flex;align-items:baseline;gap:8px;margin:12px 4px 0;font-weight:900;font-size:1rem;color:#f2c35b}
+.tbbas:first-child{margin-top:2px}
 .tbbas small{font-weight:700;font-size:.74rem;color:rgba(235,225,255,.55)}
-.tbbas.tek{color:#cdb8ff}
+.tbd{display:flex;flex-direction:column;gap:8px;padding:12px 14px;border-radius:18px;color:#fff;text-decoration:none;background:rgba(255,255,255,.06);box-shadow:inset 0 0 0 1px rgba(255,255,255,.1);-webkit-tap-highlight-color:transparent;transition:transform .12s}
+.tbd:active{transform:scale(.98)}
+.tbd:focus-visible{outline:2px solid #f2c35b;outline-offset:2px}
+.tbd.sira{box-shadow:inset 0 0 0 1.5px rgba(98,232,143,.6)}
+.tbdu{display:flex;align-items:center;gap:8px;min-width:0}
+.tbdu i{font-style:normal;font-size:1.1rem}
+.tbdu b{font-size:.98rem;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tbdu em{margin-left:auto;flex:none;font-style:normal;font-size:.72rem;font-weight:800;padding:3px 9px;border-radius:99px;color:rgba(235,225,255,.75);background:rgba(255,255,255,.08)}
+.tbdu em.ben{color:#0e3a1c;background:#62e88f}
+.tbds{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:10px}
+.tbds b{min-width:1.3em;font-size:1.5rem;font-weight:900;line-height:1;text-align:center}
+.tbds b.a{color:#ffb3cc}.tbds b.b{color:#c9b5ff}
+.tbda{display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:.74rem;color:rgba(235,225,255,.6)}
+.tbda u{text-decoration:none;font-weight:800;color:rgba(235,225,255,.75)}
+.tbda u.ust{color:#f2c35b}
+.tbbos{display:flex;flex-wrap:wrap;gap:8px}
+.tbbos a{display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:0 13px;border-radius:99px;font-size:.86rem;font-weight:800;color:#eadcff;text-decoration:none;background:rgba(255,255,255,.06);box-shadow:inset 0 0 0 1px rgba(255,255,255,.12)}
+.tbbos a i{font-style:normal}
+.tbbos a.sira{box-shadow:inset 0 0 0 1.5px rgba(98,232,143,.6)}
+.tbbos a em{font-style:normal;font-size:.7rem;color:#62e88f}
+.tbdet{margin-top:10px;border-radius:18px;background:rgba(255,255,255,.04);box-shadow:inset 0 0 0 1px rgba(255,255,255,.09)}
+.tbdet summary{display:flex;align-items:baseline;gap:8px;min-height:48px;padding:13px 14px;font-weight:900;font-size:.98rem;color:#cdb8ff;cursor:pointer;list-style:none}
+.tbdet summary::-webkit-details-marker{display:none}
+.tbdet summary small{font-weight:700;font-size:.74rem;color:rgba(235,225,255,.55)}
+.tbdet summary:after{content:"";margin-left:auto;align-self:center;width:9px;height:9px;border-right:2.5px solid currentColor;border-bottom:2.5px solid currentColor;transform:rotate(45deg);transition:transform .2s}
+.tbdet[open] summary:after{transform:rotate(-135deg)}
+.tbdet .tbrow{margin:0 8px 6px}
+.tbrekad{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 28px 6px;font-size:.78rem;color:rgba(235,225,255,.7)}
 .tbrek .tbc b{color:rgba(255,255,255,.85)}
+@media (prefers-reduced-motion:reduce){.tbbar i,.tbd{transition:none}}
 .tbmin .tbskor small{flex-basis:100%;text-align:center;font-size:.64rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:rgba(242,195,91,.8)}
 .tbmin .tbvalt{margin:10px 0 0;font-size:.78rem}
 </style>
@@ -62,7 +105,7 @@
 </main>
 
 <script src="app.js?v=1022h"></script>
-<script src="hesap.js?v=1022h"></script>
+<script src="hesap.js?v=1022l"></script>
 <script src="deneme.js?v=1022h"></script>
 <script>
 (function () {
@@ -147,7 +190,7 @@
   var DUEL = ["hafiza", "sayi", "kelimeavi", "zincir", "uno", "dort", "ciz", "xox", "tepe", "satranc", "amiral", "asmaca", "joled"];
   var duSeri = {}, duMac = {}; DUEL.forEach(function (k) { duSeri[k] = null; duMac[k] = null; });
   var IK = { hafiza: "🃏", sayi: "🔢", kelimeavi: "🔡", xox: "❌", tepe: "💥", zincir: "⛓️", uno: "🎴", dort: "🔵", ciz: "🎨", satranc: "♟️", amiral: "⚓", asmaca: "🔤", gunun: "🟩", kelime: "🌸", ok: "🏹", kase: "🍫", jole: "🫧", joled: "⚔️", oda: "🛋️", plan: "🌿", tur: "🏰", fark: "🔍", yikim: "🔨", stilobat: "🏛️", takvim: "📅", hesap: "🔑", tabu: "🃏" };
-  var LINK = { hafiza: "hafiza.html", sayi: "sayi.html", kelimeavi: "kelimeavi.html", xox: "xox.html", tepe: "tepe.html", zincir: "zincir.html", uno: "uno.html", dort: "dort.html", ciz: "ciz.html", satranc: "satranc.html", amiral: "amiral.html", asmaca: "asmaca.html" , jole: "jole.html", joled: "jole.html" };
+  var LINK = { hafiza: "hafiza.html", sayi: "sayi.html", kelimeavi: "kelimeavi.html", xox: "xox.html", tepe: "tepe.html", zincir: "zincir.html", uno: "uno.html", dort: "dort.html", ciz: "ciz.html", satranc: "satranc.html", amiral: "amiral.html", asmaca: "asmaca.html" , jole: "jole.html", joled: "jole.html", gunun: "gunun.html" };
   var filtreO = ""; try { filtreO = sessionStorage.getItem("tb_filtre") || ""; } catch (e) {}
   function ekDe(ad) { var m = String(ad).toLowerCase().match(/[aeıioöuü](?![\s\S]*[aeıioöuü])/), v = m ? m[0] : "a"; return ad + "'" + (/[fstkçşhp]$/i.test(ad) ? "t" : "d") + (/[aıou]/.test(v) ? "a" : "e"); }
   function liste() { var L = [], u; for (u in oyuncular) L.push(oyuncular[u]); L.sort(function (a, b) { return (a.uid === ben ? 1 : 0) - (b.uid === ben ? 1 : 0) || (a.ad > b.ad ? 1 : -1); }); return L; }
@@ -175,34 +218,74 @@
     if (mc.sira === "bot") return { ben: false, t: "bot oynuyor" };
     return mc.sira === ben ? { ben: true, t: "sıra sende" } : { ben: false, t: "sıra " + (oyuncular[mc.sira] ? ekDe(adOf(mc.sira)) : "onda") };
   }
+  var rekAcik = false;
   function ciz() {
     var list = liste();
     if (!list.length) { $("grid").innerHTML = '<p class="tbempty">Henüz veri yok. Oyunlardan birini oyna, burada görünsün.</p>'; return; }
     var now = Date.now(), o = karsi(), sol = o || ben, sag = ben, taclar = {}; taclar[sol] = 0; taclar[sag] = 0;
-    /* skor (taç) sadece iki kişilik oyunlardan: her düelloda önde olan bir taç alır */
-    var oz = list.map(function (p) { return ozet(p.d); }), html = '<div class="tbbas">İkimiz<small>skora sayılır</small></div>';
+    /* skor sadece iki kişilik oyunlardan. Adil olsun diye her oyun 10 puan dağıtır:
+       pay = (galibiyet + beraberliğin yarısı + 1) / (oyun + 2). Tek oyunu çok oynamak skoru uçurmaz, tek maç da 10-0 yapmaz. */
+    var iki = list.length > 1, L0 = list[0].uid, L1 = iki ? list[1].uid : null, puan = {}, oynandi = [], bos = [];
+    puan[L0] = 0; if (iki) puan[L1] = 0;
     DUEL.forEach(function (k) {
       if (kapali(k)) return;
-      var se = seriOf(k), gg = (se && se.g) || {}, a0 = gg[list[0].uid] || 0, a1 = list.length > 1 ? (gg[list[1].uid] || 0) : 0, ab = list.length < 2 || a0 === a1 ? -1 : (a0 > a1 ? 0 : 1), d = durumOf(k);
-      if (ab >= 0) taclar[list[ab].uid] = (taclar[list[ab].uid] || 0) + 1;
-      html += '<div class="tbrow"><div class="tbg">' + esc(OYUN[k]) + (d ? ' · <i>' + esc(d.t) + "</i>" : "") + '</div>' + list.map(function (p, i) {
-        var w = gg[p.uid] || 0; return '<div class="tbc' + (ab === i ? " win" : "") + '"><b>' + w + " galibiyet</b>" + (oynanan(se) ? "<small>" + oynanan(se) + " oyun" + (se.b ? " · " + se.b + " berabere" : "") + "</small>" : "") + "</div>";
-      }).join("") + "</div>";
+      var se = seriOf(k), gg = (se && se.g) || {}, w0 = gg[L0] || 0, w1 = iki ? (gg[L1] || 0) : 0, n = Math.max(oynanan(se), w0 + w1), br = Math.max(0, n - w0 - w1), d = durumOf(k);
+      if (!n || !iki) { bos.push({ k: k, d: d }); return; }
+      var p0 = Math.round(10 * (w0 + br / 2 + 1) / (n + 2)), p1 = 10 - p0;
+      puan[L0] += p0; puan[L1] += p1;
+      oynandi.push({ k: k, d: d, w0: w0, w1: w1, n: n, br: br, p0: p0, p1: p1 });
     });
-    /* tek kişilik rekorlar: sadece bilgi, skora sayılmaz, kazanan işaretlenmez */
-    html += '<div class="tbbas tek">Kendi rekorlarımız<small>skora sayılmaz</small></div>';
+    /* Günün Kelimesi: ikiniz de bitirdiğiniz her gün bir maç; az tahminde bulan kazanır, eşitse berabere, biri bulamazsa bulan kazanır */
+    if (iki && !kapali("gunun")) {
+      var d0 = list[0].d || {}, d1 = list[1].d || {}, gw0 = 0, gw1 = 0, gn = 0, gbr = 0, gun;
+      for (gun in d0) {
+        if (gun.indexOf("gk_d") !== 0 || !d1[gun]) continue;
+        var r0 = obj(d0[gun]), r1 = obj(d1[gun]); if (!r0 || !r1 || (r0.s !== "w" && r0.s !== "l") || (r1.s !== "w" && r1.s !== "l")) continue;
+        gn++;
+        if (r0.s === "w" && r1.s === "w") { var t0 = (r0.g || []).length, t1 = (r1.g || []).length; if (t0 < t1) gw0++; else if (t1 < t0) gw1++; else gbr++; }
+        else if (r0.s === "w") gw0++; else if (r1.s === "w") gw1++; else gbr++;
+      }
+      var bugunK = "gk_d" + ymd(new Date()), benR = obj(((list[0].uid === ben ? d0 : d1))[bugunK]), gd = !benR || benR.s === "p" ? { ben: true, t: "bugünkü kelime" } : null;
+      if (gn) {
+        var gp0 = Math.round(10 * (gw0 + gbr / 2 + 1) / (gn + 2));
+        puan[L0] += gp0; puan[L1] += 10 - gp0;
+        oynandi.push({ k: "gunun", d: gd, w0: gw0, w1: gw1, n: gn, br: gbr, p0: gp0, p1: 10 - gp0 });
+      } else bos.push({ k: "gunun", d: gd });
+    }
+    oynandi.sort(function (x, y) { return ((y.d && y.d.ben) ? 1 : 0) - ((x.d && x.d.ben) ? 1 : 0) || y.n - x.n; });
+    var html = "";
+    if (oynandi.length) {
+      html += '<div class="tbbas">Oynadıklarımız<small>her oyun 10 puan</small></div>';
+      oynandi.forEach(function (x) {
+        var yuzde = Math.round(100 * (x.w0 + x.br / 2 + 1) / (x.n + 2));
+        html += '<a class="tbd' + (x.d && x.d.ben ? " sira" : "") + '" href="' + (LINK[x.k] || "oyunlar.html") + '">' +
+          '<span class="tbdu"><i aria-hidden="true">' + (IK[x.k] || "🎲") + "</i><b>" + esc(OYUN[x.k]) + (x.k === "sayi" ? " 😊" : "") + "</b>" + (x.d ? '<em' + (x.d.ben ? ' class="ben"' : "") + ">" + esc(x.d.t) + "</em>" : "") + "</span>" +
+          '<span class="tbds"><b class="' + sinif(L0) + '">' + x.w0 + '</b><span class="tbbar"><i class="' + sinif(L0) + '" style="width:' + yuzde + '%"></i><i class="' + sinif(L1) + '" style="width:' + (100 - yuzde) + '%"></i></span><b class="' + sinif(L1) + '">' + x.w1 + "</b></span>" +
+          '<span class="tbda"><u class="' + (x.p0 > x.p1 ? "ust" : "") + '">+' + x.p0 + " puan</u><small>" + x.n + (x.k === "gunun" ? " gün" : " oyun") + (x.br ? " · " + x.br + " berabere" : "") + '</small><u class="' + (x.p1 > x.p0 ? "ust" : "") + '">+' + x.p1 + " puan</u></span></a>";
+      });
+    }
+    if (bos.length) {
+      html += '<div class="tbbas ' + (oynandi.length ? "" : "ilk") + '">' + (iki ? "Henüz oynamadıklarımız" : "İki kişilik oyunlar") + "<small>ilk maçla skora girer</small></div><div class=\"tbbos\">" +
+        bos.map(function (x) { return '<a href="' + (LINK[x.k] || "oyunlar.html") + '"' + (x.d && x.d.ben ? ' class="sira"' : "") + "><i aria-hidden=\"true\">" + (IK[x.k] || "🎲") + "</i>" + esc(OYUN[x.k]) + (x.d && x.d.ben ? "<em>" + esc(x.d.t) + "</em>" : "") + "</a>"; }).join("") + "</div>";
+    }
+    /* tek kişilik rekorlar: sadece bilgi, skora sayılmaz, kapalı gelir */
+    var oz = list.map(function (p) { return ozet(p.d); }), rek = "";
     for (var r = 0; r < oz[0].length; r++) {
-      html += '<div class="tbrow tbrek"><div class="tbg">' + esc(oz[0][r].ad) + '</div>' + list.map(function (p, i) {
+      rek += '<div class="tbrow tbrek"><div class="tbg">' + esc(oz[0][r].ad) + '</div>' + list.map(function (p, i) {
         var c = oz[i][r]; return '<div class="tbc"><b>' + esc(c.t) + '</b>' + (c.alt ? '<small>' + esc(c.alt) + '</small>' : "") + '</div>';
       }).join("") + "</div>";
     }
+    html += '<details class="tbdet" id="tbRek"' + (rekAcik ? " open" : "") + '><summary>Kendi rekorlarımız<small>skora sayılmaz</small></summary><div class="tbrekad">' + list.map(function (p) { return "<b>" + esc(adOf(p.uid)) + "</b>"; }).join("") + "</div>" + rek + "</details>";
     $("grid").innerHTML = html;
-    /* vitrin: toplam taç (yeni) */
-    var a = taclar[sol] || 0, b = taclar[sag] || 0, onde = !o || a === b ? null : a > b ? sol : sag;
+    var det = $("tbRek"); if (det) det.addEventListener("toggle", function () { rekAcik = det.open; });
+    /* vitrin: toplam puan, hep en üstte */
+    var a = puan[sol] || 0, b = iki ? (puan[sag] || 0) : 0, onde = !o || a === b ? null : a > b ? sol : sag, top = a + b;
     function durumK(u) { var p = oyuncular[u] || {}, t = p.son && p.son.t ? Hesap.tms(p.son.t) : 0, canli = t && now - t < 180000 && p.son.o && LINK[p.son.o]; return canli ? '<small class="on">şu an ' + esc(OYUN[p.son.o]) + " oynuyor</small>" : "<small>" + (t ? esc(nezaman(t)) : "henüz girmedi") + "</small>"; }
     function kisi(u) { return '<div class="tbvk' + (onde === u ? " onde" : "") + '"><span class="hsava ' + sinif(u) + '">' + esc(adOf(u).charAt(0)) + "</span>" + (onde === u ? '<i class="tbtac">👑</i>' : "") + "<b>" + esc(adOf(u)) + "</b>" + durumK(u) + "</div>"; }
-    $("vitrin").innerHTML = '<div class="tbvs">' + kisi(sol) + '<div class="tbskor"><b>' + a + "</b><span>–</span><b>" + b + "</b><small>taç</small></div>" + kisi(sag) + "</div>" +
-      '<p class="tbvalt">' + (a + b ? (onde ? "Büyük taç " + esc(ekDe(adOf(onde))) : "Taçlar başa baş") : "Henüz kimse taç almadı") + "</p>";
+    $("vitrin").innerHTML = '<div class="tbvs">' + kisi(sol) + '<div class="tbskor"><b>' + a + "</b><span>–</span><b>" + b + "</b><small>puan</small></div>" + kisi(sag) + "</div>" +
+      (top ? '<span class="tbbar buyuk"><i class="' + sinif(sol) + '" style="width:' + Math.round(100 * a / top) + '%"></i><i class="' + sinif(sag) + '" style="width:' + (100 - Math.round(100 * a / top)) + '%"></i></span>' : "") +
+      '<p class="tbvalt">' + (top ? (onde ? esc(adOf(onde)) + " " + Math.abs(a - b) + " puan önde" : "Başa baş gidiyoruz") + " · " + oynandi.length + " oyundan" : "İlk düelloyu oynayın, skor başlasın") + "</p>" +
+      '<p class="tbnasil">Her iki kişilik oyun 10 puan dağıtır; o oyunda kazandıkça payın büyür. Bütün oyunlar eşit sayılır.</p>';
   }
   function gunAd(ms) { var t = new Date(ms), b = new Date(); b.setHours(0, 0, 0, 0); var g = Math.round((b - new Date(t.getFullYear(), t.getMonth(), t.getDate())) / 86400000); return g === 0 ? "Bugün" : g === 1 ? "Dün" : t.getDate() + " " + AYLAR[t.getMonth()]; }
   function cizAkis() {
@@ -213,6 +296,12 @@
       return '<li><span class="hsava sm ' + (p.kul === "bus" ? "a" : "b") + '">' + esc(ad.charAt(0).toUpperCase()) + '</span><span class="tbft">' + esc(metin(e, ad)) + '<small>' + esc(nezaman(Hesap.tms(e.t))) + '</small></span></li>';
     }).join("");
   }
+  /* aşağı kayınca üstteki skor küçülüp ekranın tepesinde kalır */
+  var kucuk = false;
+  addEventListener("scroll", function () {
+    var y = window.pageYOffset, yeni = kucuk ? y > 40 : y > 200;
+    if (yeni !== kucuk) { kucuk = yeni; $("vitrin").classList.toggle("kucuk", kucuk); }
+  }, { passive: true });
   var tik = setInterval(function () { if (!$("wrap").hidden) { ciz(); cizAkis(); } }, 30000);
 
   var basladi = false;

@@ -109,7 +109,7 @@
       var degisti = !cl || !ayni(cl.d || {}, m.d);
       ls("hs_last", user.uid);
       var p = degisti ? ref.set({ kul: kulAdi(user), ad: gorunenAd(kulAdi(user)), d: m.d, dt: m.dt, t: firebase.firestore.FieldValue.serverTimestamp(), son: { o: oyunKodu, t: firebase.firestore.FieldValue.serverTimestamp() } }, { merge: true }).then(function () { if (ilk) return olay("hesap", "ilk", 0); }) : nabiz();
-      return p.then(function () { senk = true; duzelt(); });
+      return p.then(function () { senk = true; duzelt(); seriAyarla(); });
     }).catch(function (e) { if (!bulut) setTimeout(function () { if (user && !bulut) esitle().then(bitti, bitti); }, 8000); throw e; });
   }
   /* tek seferlik düzeltmeler (2 Kasım), yalnız Yunus'ta:
@@ -126,6 +126,32 @@
       var o = {}; o.d = { jl_best: "0" }; o.dt = { jl_best: T.jl_best };
       db.collection("oyuncular").doc(user.uid).set(o, { merge: true }).catch(function () {});
     }
+  }
+  /* bir kereliğine düello skorlarını ayarla (0–0'a sıfırla ya da belli bir skora getir).
+     İşaret (sifir) skorun içinde saklanır; oyunlar oynandıkça skor bu sayılardan devam eder. */
+  var SERI_AYAR = [
+    { kol: "dort", k: "1113", g: { bus: 0, yec: 0 } },
+    { kol: "tepe", k: "1113", g: { bus: 0, yec: 0 } },
+    { kol: "sayi", k: "1113", g: { bus: 22, yec: 19 } }
+  ], SERI_AYAR_SON = Date.parse("2026-11-27T00:00:00+03:00");
+  function seriAyarla() {
+    if (!user || !db || Date.now() > SERI_AYAR_SON) return;
+    db.collection("oyuncular").get().then(function (qs) {
+      var uid = {}; qs.forEach(function (d) { var k = (d.data() || {}).kul; if (k) uid[k] = d.id; });
+      if (!uid.bus || !uid.yec) return;
+      SERI_AYAR.forEach(function (z) {
+        var ref = db.collection(z.kol).doc("seri");
+        db.runTransaction(function (tx) {
+          return tx.get(ref).then(function (snap) {
+            var s = snap.exists ? snap.data() : { g: {}, b: 0, oyun: 0, son: [] };
+            if (s.sifir === z.k) return;
+            var g = {}, top = 0; g[uid.bus] = z.g.bus; g[uid.yec] = z.g.yec; top = z.g.bus + z.g.yec;
+            tx.set(ref, { g: g, b: 0, oyun: s.oyun || 0, son: [], sifir: z.k, taban: (s.oyun || 0) - top,
+              eski: s.sifir && s.eski ? s.eski : { g: s.g || {}, b: s.b || 0, oyun: s.oyun || 0 }, t: firebase.firestore.FieldValue.serverTimestamp() });
+          });
+        }).catch(function () {});
+      });
+    }).catch(function () {});
   }
   var planT = 0;
   function planla() { if (!user || !db) return; clearTimeout(planT); planT = setTimeout(gonder, DEBOUNCE); }
