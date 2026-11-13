@@ -32,7 +32,12 @@
 .tbmin .tbvk small.on{color:#9ef0b0;font-weight:700}
 .tbmin .tbskor{display:flex;flex-wrap:wrap;justify-content:center;align-items:baseline;gap:6px}
 .tbmin .tbskor b{font-size:2.2rem}
-.tbmin .tbvitrin{position:-webkit-sticky;position:sticky;top:calc(env(safe-area-inset-top,0px) + 6px);z-index:20;background:rgba(48,24,92,.94);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);box-shadow:inset 0 0 0 1px rgba(255,255,255,.14),0 14px 28px -16px rgba(0,0,0,.8)}
+.tbmini{position:fixed;z-index:30;left:50%;top:calc(env(safe-area-inset-top,0px) + 8px);width:min(408px,calc(100vw - 24px));display:grid;grid-template-columns:auto auto 1fr auto auto;align-items:center;gap:4px 10px;padding:8px 12px;border-radius:18px;background:rgba(48,24,92,.95);box-shadow:inset 0 0 0 1px rgba(255,255,255,.16),0 14px 28px -14px rgba(0,0,0,.85);opacity:0;transform:translate(-50%,-140%);transition:transform .28s cubic-bezier(.2,.9,.3,1),opacity .2s;pointer-events:none}
+.tbmini.gor{opacity:1;transform:translate(-50%,0)}
+.tbmini b{font-family:"Cinzel",Georgia,serif;font-size:1.25rem;color:#f2c35b}
+.tbmini small{grid-column:1/-1;text-align:center;font-size:.64rem;font-weight:800;color:rgba(235,225,255,.6)}
+.tbmini .hsava{width:28px;height:28px;font-size:.85rem}
+@media (prefers-reduced-motion:reduce){.tbmini{transition:none}}
 .tbmin .tbvitrin.kucuk{padding:8px 12px 10px}
 .tbvitrin.kucuk .tbvk small,.tbvitrin.kucuk .tbvalt,.tbvitrin.kucuk .tbnasil,.tbvitrin.kucuk .tbskor small{display:none}
 .tbmin .tbvitrin.kucuk .tbvk{flex-direction:row;justify-content:center;gap:8px}
@@ -127,6 +132,7 @@ body[data-page="tablo"],body[data-page="tablo"] *{overflow-anchor:none}
     <a class="hsbtn" href="giris.html?d=tablo.html">Giriş yap</a>
   </div>
 
+  <div class="tbmini" id="mini" aria-hidden="true"></div>
   <section class="tbwrap tbmin" id="wrap" hidden>
     <div class="tbvitrin" id="vitrin"></div>
     <div class="tbgrid" id="grid"></div>
@@ -250,7 +256,7 @@ body[data-page="tablo"],body[data-page="tablo"] *{overflow-anchor:none}
     if (mc.sira === "bot") return { ben: false, t: "bot oynuyor" };
     return mc.sira === ben ? { ben: true, t: "sıra sende" } : { ben: false, t: "sıra " + (oyuncular[mc.sira] ? ekDe(adOf(mc.sira)) : "onda") };
   }
-  var tdb = null, kupaYazildi = {}, rekAcik = false, ayAkis = null, kapsam = "ay", sonSkor = "";
+  var tdb = null, ayTam = false, kupaYazildi = {}, rekAcik = false, ayAkis = null, kapsam = "ay", sonSkor = "";
   try { kapsam = sessionStorage.getItem("tb_kapsam") || "ay"; } catch (e) {}
   var AYUZUN = ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"];
   function ekIn2(ad) { var m = String(ad).toLowerCase().match(/[aeıioöuü](?![\s\S]*[aeıioöuü])/), v = m ? m[0] : "a", son = /[aeıioöuü]$/i.test(ad); return ad + "'" + (son ? "n" : "") + ({ a: "ı", "ı": "ı", e: "i", i: "i", o: "u", u: "u", "ö": "ü", "ü": "ü" }[v] || "ı") + "n"; }
@@ -310,13 +316,13 @@ body[data-page="tablo"],body[data-page="tablo"] *{overflow-anchor:none}
     /* kupa rafı: biten her ayın kupası tek sıra halinde durur (yana kayar, sayfa uzamaz). Sonuç bir kere hesaplanıp saklanır, sonradan değişmez. */
     if (iki) {
       var kayit = {}, u2, kk2, ay0 = new Date(2026, 8, 1), ay1 = new Date(yy, mm, 1), raf = "";
-      for (u2 in oyuncular) { var kp = oyuncular[u2].kupalar || {}; for (kk2 in kp) if (!kayit[kk2]) kayit[kk2] = kp[kk2]; }
+      for (u2 in oyuncular) { var kp = oyuncular[u2].kupalar || {}; for (kk2 in kp) if (!kayit[kk2] && kp[kk2] && kp[kk2].v === 2) kayit[kk2] = kp[kk2]; }
       if (ayAkis) for (var dd = new Date(ay0); dd < ay1; dd = new Date(dd.getFullYear(), dd.getMonth() + 1, 1)) {
         var anahtar = dd.getFullYear() + "-" + pad(dd.getMonth() + 1); if (kayit[anahtar]) continue;
         var G = topla(list, aySay(list, dd.getFullYear(), dd.getMonth()), false); if (!G.oynandi.length) continue;
-        var busP = (oyuncular[L0] || {}).kul === "bus" ? G.p0 : G.p1, yecP = G.p0 + G.p1 - busP, rec = { bus: busP, yec: yecP, k: busP === yecP ? "" : busP > yecP ? "bus" : "yec" };
+        var busP = (oyuncular[L0] || {}).kul === "bus" ? G.p0 : G.p1, yecP = G.p0 + G.p1 - busP, rec = { v: 2, bus: busP, yec: yecP, k: busP === yecP ? "" : busP > yecP ? "bus" : "yec" };
         kayit[anahtar] = rec;
-        if (tdb && !kupaYazildi[anahtar]) { kupaYazildi[anahtar] = 1; var yaz = { kupalar: {} }; yaz.kupalar[anahtar] = rec; tdb.collection("oyuncular").doc(ben).set(yaz, { merge: true }).catch(function () {}); }
+        if (tdb && ayTam && !kupaYazildi[anahtar]) { kupaYazildi[anahtar] = 1; var yaz = { kupalar: {} }; yaz.kupalar[anahtar] = rec; tdb.collection("oyuncular").doc(ben).set(yaz, { merge: true }).catch(function () {}); }
       }
       Object.keys(kayit).sort().reverse().forEach(function (an) {
         var rc = kayit[an], ayI = +an.slice(5) - 1, kazU = null, u3; for (u3 in oyuncular) if (rc.k && oyuncular[u3].kul === rc.k) kazU = u3;
@@ -364,6 +370,7 @@ body[data-page="tablo"],body[data-page="tablo"] *{overflow-anchor:none}
       '<p class="tbvalt">' + alt + "</p>" +
       (ayMod ? '<div class="tbay"><span class="tbayb"><i style="width:' + Math.round(100 * bugun.getDate() / gunSay) + '%"></i></span><small>' + (kalan > 0 ? "kupanın sahibi " + kalan + " gün sonra belli olur" : "bugün son gün, kupa bu gece sahibini bulur") + "</small></div>" : "") +
       '<p class="tbnasil">' + (ayMod ? "Her ay 0–0'dan başlar. " : "") + "Her oyun maç başına 2 puan dağıtır, 5 maçta 10 puana dolar. Tek maç skoru uçurmaz; fark ancak çok kazandıkça açılır.</p>";
+    $("mini").innerHTML = iki ? '<span class="hsava sm ' + sinif(sol) + '">' + esc(adOf(sol).charAt(0)) + "</span><b>" + a + "</b><span class=\"tbbar\">" + (top ? '<i class="' + sinif(sol) + '" style="width:' + Math.round(100 * a / top) + '%"></i><i class="' + sinif(sag) + '" style="width:' + (100 - Math.round(100 * a / top)) + '%"></i>' : "") + "</span><b>" + b + '</b><span class="hsava sm ' + sinif(sag) + '">' + esc(adOf(sag).charAt(0)) + "</span><small>" + (ayMod ? esc(AYUZUN[mm]) + " kupası" : "Genel") + "</small>" : "";
     if (say) sayAnim();
   }
   function sayAnim() {                                                /* skor rakamları 0'dan yukarı sayar */
@@ -389,16 +396,10 @@ body[data-page="tablo"],body[data-page="tablo"] *{overflow-anchor:none}
     kapsam = b.getAttribute("data-k"); try { sessionStorage.setItem("tb_kapsam", kapsam); } catch (er) {}
     ciz();
   });
-  /* aşağı kayınca üstteki skor küçülüp ekranın tepesinde kalır */
-  var kucuk = false;
-  addEventListener("scroll", function () {
-    var y = window.pageYOffset, yeni = kucuk ? y > 40 : y > 200;
-    if (yeni === kucuk) return;
-    /* küçülünce sayfa boyu kısalmasın diye aradaki fark alt boşluk olarak korunur; yoksa kaydırma geri sıçrayıp takılıyordu */
-    var v = $("vitrin"), tam = v.offsetHeight; kucuk = yeni;
-    if (kucuk) { v.classList.add("kucuk"); v.style.marginBottom = Math.max(0, tam - v.offsetHeight) + "px"; }
-    else { v.classList.remove("kucuk"); v.style.marginBottom = ""; }
-  }, { passive: true });
+  /* üstteki skor kutusu sayfayla birlikte kayar; ekrandan çıkınca tepede ince bir skor çubuğu belirir (sayfa düzeni hiç değişmez, takılma olmaz) */
+  var miniGor = false, miniBekle = false;
+  function miniBak() { miniBekle = false; var g = !$("wrap").hidden && $("vitrin").getBoundingClientRect().bottom < 4; if (g !== miniGor) { miniGor = g; $("mini").classList.toggle("gor", g); } }
+  addEventListener("scroll", function () { if (!miniBekle) { miniBekle = true; requestAnimationFrame(miniBak); } }, { passive: true });
   var tik = setInterval(function () { if (!$("wrap").hidden) { ciz(); cizAkis(); } }, 30000);
 
   var basladi = false;
@@ -424,7 +425,7 @@ body[data-page="tablo"],body[data-page="tablo"] *{overflow-anchor:none}
       });
       var ayBas = new Date(); ayBas = new Date(Math.min(new Date(ayBas.getFullYear(), ayBas.getMonth() - 1, 1).getTime(), ayBas < new Date(2027, 0, 1) ? new Date(2026, 8, 1).getTime() : Infinity));   /* geçen ayın başından beri maç sonuçları */
       db.collection("akis").where("t", ">=", ayBas).orderBy("t", "desc").limit(3000).onSnapshot(function (snap) {
-        ayAkis = []; snap.forEach(function (doc) { ayAkis.push(doc.data()); }); ciz();
+        ayAkis = []; snap.forEach(function (doc) { ayAkis.push(doc.data()); }); ayTam = !(snap.metadata && snap.metadata.fromCache); ciz();
       }, function () { ayAkis = []; ciz(); });
       db.collection("akis").orderBy("t", "desc").limit(150).onSnapshot(function (snap) {
         akis = []; snap.forEach(function (doc) { akis.push(doc.data()); }); ciz(); cizAkis();
