@@ -40,6 +40,28 @@
 .tbmin .tbvitrin.kucuk .tbskor b{font-size:1.6rem}
 .tbvitrin.kucuk .tbbar.buyuk{margin-top:8px;height:6px}
 .tbvitrin.kucuk .tbtac{display:none}
+.tbsek{display:flex;gap:4px;margin:0 auto 12px;padding:4px;max-width:270px;border-radius:14px;background:rgba(20,8,44,.4);box-shadow:inset 0 0 0 1px rgba(255,255,255,.1)}
+.tbsek button{flex:1;min-height:36px;border:0;border-radius:11px;font:inherit;font-weight:800;font-size:.86rem;color:rgba(232,222,255,.7);background:transparent;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:background .2s,color .2s}
+.tbsek button.on{color:#3b2a08;background:linear-gradient(180deg,#ffe08a,#f2b33c);box-shadow:0 2px 0 #b17e1c}
+.tbsek button:focus-visible{outline:2px solid #f2c35b;outline-offset:2px}
+.tbvitrin.kucuk .tbsek,.tbvitrin.kucuk .tbay{display:none}
+.tbmin .tbvk.onde .tbtac{animation:tbTac 3.2s ease-in-out infinite}
+.tbay{display:flex;flex-direction:column;gap:5px;margin:10px 4px 0}
+.tbayb{display:block;height:4px;border-radius:9px;background:rgba(255,255,255,.1);overflow:hidden}
+.tbayb i{display:block;height:100%;border-radius:9px;background:#f2c35b}
+.tbay small{font-size:.72rem;text-align:center;color:rgba(242,195,91,.85)}
+.tbraf{display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:18px;background:linear-gradient(120deg,rgba(242,195,91,.18),rgba(255,143,179,.1));box-shadow:inset 0 0 0 1px rgba(242,195,91,.4)}
+.tbraf span{display:flex;flex-direction:column;gap:2px;min-width:0}
+.tbraf b{font-size:.95rem;font-weight:800;color:#ffe08a}
+.tbraf small{font-size:.76rem;color:rgba(235,225,255,.7)}
+.tbkupa{flex:none;width:40px;height:40px;animation:tbKupa 4s ease-in-out infinite;transform-origin:50% 90%}
+.tbgrid.gir>*{animation:tbGir .4s cubic-bezier(.2,.9,.3,1.1) both;animation-delay:calc(var(--i,0) * 45ms)}
+.tbgrid.gir .tbbar i:first-child{animation:tbBar .7s cubic-bezier(.2,.8,.3,1) both;animation-delay:calc(var(--i,0) * 45ms + .1s);transform-origin:left}
+@keyframes tbGir{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes tbBar{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes tbTac{0%,100%{transform:translateY(0) rotate(-6deg)}50%{transform:translateY(-3px) rotate(6deg)}}
+@keyframes tbKupa{0%,84%,100%{transform:rotate(0)}88%{transform:rotate(-8deg)}93%{transform:rotate(7deg)}97%{transform:rotate(-3deg)}}
+@media (prefers-reduced-motion:reduce){.tbgrid.gir>*,.tbgrid.gir .tbbar i,.tbkupa,.tbmin .tbvk.onde .tbtac{animation:none}}
 .tbnasil{margin:6px 0 0;font-size:.7rem;line-height:1.35;text-align:center;color:rgba(235,225,255,.55)}
 .tbbar{display:flex;height:8px;border-radius:99px;overflow:hidden;background:rgba(255,255,255,.1)}
 .tbbar i{display:block;height:100%;transition:width .5s cubic-bezier(.2,.8,.3,1)}
@@ -105,8 +127,8 @@
 </main>
 
 <script src="app.js?v=1022h"></script>
-<script src="hesap.js?v=1022l"></script>
-<script src="deneme.js?v=1022h"></script>
+<script src="hesap.js?v=1022m"></script>
+<script src="deneme.js?v=1022m"></script>
 <script>
 (function () {
   var $ = function (id) { return document.getElementById(id); };
@@ -218,55 +240,82 @@
     if (mc.sira === "bot") return { ben: false, t: "bot oynuyor" };
     return mc.sira === ben ? { ben: true, t: "sıra sende" } : { ben: false, t: "sıra " + (oyuncular[mc.sira] ? ekDe(adOf(mc.sira)) : "onda") };
   }
-  var rekAcik = false;
+  var rekAcik = false, ayAkis = null, kapsam = "ay", sonSkor = "";
+  try { kapsam = sessionStorage.getItem("tb_kapsam") || "ay"; } catch (e) {}
+  var AYUZUN = ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"];
+  function ekIn2(ad) { var m = String(ad).toLowerCase().match(/[aeıioöuü](?![\s\S]*[aeıioöuü])/), v = m ? m[0] : "a", son = /[aeıioöuü]$/i.test(ad); return ad + "'" + (son ? "n" : "") + ({ a: "ı", "ı": "ı", e: "i", i: "i", o: "u", u: "u", "ö": "ü", "ü": "ü" }[v] || "ı") + "n"; }
+  /* her oyun 10 puan dağıtır: pay = (galibiyet + beraberliğin yarısı + 1) / (oyun + 2). Tek oyunu çok oynamak skoru uçurmaz, tek maç 10-0 yapmaz. */
+  function pay(w0, br, n) { return Math.round(10 * (w0 + br / 2 + 1) / (n + 2)); }
+  function gununSay(list, y, m) {                                     /* Günün Kelimesi: ikinizin de bitirdiği her gün bir maç (y,m verilirse sadece o ay) */
+    var d0 = list[0].d || {}, d1 = list[1].d || {}, r = { w0: 0, w1: 0, n: 0, br: 0 }, on = y === undefined ? "gk_d" : "gk_d" + y + "-" + pad(m + 1) + "-", gun;
+    for (gun in d0) {
+      if (gun.indexOf(on) !== 0 || !d1[gun]) continue;
+      var r0 = obj(d0[gun]), r1 = obj(d1[gun]); if (!r0 || !r1 || (r0.s !== "w" && r0.s !== "l") || (r1.s !== "w" && r1.s !== "l")) continue;
+      r.n++;
+      if (r0.s === "w" && r1.s === "w") { var t0 = (r0.g || []).length, t1 = (r1.g || []).length; if (t0 < t1) r.w0++; else if (t1 < t0) r.w1++; else r.br++; }
+      else if (r0.s === "w") r.w0++; else if (r1.s === "w") r.w1++; else r.br++;
+    }
+    return r;
+  }
+  var SIFIR_T = { dort: Date.parse("2026-11-13T19:45:00+03:00"), tepe: Date.parse("2026-11-13T19:45:00+03:00") };   /* 0–0'a dönen oyunlarda öncesi sayılmaz */
+  function aySay(list, y, m) {                                        /* o ayın düelloları: akıştaki maç sonuçlarından */
+    var L0 = list[0].uid, L1 = list[1].uid, bas = new Date(y, m, 1).getTime(), son = new Date(y, m + 1, 1).getTime(), S = {};
+    (ayAkis || []).forEach(function (e) {
+      if (DUEL.indexOf(e.o) < 0 || (e.k !== "kazandi" && e.k !== "kaybetti" && e.k !== "berabere")) return;
+      var t = Hesap.tms(e.t); if (!t || t < bas || t >= son || (SIFIR_T[e.o] && t < SIFIR_T[e.o])) return;
+      var x = S[e.o] || (S[e.o] = { w0: 0, w1: 0, n: 0, br: 0 }); x.n++;
+      if (e.k === "berabere") { x.br++; return; }
+      var kaz = e.k === "kazandi" ? e.uid : (e.uid === L0 ? L1 : L0);
+      if (kaz === L0) x.w0++; else x.w1++;
+    });
+    S.gunun = gununSay(list, y, m);
+    return S;
+  }
+  function topla(list, S, durumlu) {                                  /* S: oyun → {w0,w1,n,br} */
+    var T = { p0: 0, p1: 0, oynandi: [], bos: [] };
+    DUEL.concat(["gunun"]).forEach(function (k) {
+      if (kapali(k)) return;
+      var x = S[k] || { w0: 0, w1: 0, n: 0, br: 0 }, d = null;
+      if (durumlu) { if (k === "gunun") { var br = obj(((list[0].uid === ben ? list[0].d : list[1].d) || {})["gk_d" + ymd(new Date())]); d = !br || br.s === "p" ? { ben: true, t: "bugünkü kelime" } : null; } else d = durumOf(k); }
+      if (!x.n) { T.bos.push({ k: k, d: d }); return; }
+      var p0 = pay(x.w0, x.br, x.n);
+      T.p0 += p0; T.p1 += 10 - p0;
+      T.oynandi.push({ k: k, d: d, w0: x.w0, w1: x.w1, n: x.n, br: x.br, p0: p0, p1: 10 - p0 });
+    });
+    T.oynandi.sort(function (x, y) { return ((y.d && y.d.ben) ? 1 : 0) - ((x.d && x.d.ben) ? 1 : 0) || y.n - x.n; });
+    return T;
+  }
+  var KUPA = '<svg class="tbkupa" viewBox="0 0 48 48" aria-hidden="true"><path d="M14 8h20v10a10 10 0 0 1-20 0z" fill="#f6cf6e"/><path d="M14 11H8v3a7 7 0 0 0 7 7M34 11h6v3a7 7 0 0 1-7 7" fill="none" stroke="#f6cf6e" stroke-width="3" stroke-linecap="round"/><path d="M22 27h4v7h-4z" fill="#d8962f"/><rect x="15" y="34" width="18" height="5" rx="2.5" fill="#d8962f"/><path d="M20 12c0 4 1 7 3 9" fill="none" stroke="#fff" stroke-opacity=".7" stroke-width="2" stroke-linecap="round"/></svg>';
   function ciz() {
     var list = liste();
     if (!list.length) { $("grid").innerHTML = '<p class="tbempty">Henüz veri yok. Oyunlardan birini oyna, burada görünsün.</p>'; return; }
-    var now = Date.now(), o = karsi(), sol = o || ben, sag = ben, taclar = {}; taclar[sol] = 0; taclar[sag] = 0;
-    /* skor sadece iki kişilik oyunlardan. Adil olsun diye her oyun 10 puan dağıtır:
-       pay = (galibiyet + beraberliğin yarısı + 1) / (oyun + 2). Tek oyunu çok oynamak skoru uçurmaz, tek maç da 10-0 yapmaz. */
-    var iki = list.length > 1, L0 = list[0].uid, L1 = iki ? list[1].uid : null, puan = {}, oynandi = [], bos = [];
-    puan[L0] = 0; if (iki) puan[L1] = 0;
-    DUEL.forEach(function (k) {
-      if (kapali(k)) return;
-      var se = seriOf(k), gg = (se && se.g) || {}, w0 = gg[L0] || 0, w1 = iki ? (gg[L1] || 0) : 0, n = Math.max(oynanan(se), w0 + w1), br = Math.max(0, n - w0 - w1), d = durumOf(k);
-      if (!n || !iki) { bos.push({ k: k, d: d }); return; }
-      var p0 = Math.round(10 * (w0 + br / 2 + 1) / (n + 2)), p1 = 10 - p0;
-      puan[L0] += p0; puan[L1] += p1;
-      oynandi.push({ k: k, d: d, w0: w0, w1: w1, n: n, br: br, p0: p0, p1: p1 });
-    });
-    /* Günün Kelimesi: ikiniz de bitirdiğiniz her gün bir maç; az tahminde bulan kazanır, eşitse berabere, biri bulamazsa bulan kazanır */
-    if (iki && !kapali("gunun")) {
-      var d0 = list[0].d || {}, d1 = list[1].d || {}, gw0 = 0, gw1 = 0, gn = 0, gbr = 0, gun;
-      for (gun in d0) {
-        if (gun.indexOf("gk_d") !== 0 || !d1[gun]) continue;
-        var r0 = obj(d0[gun]), r1 = obj(d1[gun]); if (!r0 || !r1 || (r0.s !== "w" && r0.s !== "l") || (r1.s !== "w" && r1.s !== "l")) continue;
-        gn++;
-        if (r0.s === "w" && r1.s === "w") { var t0 = (r0.g || []).length, t1 = (r1.g || []).length; if (t0 < t1) gw0++; else if (t1 < t0) gw1++; else gbr++; }
-        else if (r0.s === "w") gw0++; else if (r1.s === "w") gw1++; else gbr++;
-      }
-      var bugunK = "gk_d" + ymd(new Date()), benR = obj(((list[0].uid === ben ? d0 : d1))[bugunK]), gd = !benR || benR.s === "p" ? { ben: true, t: "bugünkü kelime" } : null;
-      if (gn) {
-        var gp0 = Math.round(10 * (gw0 + gbr / 2 + 1) / (gn + 2));
-        puan[L0] += gp0; puan[L1] += 10 - gp0;
-        oynandi.push({ k: "gunun", d: gd, w0: gw0, w1: gw1, n: gn, br: gbr, p0: gp0, p1: 10 - gp0 });
-      } else bos.push({ k: "gunun", d: gd });
-    }
-    oynandi.sort(function (x, y) { return ((y.d && y.d.ben) ? 1 : 0) - ((x.d && x.d.ben) ? 1 : 0) || y.n - x.n; });
+    var now = Date.now(), o = karsi(), sol = o || ben, sag = ben, iki = list.length > 1, L0 = list[0].uid, L1 = iki ? list[1].uid : null;
+    var bugun = new Date(), yy = bugun.getFullYear(), mm = bugun.getMonth(), ayMod = kapsam === "ay" && iki, S = {}, T;
+    if (ayMod) S = aySay(list, yy, mm);
+    else if (iki) { DUEL.forEach(function (k) { var se = seriOf(k), gg = (se && se.g) || {}, w0 = gg[L0] || 0, w1 = gg[L1] || 0, n = Math.max(oynanan(se), w0 + w1); S[k] = { w0: w0, w1: w1, n: n, br: Math.max(0, n - w0 - w1) }; }); S.gunun = gununSay(list); }
+    T = iki ? topla(list, S, true) : { p0: 0, p1: 0, oynandi: [], bos: DUEL.map(function (k) { return { k: k, d: null }; }) };
     var html = "";
-    if (oynandi.length) {
-      html += '<div class="tbbas">Oynadıklarımız<small>her oyun 10 puan</small></div>';
-      oynandi.forEach(function (x) {
+    /* geçen ayın kazananı: küçük kupa rafı */
+    if (ayMod && ayAkis) {
+      var gd = new Date(yy, mm - 1, 1), G = topla(list, aySay(list, gd.getFullYear(), gd.getMonth()), false);
+      if (G.oynandi.length) {
+        var gk = G.p0 === G.p1 ? null : G.p0 > G.p1 ? L0 : L1;
+        html += '<div class="tbraf">' + KUPA + "<span><b>" + (gk ? esc(AYUZUN[gd.getMonth()]) + " kupası " + esc(ekDe(adOf(gk))) : esc(AYUZUN[gd.getMonth()]) + " berabere bitti") + "</b><small>" + esc(adOf(L0)) + " " + G.p0 + " – " + G.p1 + " " + esc(adOf(L1)) + "</small></span></div>";
+      }
+    }
+    if (T.oynandi.length) {
+      html += '<div class="tbbas">' + (ayMod ? "Bu ay oynadıklarımız" : "Oynadıklarımız") + "<small>her oyun 10 puan</small></div>";
+      T.oynandi.forEach(function (x, i) {
         var yuzde = Math.round(100 * (x.w0 + x.br / 2 + 1) / (x.n + 2));
-        html += '<a class="tbd' + (x.d && x.d.ben ? " sira" : "") + '" href="' + (LINK[x.k] || "oyunlar.html") + '">' +
-          '<span class="tbdu"><i aria-hidden="true">' + (IK[x.k] || "🎲") + "</i><b>" + esc(OYUN[x.k]) + (x.k === "sayi" ? " 😊" : "") + "</b>" + (x.d ? '<em' + (x.d.ben ? ' class="ben"' : "") + ">" + esc(x.d.t) + "</em>" : "") + "</span>" +
+        html += '<a class="tbd' + (x.d && x.d.ben ? " sira" : "") + '" style="--i:' + i + '" href="' + (LINK[x.k] || "oyunlar.html") + '">' +
+          '<span class="tbdu"><i aria-hidden="true">' + (IK[x.k] || "🎲") + "</i><b>" + esc(OYUN[x.k]) + (!ayMod && x.k === "sayi" ? " 😊" : "") + "</b>" + (x.d ? '<em' + (x.d.ben ? ' class="ben"' : "") + ">" + esc(x.d.t) + "</em>" : "") + "</span>" +
           '<span class="tbds"><b class="' + sinif(L0) + '">' + x.w0 + '</b><span class="tbbar"><i class="' + sinif(L0) + '" style="width:' + yuzde + '%"></i><i class="' + sinif(L1) + '" style="width:' + (100 - yuzde) + '%"></i></span><b class="' + sinif(L1) + '">' + x.w1 + "</b></span>" +
           '<span class="tbda"><u class="' + (x.p0 > x.p1 ? "ust" : "") + '">+' + x.p0 + " puan</u><small>" + x.n + (x.k === "gunun" ? " gün" : " oyun") + (x.br ? " · " + x.br + " berabere" : "") + '</small><u class="' + (x.p1 > x.p0 ? "ust" : "") + '">+' + x.p1 + " puan</u></span></a>";
       });
     }
-    if (bos.length) {
-      html += '<div class="tbbas ' + (oynandi.length ? "" : "ilk") + '">' + (iki ? "Henüz oynamadıklarımız" : "İki kişilik oyunlar") + "<small>ilk maçla skora girer</small></div><div class=\"tbbos\">" +
-        bos.map(function (x) { return '<a href="' + (LINK[x.k] || "oyunlar.html") + '"' + (x.d && x.d.ben ? ' class="sira"' : "") + "><i aria-hidden=\"true\">" + (IK[x.k] || "🎲") + "</i>" + esc(OYUN[x.k]) + (x.d && x.d.ben ? "<em>" + esc(x.d.t) + "</em>" : "") + "</a>"; }).join("") + "</div>";
+    if (T.bos.length) {
+      html += '<div class="tbbas">' + (!iki ? "İki kişilik oyunlar" : ayMod ? "Bu ay sırada bekleyenler" : "Henüz oynamadıklarımız") + "<small>ilk maçla skora girer</small></div><div class=\"tbbos\">" +
+        T.bos.map(function (x) { return '<a href="' + (LINK[x.k] || "oyunlar.html") + '"' + (x.d && x.d.ben ? ' class="sira"' : "") + "><i aria-hidden=\"true\">" + (IK[x.k] || "🎲") + "</i>" + esc(OYUN[x.k]) + (x.d && x.d.ben ? "<em>" + esc(x.d.t) + "</em>" : "") + "</a>"; }).join("") + "</div>";
     }
     /* tek kişilik rekorlar: sadece bilgi, skora sayılmaz, kapalı gelir */
     var oz = list.map(function (p) { return ozet(p.d); }), rek = "";
@@ -276,16 +325,34 @@
       }).join("") + "</div>";
     }
     html += '<details class="tbdet" id="tbRek"' + (rekAcik ? " open" : "") + '><summary>Kendi rekorlarımız<small>skora sayılmaz</small></summary><div class="tbrekad">' + list.map(function (p) { return "<b>" + esc(adOf(p.uid)) + "</b>"; }).join("") + "</div>" + rek + "</details>";
-    $("grid").innerHTML = html;
+    var grid = $("grid"), ilk = !grid.getAttribute("data-k") || grid.getAttribute("data-k") !== kapsam;
+    grid.innerHTML = html; grid.className = "tbgrid" + (ilk ? " gir" : ""); grid.setAttribute("data-k", kapsam);
     var det = $("tbRek"); if (det) det.addEventListener("toggle", function () { rekAcik = det.open; });
-    /* vitrin: toplam puan, hep en üstte */
-    var a = puan[sol] || 0, b = iki ? (puan[sag] || 0) : 0, onde = !o || a === b ? null : a > b ? sol : sag, top = a + b;
+    /* vitrin: toplam skor hep en üstte; "Bu ay" kupası ile "Genel" arasında geçiş */
+    var a = sol === L0 ? T.p0 : T.p1, b = iki ? (sag === L0 ? T.p0 : T.p1) : 0, onde = !o || a === b ? null : a > b ? sol : sag, top = a + b;
     function durumK(u) { var p = oyuncular[u] || {}, t = p.son && p.son.t ? Hesap.tms(p.son.t) : 0, canli = t && now - t < 180000 && p.son.o && LINK[p.son.o]; return canli ? '<small class="on">şu an ' + esc(OYUN[p.son.o]) + " oynuyor</small>" : "<small>" + (t ? esc(nezaman(t)) : "henüz girmedi") + "</small>"; }
     function kisi(u) { return '<div class="tbvk' + (onde === u ? " onde" : "") + '"><span class="hsava ' + sinif(u) + '">' + esc(adOf(u).charAt(0)) + "</span>" + (onde === u ? '<i class="tbtac">👑</i>' : "") + "<b>" + esc(adOf(u)) + "</b>" + durumK(u) + "</div>"; }
-    $("vitrin").innerHTML = '<div class="tbvs">' + kisi(sol) + '<div class="tbskor"><b>' + a + "</b><span>–</span><b>" + b + "</b><small>puan</small></div>" + kisi(sag) + "</div>" +
+    var gunSay = new Date(yy, mm + 1, 0).getDate(), kalan = gunSay - bugun.getDate(), unvan = onde ? ((oyuncular[onde] || {}).kul === "bus" ? "kraliçesi" : "kralı") : "";
+    var alt = !iki ? "" : ayMod
+      ? (top ? (onde ? "Şimdilik " + esc(AYUZUN[mm]) + " ayının " + unvan + " " + esc(adOf(onde)) + " · " + Math.abs(a - b) + " puan önde" : "Başa baş gidiyoruz") : esc(AYUZUN[mm]) + " kupası için ilk maçı oynayın")
+      : (top ? (onde ? esc(adOf(onde)) + " " + Math.abs(a - b) + " puan önde · " + T.oynandi.length + " oyundan" : "Başa baş gidiyoruz") : "İlk düelloyu oynayın, skor başlasın");
+    var skorK = kapsam + ":" + a + ":" + b, say = skorK !== sonSkor; sonSkor = skorK;
+    $("vitrin").innerHTML = (iki ? '<div class="tbsek" role="tablist"><button type="button" role="tab" data-k="ay" class="' + (ayMod ? "on" : "") + '" aria-selected="' + ayMod + '">' + esc(AYUZUN[mm]) + ' kupası</button><button type="button" role="tab" data-k="genel" class="' + (ayMod ? "" : "on") + '" aria-selected="' + !ayMod + '">Genel</button></div>' : "") +
+      '<div class="tbvs">' + kisi(sol) + '<div class="tbskor' + (say ? " say" : "") + '"><b data-n="' + a + '">' + a + "</b><span>–</span><b data-n=\"" + b + '">' + b + "</b><small>puan</small></div>" + kisi(sag) + "</div>" +
       (top ? '<span class="tbbar buyuk"><i class="' + sinif(sol) + '" style="width:' + Math.round(100 * a / top) + '%"></i><i class="' + sinif(sag) + '" style="width:' + (100 - Math.round(100 * a / top)) + '%"></i></span>' : "") +
-      '<p class="tbvalt">' + (top ? (onde ? esc(adOf(onde)) + " " + Math.abs(a - b) + " puan önde" : "Başa baş gidiyoruz") + " · " + oynandi.length + " oyundan" : "İlk düelloyu oynayın, skor başlasın") + "</p>" +
-      '<p class="tbnasil">Her iki kişilik oyun 10 puan dağıtır; o oyunda kazandıkça payın büyür. Bütün oyunlar eşit sayılır.</p>';
+      '<p class="tbvalt">' + alt + "</p>" +
+      (ayMod ? '<div class="tbay"><span class="tbayb"><i style="width:' + Math.round(100 * bugun.getDate() / gunSay) + '%"></i></span><small>' + (kalan > 0 ? "kupanın sahibi " + kalan + " gün sonra belli olur" : "bugün son gün, kupa bu gece sahibini bulur") + "</small></div>" : "") +
+      '<p class="tbnasil">' + (ayMod ? "Her ay 0–0'dan başlar. " : "") + "Her iki kişilik oyun 10 puan dağıtır; o oyunda kazandıkça payın büyür. Bütün oyunlar eşit sayılır.</p>";
+    if (say) sayAnim();
+  }
+  function sayAnim() {                                                /* skor rakamları 0'dan yukarı sayar */
+    if (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    var bs = $("vitrin").querySelectorAll(".tbskor b"), t0 = performance.now();
+    (function adim(t) {
+      var p = Math.min(1, (t - t0) / 650), e = 1 - Math.pow(1 - p, 3);
+      [].forEach.call(bs, function (el) { if (!el.isConnected) return; el.textContent = Math.round(+el.getAttribute("data-n") * e); });
+      if (p < 1) requestAnimationFrame(adim);
+    })(t0);
   }
   function gunAd(ms) { var t = new Date(ms), b = new Date(); b.setHours(0, 0, 0, 0); var g = Math.round((b - new Date(t.getFullYear(), t.getMonth(), t.getDate())) / 86400000); return g === 0 ? "Bugün" : g === 1 ? "Dün" : t.getDate() + " " + AYLAR[t.getMonth()]; }
   function cizAkis() {
@@ -296,6 +363,11 @@
       return '<li><span class="hsava sm ' + (p.kul === "bus" ? "a" : "b") + '">' + esc(ad.charAt(0).toUpperCase()) + '</span><span class="tbft">' + esc(metin(e, ad)) + '<small>' + esc(nezaman(Hesap.tms(e.t))) + '</small></span></li>';
     }).join("");
   }
+  $("vitrin").addEventListener("click", function (e) {
+    var b = e.target && e.target.closest ? e.target.closest(".tbsek button") : null; if (!b) return;
+    kapsam = b.getAttribute("data-k"); try { sessionStorage.setItem("tb_kapsam", kapsam); } catch (er) {}
+    ciz();
+  });
   /* aşağı kayınca üstteki skor küçülüp ekranın tepesinde kalır */
   var kucuk = false;
   addEventListener("scroll", function () {
@@ -324,6 +396,10 @@
         db.collection(kol).doc("seri").onSnapshot(function (snap) { duSeri[kol] = snap.exists ? snap.data() : null; ciz(); }, function () {});
         db.collection(kol).doc("mac").onSnapshot(function (snap) { duMac[kol] = snap.exists ? snap.data() : null; ciz(); }, function () {});
       });
+      var ayBas = new Date(); ayBas = new Date(ayBas.getFullYear(), ayBas.getMonth() - 1, 1);   /* geçen ayın başından beri maç sonuçları */
+      db.collection("akis").where("t", ">=", ayBas).orderBy("t", "desc").limit(1500).onSnapshot(function (snap) {
+        ayAkis = []; snap.forEach(function (doc) { ayAkis.push(doc.data()); }); ciz();
+      }, function () { ayAkis = []; ciz(); });
       db.collection("akis").orderBy("t", "desc").limit(150).onSnapshot(function (snap) {
         akis = []; snap.forEach(function (doc) { akis.push(doc.data()); }); ciz(); cizAkis();
       }, function () {});

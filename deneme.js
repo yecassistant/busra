@@ -33,16 +33,18 @@
       onSnapshot: function (cb, err) { var f = function () { cb(snap(col, id)); }; dinleyiciler.push(f); setTimeout(f, 0); return function () { var i = dinleyiciler.indexOf(f); if (i >= 0) dinleyiciler.splice(i, 1); }; }
     };
   }
-  function sorgu(col, order, dir, lim) {
+  function sorgu(col, order, dir, lim, filt) {
     function al() {
       var st = oku(), items = [], c = st[col] || {}, k;
       for (k in c) items.push({ id: k, data: c[k] });
+      if (filt) items = items.filter(function (it) { var v = it.data[filt[0]], w = filt[2] && filt[2].getTime ? filt[2].getTime() : filt[2]; return filt[1] === ">=" ? v >= w : filt[1] === "==" ? v === w : true; });
       if (order) items.sort(function (a, b) { var x = a.data[order] || 0, y = b.data[order] || 0; return dir === "desc" ? y - x : x - y; });
       if (lim) items = items.slice(0, lim);
       return { size: items.length, forEach: function (fn) { items.forEach(function (it) { fn({ id: it.id, exists: true, data: function () { return kopya(it.data); } }); }); } };
     }
     var q = {
-      orderBy: function (f, d) { return sorgu(col, f, d || "asc", lim); }, limit: function (n) { return sorgu(col, order, dir, n); },
+      orderBy: function (f, d) { return sorgu(col, f, d || "asc", lim, filt); }, limit: function (n) { return sorgu(col, order, dir, n, filt); },
+      where: function (f, op, v) { return sorgu(col, order, dir, lim, [f, op, v]); },
       get: function () { return Promise.resolve(al()); },
       onSnapshot: function (cb) { var f = function () { cb(al()); }; dinleyiciler.push(f); setTimeout(f, 0); return function () { var i = dinleyiciler.indexOf(f); if (i >= 0) dinleyiciler.splice(i, 1); }; },
       doc: function (id) { return docRef(col, id); },
