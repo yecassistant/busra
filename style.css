@@ -3884,7 +3884,7 @@ button.jmod:active,.jmodbas:active{-webkit-transform:scale(.98);transform:scale(
 .qm .qmcrown{position:relative;z-index:1;width:104px;height:72px;filter:drop-shadow(0 6px 16px rgba(242,195,91,.5))}
 .qm .qmlogo{position:relative;z-index:1}
 .qm .qmq{font-size:3.5rem;background-image:linear-gradient(100deg,rgba(255,255,255,0) 42%,rgba(255,255,255,.95) 50%,rgba(255,255,255,0) 58%),linear-gradient(180deg,#fff0bf 0%,#f6cf6e 45%,#d8962f 100%);background-size:260% 100%,100% 100%;background-position:130% 0,0 0;background-repeat:no-repeat}
-.qm.canli .qmq{-webkit-animation:qmIsik 6.5s ease-in-out infinite;animation:qmIsik 6.5s ease-in-out infinite}
+.qm.canli .qmq{-webkit-animation:qmIsik 2.4s ease-in-out .4s 1 both;animation:qmIsik 2.4s ease-in-out .4s 1 both}
 .qmhale{--h1:rgba(242,195,91,.42);--h2:rgba(255,143,179,.2);position:absolute;z-index:0;left:50%;top:-34px;width:320px;height:250px;margin-left:-160px;border-radius:50%;background:radial-gradient(closest-side,var(--h1),var(--h2) 55%,rgba(0,0,0,0) 100%);pointer-events:none}
 .qm.anim .qmhale{-webkit-animation:qmHaleN 5.5s ease-in-out infinite;animation:qmHaleN 5.5s ease-in-out infinite}
 .qm[data-zaman="sabah"] .qmhale{--h1:rgba(255,214,120,.5);--h2:rgba(255,170,130,.22)}
@@ -3900,8 +3900,8 @@ button.jmod:active,.jmodbas:active{-webkit-transform:scale(.98);transform:scale(
 .qmselam svg .yildiz{fill:#f2c35b;stroke:none}
 .qm[data-zaman="gece"] .qmselam svg,.qm[data-zaman="aksam"] .qmselam svg{stroke:#cdb8ff}
 .qm.canli .qmselam svg{-webkit-animation:qmSuz 6s ease-in-out infinite;animation:qmSuz 6s ease-in-out infinite}
-@-webkit-keyframes qmIsik{0%,62%{background-position:130% 0,0 0}88%,100%{background-position:-60% 0,0 0}}
-@keyframes qmIsik{0%,62%{background-position:130% 0,0 0}88%,100%{background-position:-60% 0,0 0}}
+@-webkit-keyframes qmIsik{0%,20%{background-position:130% 0,0 0}100%{background-position:-60% 0,0 0}}
+@keyframes qmIsik{0%,20%{background-position:130% 0,0 0}100%{background-position:-60% 0,0 0}}
 @-webkit-keyframes qmHaleN{0%,100%{opacity:.75;-webkit-transform:scale(1)}50%{opacity:1;-webkit-transform:scale(1.1)}}
 @keyframes qmHaleN{0%,100%{opacity:.75;transform:scale(1)}50%{opacity:1;transform:scale(1.1)}}
 @-webkit-keyframes qmYuksel{0%{opacity:0;-webkit-transform:translateY(0) scale(.5)}20%{opacity:.9}100%{opacity:0;-webkit-transform:translateY(-130px) scale(1) rotate(60deg)}}
@@ -3965,7 +3965,6 @@ body[data-page="takvim"] .tkherotx b{font-size:1.36rem}
 /* Buluşma Takvimi kartı: içinde canlı 7 günlük şerit, dönen ışıklı çerçeve, arada geçen parıltı */
 .qm .qmhero{flex-wrap:wrap;row-gap:12px;overflow:hidden}
 .qm .qmherosar{background-size:300% 100%}
-.qm.anim .qmherosar{-webkit-animation:qmCerceve 6s linear infinite;animation:qmCerceve 6s linear infinite}
 .qm .qmhero:after{content:"";position:absolute;z-index:1;top:-20%;bottom:-20%;left:0;width:34%;background:linear-gradient(100deg,rgba(255,255,255,0),rgba(255,255,255,.34),rgba(255,255,255,0));-webkit-transform:translateX(-140%) skewX(-12deg);transform:translateX(-140%) skewX(-12deg);pointer-events:none}
 .qm.canli .qmhero:after{-webkit-animation:qmParla 5.5s ease-in-out 1s infinite;animation:qmParla 5.5s ease-in-out 1s infinite}
 .qm.canli .qmhero .qmico svg{-webkit-animation:qmTkSalla 5.5s ease-in-out 1s infinite;animation:qmTkSalla 5.5s ease-in-out 1s infinite;-webkit-transform-origin:50% 20%;transform-origin:50% 20%}
@@ -3995,3 +3994,25 @@ body[data-page="takvim"] .tkherotx b{font-size:1.36rem}
 .qmtkhafta{margin-right:-32px}
 .qmtkhafta{flex:none;width:calc(100% + 32px);margin-right:-32px}
 .qmskor,.qmskor:not([hidden]){display:none}
+/* oyun sonu kartı: kazanınca taç iner, başlık parlar, skorlar zıplar; kaybedince kart sakin gelir */
+.gkover:not([hidden]){-webkit-animation:gkPerde .25s ease-out both;animation:gkPerde .25s ease-out both}
+.gkover.kazandi .gkcard{-webkit-animation:gkKazan .6s cubic-bezier(.2,1.4,.4,1) both;animation:gkKazan .6s cubic-bezier(.2,1.4,.4,1) both;box-shadow:inset 0 0 0 1.5px rgba(242,195,91,.75),0 0 44px -6px rgba(242,195,91,.5),0 30px 60px -24px rgba(0,0,0,.7)}
+.gkover.kazandi .gkcard:before{content:"";display:block;flex:none;width:60px;height:44px;margin:-4px auto -4px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 44'%3E%3Cpath d='M6 38 2 12l14 10L30 4l14 18 14-10-4 26z' fill='%23f6cf6e' stroke='%23b17e1c' stroke-width='2.5' stroke-linejoin='round'/%3E%3Ccircle cx='30' cy='27' r='4' fill='%23ff8fb3'/%3E%3Ccircle cx='15' cy='29' r='2.5' fill='%23fff'/%3E%3Ccircle cx='45' cy='29' r='2.5' fill='%23fff'/%3E%3C/svg%3E") center/contain no-repeat;-webkit-animation:gkTac .8s cubic-bezier(.2,1.6,.4,1) .25s both;animation:gkTac .8s cubic-bezier(.2,1.6,.4,1) .25s both;pointer-events:none}
+.gkover.kazandi .gkcard h2{-webkit-animation:gkBaslik .7s cubic-bezier(.2,1.5,.4,1) .2s both;animation:gkBaslik .7s cubic-bezier(.2,1.5,.4,1) .2s both}
+.gkover.kazandi .gkstats>div,.gkover.berabere .gkstats>div{-webkit-animation:gkSkor .5s cubic-bezier(.2,1.6,.4,1) both;animation:gkSkor .5s cubic-bezier(.2,1.6,.4,1) both;-webkit-animation-delay:.45s;animation-delay:.45s}
+.gkover.kazandi .gkstats>div:nth-child(2),.gkover.berabere .gkstats>div:nth-child(2){-webkit-animation-delay:.55s;animation-delay:.55s}
+.gkover.kazandi .gkstats>div:nth-child(3){-webkit-animation-delay:.65s;animation-delay:.65s}
+.gkover.kazandi .gkstats>div:nth-child(4){-webkit-animation-delay:.75s;animation-delay:.75s}
+.gkover.kaybetti .gkcard{-webkit-animation:gkSakin .5s ease-out both;animation:gkSakin .5s ease-out both}
+@-webkit-keyframes gkPerde{from{background-color:rgba(20,13,10,0)}}
+@keyframes gkPerde{from{background-color:rgba(20,13,10,0)}}
+@-webkit-keyframes gkKazan{from{opacity:0;-webkit-transform:translateY(26px) scale(.9)}to{opacity:1;-webkit-transform:none}}
+@keyframes gkKazan{from{opacity:0;transform:translateY(26px) scale(.9)}to{opacity:1;transform:none}}
+@-webkit-keyframes gkTac{from{opacity:0;-webkit-transform:translateY(-40px) rotate(-25deg) scale(.6)}to{opacity:1;-webkit-transform:rotate(-6deg)}}
+@keyframes gkTac{from{opacity:0;transform:translateY(-40px) rotate(-25deg) scale(.6)}to{opacity:1;transform:rotate(-6deg)}}
+@-webkit-keyframes gkBaslik{from{opacity:0;-webkit-transform:scale(.7)}to{opacity:1;-webkit-transform:none}}
+@keyframes gkBaslik{from{opacity:0;transform:scale(.7)}to{opacity:1;transform:none}}
+@-webkit-keyframes gkSkor{from{opacity:0;-webkit-transform:translateY(8px) scale(.8)}to{opacity:1;-webkit-transform:none}}
+@keyframes gkSkor{from{opacity:0;transform:translateY(8px) scale(.8)}to{opacity:1;transform:none}}
+@-webkit-keyframes gkSakin{from{opacity:0;-webkit-transform:translateY(10px)}to{opacity:1;-webkit-transform:none}}
+@keyframes gkSakin{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}

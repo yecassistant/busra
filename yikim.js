@@ -85,10 +85,12 @@
   var bitisT = 0, olumT = 0;
   $("rekor").textContent = best;
 
+  /* kareler uzun süre yavaş gelirse çözünürlük bir kademe iner (2 → 1,5 → 1): zayıf telefonda kasmasın */
+  var dprTavan = 2, kareOlc = window.__akici ? window.__akici(function () { if (dprTavan > 1) { dprTavan = Math.max(1, dprTavan - 0.5); fit(); } }) : function () {};
   var _fit = "";
   function fit() {
     W = stage.clientWidth || innerWidth; Hh = stage.clientHeight || innerHeight;
-    var pr = Math.min(window.devicePixelRatio || 1, 2), k = W + "x" + Hh + "@" + pr; if (k === _fit) return; _fit = k;
+    var pr = Math.min(window.devicePixelRatio || 1, dprTavan), k = W + "x" + Hh + "@" + pr; if (k === _fit) return; _fit = k;
     renderer.setPixelRatio(pr);
     renderer.setSize(W, Hh, false);
     camera.aspect = W / Hh;
@@ -322,7 +324,7 @@
   function loop(t) {
     if (!running) return;
     var dt = lastT ? Math.min(0.05, (t - lastT) / 1000) : 0.016; lastT = t;
-    adim(dt); renderer.render(scene, camera);
+    adim(dt); renderer.render(scene, camera); kareOlc(t);
     requestAnimationFrame(loop);
   }
   function basla() { if (!running) { running = true; lastT = 0; requestAnimationFrame(loop); } }

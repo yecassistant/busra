@@ -252,7 +252,9 @@
     var g = (seri && seri.g) || {}, a = (g[ME] || 0) + (kazandim && (!seri || seri.oyun < G.n) ? 1 : 0), b = (g[OTHER] || 0) + (!kazandim && !berabere && (!seri || seri.oyun < G.n) ? 1 : 0);
     $("doneStats").innerHTML = "<div><b>" + a + "</b><span>" + esc(ADLAR[ME] || "sen") + "</span></div><div><b>" + b + "</b><span>" + esc(ad) + "</span></div>";
     $("doneNew").textContent = "Yeni oyun";
+    $("done").className = "gkover " + (berabere ? "berabere" : kazandim ? "kazandi" : "kaybetti");
     $("done").hidden = false; snd(berabere ? "draw" : kazandim ? "win" : "lose");
+    if (kazandim && window.__kutla) setTimeout(function () { window.__kutla(1); }, 250);
   }
   /* seri + akış: bitiren taraf hemen, diğeri 5 sn sonra yedek olarak */
   function seriGuncelle() {

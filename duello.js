@@ -60,7 +60,9 @@
       var g = (D.seri && D.seri.g) || {}, yeni = !D.seri || D.seri.oyun < G.n, a = (g[D.me] || 0) + (kazandim && yeni ? 1 : 0), c = (g[D.other] || 0) + (!kazandim && !berabere && yeni ? 1 : 0);
       $("doneStats").innerHTML = "<div><b>" + a + "</b><span>" + esc(D.adlar[D.me] || "sen") + "</span></div><div><b>" + c + "</b><span>" + esc(D.adlar[D.other] || "rakip") + "</span></div>";
       if (b.ek) { var ek = $("doneEk"); if (ek) ek.innerHTML = b.ek; }
+      $("done").className = "gkover " + (berabere ? "berabere" : kazandim ? "kazandi" : "kaybetti");
       $("done").hidden = false;
+      if (kazandim && window.__kutla) setTimeout(function () { window.__kutla(1); }, 250);
       if (window[o.ses]) try { window[o.ses].play(berabere ? "draw" : kazandim ? "win" : "lose"); } catch (e) {}
     };
     D.seriGuncelle = function () {

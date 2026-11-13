@@ -184,6 +184,62 @@
     if (P.length > MAXP) P.splice(0, P.length - MAXP);
     if (!raf) { lastT = 0; raf = requestAnimationFrame(loop); }
   }
+  /* kutlama: alttan fışkıran kalp, şakayık yaprağı ve yıldızlar (oyun kazanınca).
+     Kendi tuvalini o an kurar, bitince kaldırır; oyun sayfalarında yaprak tuvali gizli olduğu için ayrı ve bitiş kartının üstünde. */
+  var kcv = null, kctx = null, K = [], kraf = null, kson = 0, KR = 1;
+  function kutla(guc) {
+    if (reduce) return;
+    if (!kcv) {
+      kcv = document.createElement("canvas"); kcv.setAttribute("aria-hidden", "true");
+      kcv.style.cssText = "position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:95";
+      KR = innerWidth < 520 ? 1 : Math.min(window.devicePixelRatio || 1, 1.5);
+      kcv.width = Math.round(innerWidth * KR); kcv.height = Math.round(innerHeight * KR);
+      document.body.appendChild(kcv); kctx = kcv.getContext("2d");
+    }
+    var n = Math.round((guc || 1) * (innerWidth < 520 ? 28 : 46)), H = innerHeight;
+    for (var i = 0; i < n; i++) {
+      var a = -Math.PI / 2 + (Math.random() - 0.5) * 1.3, v = 11 + Math.random() * 9;
+      K.push({ x: innerWidth * (0.2 + Math.random() * 0.6), y: H + 8, s: 6 + Math.random() * 7, vx: Math.cos(a) * v * 0.6, vy: Math.sin(a) * v,
+        r: Math.random() * 6.28, vr: -0.1 + Math.random() * 0.2, c: cols[(Math.random() * cols.length) | 0], w: Math.random() * 6.28, life: 100 + Math.random() * 45,
+        t: i % 3 === 0 ? "k" : i % 5 === 0 ? "y" : "" });
+    }
+    if (K.length > 60) K.splice(0, K.length - 60);
+    if (!kraf) { kson = 0; kraf = requestAnimationFrame(kdongu); }
+  }
+  function kdongu(t) {
+    var dt = kson ? Math.min(2, (t - kson) / 16.7) : 1; kson = t;
+    kctx.setTransform(1, 0, 0, 1, 0, 0); kctx.clearRect(0, 0, kcv.width, kcv.height);
+    var kal = [], H = innerHeight + 30;
+    for (var i = 0; i < K.length; i++) {
+      var p = K[i];
+      p.vy += 0.3 * dt; p.w += 0.05 * dt; p.x += (p.vx + Math.sin(p.w) * 0.4) * dt; p.y += p.vy * dt; p.r += p.vr * dt; p.life -= dt;
+      if (p.life <= 0 || (p.y > H && p.vy > 0)) continue;
+      kal.push(p);
+      var c = Math.cos(p.r), s = Math.sin(p.r);
+      kctx.setTransform(c * KR, s * KR, -s * KR, c * KR, p.x * KR, p.y * KR);
+      kctx.globalAlpha = p.life < 24 ? Math.max(0, p.life / 24) * 0.95 : 0.95;
+      kctx.fillStyle = p.c; kctx.beginPath();
+      if (p.t === "k") { var q = p.s * 0.9; kctx.moveTo(0, q * 0.9); kctx.bezierCurveTo(-q * 1.5, -q * 0.2, -q * 0.7, -q * 1.2, 0, -q * 0.4); kctx.bezierCurveTo(q * 0.7, -q * 1.2, q * 1.5, -q * 0.2, 0, q * 0.9); }
+      else if (p.t === "y") { var z = p.s; kctx.moveTo(0, -z); kctx.quadraticCurveTo(0, 0, z, 0); kctx.quadraticCurveTo(0, 0, 0, z); kctx.quadraticCurveTo(0, 0, -z, 0); kctx.quadraticCurveTo(0, 0, 0, -z); }
+      else kctx.ellipse(0, 0, p.s * 0.55, p.s, 0, 0, 6.28);
+      kctx.fill();
+    }
+    K = kal;
+    if (K.length) kraf = requestAnimationFrame(kdongu);
+    else { kraf = null; if (kcv && kcv.parentNode) kcv.parentNode.removeChild(kcv); kcv = null; kctx = null; }
+  }
+  window.__kutla = kutla;
+  /* akıcılık ölçer: oyun döngüsü her karede çağırır; kareler uzun süre yavaş gelirse dusur() çağrılır (oyun çözünürlüğünü bir kademe indirir) */
+  window.__akici = function (dusur) {
+    var son = 0, ort = 16.7, yavas = 0;
+    return function (t) {
+      var d = son ? t - son : 0; son = t;
+      if (!d || d > 250) return;                                           /* ilk kare ya da duraklama: sayma */
+      ort += (d - ort) * 0.06;
+      if (ort > 23) yavas += d; else yavas = Math.max(0, yavas - d * 2);
+      if (yavas > 1600) { yavas = 0; ort = 16.7; try { dusur(); } catch (e) {} }
+    };
+  };
   window.__burst = burst;
   window.__flower = svgEl;
   function loop(t) {

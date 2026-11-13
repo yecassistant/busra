@@ -638,6 +638,7 @@
     if (dSonN === d.n) return; dSonN = d.n; clearTimeout(dZamanAsimi); clearInterval(dSonTekrarT);
     var bp = d.son[ben].puan || 0, op = d.son[rakip].puan || 0, kz = bp > op ? ben : op > bp ? rakip : "";
     $("dSonUst").textContent = "düello bitti ⚔️";
+    if (kz === ben && window.__kutla && !$("dSonBaslik").getAttribute("data-kutla" + dN)) { $("dSonBaslik").setAttribute("data-kutla" + dN, "1"); window.__kutla(1); }
     $("dSonBaslik").textContent = kz === ben ? "Kazandın! 🏆" : kz ? rakipAd + " kazandı" : "Berabere 🤝";
     $("dSonBen").textContent = bp; $("dSonO").textContent = op; $("dSonOAd").textContent = rakipAd;
     $("dSonMetin").textContent = d.son[rakip].sebep === "ayrildi" ? rakipAd + " oyundan çıktı; son puanıyla sayıldı." : d.son[rakip].sebep === "tasma" ? rakipAd + "'nin kutusu doldu." : d.son[ben].sebep === "tasma" ? "Senin kutun dolmuştu." : "";

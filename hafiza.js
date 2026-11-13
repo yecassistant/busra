@@ -186,7 +186,9 @@
     $("doneText").textContent = kazandim ? "Yeni oyunda ilk hamle " + (ADLAR[OTHER] ? ekIn(ADLAR[OTHER]) : "onun") + ". Oyunu ikimizden biri kurabilir." : "Yeni oyunda ilk hamle senin.";
     $("doneStats").innerHTML = "<div><b>" + ben + "</b><span>" + esc(ADLAR[ME] || "sen") + "</span></div><div><b>" + o + "</b><span>" + esc(ADLAR[OTHER] || "rakip") + "</span></div>";
     $("doneNew").textContent = kazandim ? "Yeni oyunu kur" : "Yeni oyunu başlat";
+    $("done").className = "gkover " + (kazandim ? "kazandi" : "kaybetti");
     $("done").hidden = false; snd(kazandim ? "win" : "lose");
+    if (kazandim && window.__kutla) setTimeout(function () { window.__kutla(1); }, 250);
   }
 
   /* ilk oyun kartı: rakip henüz hiç giriş yapmadıysa düğme kapalı */

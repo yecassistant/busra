@@ -15,10 +15,12 @@
   function now() { return performance.now(); }
 
   /* ---- ölçü ---- */
+  /* kareler uzun süre yavaş gelirse çözünürlük bir kademe iner (2 → 1,5 → 1): zayıf telefonda kasmasın */
+  var dprTavan = 2, kareOlc = window.__akici ? window.__akici(function () { if (dprTavan > 1) { dprTavan = Math.max(1, dprTavan - 0.5); fit(); } }) : function () {};
   var fitW = -1, fitH = -1, fitT = 0;
   function fit() {
     var vh = (window.visualViewport && window.visualViewport.height) || innerHeight;
-    var nW = stage.clientWidth || innerWidth, nH = Math.max(320, Math.round(vh)), nD = Math.min(window.devicePixelRatio || 1, 2);
+    var nW = stage.clientWidth || innerWidth, nH = Math.max(320, Math.round(vh)), nD = Math.min(window.devicePixelRatio || 1, dprTavan);
     if (nW === fitW && nH === fitH && nD === DPR) return;                 /* boyut aynıysa tuvali yeniden kurma (Safari'de çubuklar oynadıkça sürekli resize gelir) */
     fitW = nW; fitH = nH;
     W = nW; H = nH; stage.style.height = H + "px";
@@ -261,7 +263,7 @@
   function loop(t) {
     if (!running) return;
     var dt = lastT ? Math.min(0.05, (t - lastT) / 1000) : 0; lastT = t;
-    adim(dt); ciz(); requestAnimationFrame(loop);
+    adim(dt); ciz(); kareOlc(t); requestAnimationFrame(loop);
   }
   function basla() { if (!running) { running = true; lastT = 0; requestAnimationFrame(loop); } }
   document.addEventListener("visibilitychange", function () { if (document.hidden) running = false; else basla(); });

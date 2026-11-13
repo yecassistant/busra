@@ -626,7 +626,9 @@
 
   /* ---------- çizim ---------- */
   var cv = $("cv"), ctx = cv.getContext("2d"), CW = 1, CH = 1, DPR = 1;
-  function boyut() { DPR = Math.min(window.devicePixelRatio || 1, 2); CW = innerWidth; CH = innerHeight; cv.width = Math.round(CW * DPR); cv.height = Math.round(CH * DPR); cv.style.width = CW + "px"; cv.style.height = CH + "px"; zSinir(); }
+  /* kareler uzun süre yavaş gelirse çözünürlük bir kademe iner (2 → 1,5 → 1): zayıf telefonda kasmasın */
+  var dprTavan = 2, kareOlc = window.__akici ? window.__akici(function () { if (dprTavan > 1) { dprTavan = Math.max(1, dprTavan - 0.5); boyut(); } }) : function () {};
+  function boyut() { DPR = Math.min(window.devicePixelRatio || 1, dprTavan); CW = innerWidth; CH = innerHeight; cv.width = Math.round(CW * DPR); cv.height = Math.round(CH * DPR); cv.style.width = CW + "px"; cv.style.height = CH + "px"; zSinir(); }
   function zMin() { var a = CW / (W + 200), b = CH / (H + 120); return CH > CW ? Math.max(a, b * 0.55) : Math.max(a, b); }
   function zSinir() { kamera.hz = Math.max(zMin(), Math.min(2.4, kamera.hz)); }
   addEventListener("resize", boyut); boyut(); kamera.z = kamera.hz = zMin();
@@ -792,7 +794,7 @@
   /* ---------- döngü ---------- */
   var yuruYon = 0, adimT = 0;
   function dongu(ts) {
-    requestAnimationFrame(dongu);
+    requestAnimationFrame(dongu); kareOlc(ts);
     var dt = sonT ? Math.min(0.05, (ts - sonT) / 1000) : 0.016; sonT = ts; saat += dt;
     var adim = 1 / 120, kalan = dt;
     while (kalan > 1e-6) {

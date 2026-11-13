@@ -106,7 +106,7 @@
     busy = true;
     reveal(r, g, true, function () {
       busy = false; paintKeys(); row = r + 1; cur = "";
-      if (won) { endStats(true); bounce(r); setTimeout(showDone, 1300); }
+      if (won) { endStats(true); bounce(r); if (window.__kutla) setTimeout(function () { window.__kutla(1); }, 500); setTimeout(function () { $("done").className = "gkover kazandi"; showDone(); }, 1300); }
       else if (lost) { endStats(false); toast(up(ANSWER), 2200); setTimeout(showDone, 1700); }
     });
   }
