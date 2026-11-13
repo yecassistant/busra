@@ -303,6 +303,7 @@ body[data-page="tablo"],body[data-page="tablo"] *{overflow-anchor:none}
     T.oynandi.sort(function (x, y) { return ((y.d && y.d.ben) ? 1 : 0) - ((x.d && x.d.ben) ? 1 : 0) || y.n - x.n; });
     return T;
   }
+  var KUPA_SABIT = { "2026-10": { v: 3, bus: 46, yec: 48, k: "yec" } };
   var KUPA = '<svg class="tbkupa" viewBox="0 0 48 48" aria-hidden="true"><path d="M14 8h20v10a10 10 0 0 1-20 0z" fill="#f6cf6e"/><path d="M14 11H8v3a7 7 0 0 0 7 7M34 11h6v3a7 7 0 0 1-7 7" fill="none" stroke="#f6cf6e" stroke-width="3" stroke-linecap="round"/><path d="M22 27h4v7h-4z" fill="#d8962f"/><rect x="15" y="34" width="18" height="5" rx="2.5" fill="#d8962f"/><path d="M20 12c0 4 1 7 3 9" fill="none" stroke="#fff" stroke-opacity=".7" stroke-width="2" stroke-linecap="round"/></svg>';
   function ciz() {
     var list = liste();
@@ -317,6 +318,7 @@ body[data-page="tablo"],body[data-page="tablo"] *{overflow-anchor:none}
     if (iki) {
       var kayit = {}, u2, kk2, ay0 = new Date(2026, 8, 1), ay1 = new Date(yy, mm, 1), raf = "";
       for (u2 in oyuncular) { var kp = oyuncular[u2].kupalar || {}; for (kk2 in kp) if (!kayit[kk2] && kp[kk2] && kp[kk2].v === 3) kayit[kk2] = kp[kk2]; }
+      for (kk2 in KUPA_SABIT) kayit[kk2] = KUPA_SABIT[kk2];                /* elle sabitlenen kupalar hesaplananın önüne geçer */
       var eksik = null;
       for (var dd = new Date(ay0); dd < ay1; dd = new Date(dd.getFullYear(), dd.getMonth() + 1, 1)) {
         var anahtar = dd.getFullYear() + "-" + pad(dd.getMonth() + 1); if (kayit[anahtar]) continue;
