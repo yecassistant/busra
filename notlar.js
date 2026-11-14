@@ -18,7 +18,7 @@
     sarki: { ad: "Şarkı", emo: "🎵" }                                  /* kart seçicide yok; şarkı önerisinin kendi kartı */
   };
   var SIRA = ["gece", "gunes", "cicek", "kahve", "tatli", "kutlama", "kalp", "deniz", "yagmur", "sonbahar", "kar", "sinema", "kedi", "uykucu", "sifa"];
-  var db = null, ben = null, benKul = "", oteki = null, otekiAd = "", notlar = [], gosterilen = {}, kartAcik = false, basladi = false;
+  var db = null, ben = null, benKul = "", benAd = "", oteki = null, otekiAd = "", notlar = [], gosterilen = {}, kartAcik = false, basladi = false;
   var acik = false;                                                  /* Büş için notlar kilitli mi: Yunus'un oyuncu kaydındaki notlarAcik */
 
   function $(id) { return document.getElementById(id); }
@@ -161,12 +161,12 @@
     return '<div class="nk nk-sarki" role="dialog" aria-label="Şarkı önerisi">' +
       '<div class="nksahne nkpikap" aria-hidden="true">' + NOTA.map(function (x) { return '<span class="nknota" style="left:' + x[1] + "%;top:" + x[2] + "%;animation-delay:" + x[3] + "s;-webkit-animation-delay:" + x[3] + 's">' + x[0] + "</span>"; }).join("") +
       '<span class="nkplak"><b>♥</b></span><span class="nkkol"></span></div>' +
-      '<p class="nkskim">' + esc(benden ? yonelme(otekiAd) + " önerdiğin şarkı" : otekiAd + " sana bir şarkı öneriyor") + "</p>" +
+      '<p class="nkskim">' + esc(n.onizle ? (benAd || "O") + " sana bir şarkı öneriyor" : benden ? yonelme(otekiAd) + " önerdiğin şarkı" : otekiAd + " sana bir şarkı öneriyor") + "</p>" +
       '<h3 class="nksad' + (sk.a.length > 26 ? " uzun" : "") + '">' + esc(sk.a) + "</h3>" + (sk.s ? '<p class="nkskisi">' + esc(sk.s) + "</p>" : "") +
       '<div class="nkeq" aria-hidden="true">' + eq + "</div>" +
       (m && m !== "🎵" ? '<div class="nkkagit nkkucuk"><span class="nkbant"></span><p class="nkmetin' + boy + '">' + esc(m).replace(/\n/g, "<br>") + "</p></div>" : "") +
-      '<div class="nkdinle">' + (link ? '<a class="nkdl ana" href="' + esc(link) + '" target="_blank" rel="noopener noreferrer">▶ Dinle</a>'
-        : '<a class="nkdl" href="https://open.spotify.com/search/' + q + '" target="_blank" rel="noopener noreferrer">Spotify\'da aç</a><a class="nkdl" href="https://www.youtube.com/results?search_query=' + q + '" target="_blank" rel="noopener noreferrer">YouTube\'da aç</a>') + "</div>" +
+      '<div class="nkdinle' + (link ? "" : " ara") + '">' + (link ? '<a class="nkdl ana" href="' + esc(link) + '" target="_blank" rel="noopener noreferrer">▶ Dinle</a>'
+        : '<a class="nkdl" href="https://open.spotify.com/search/' + q + '" target="_blank" rel="noopener noreferrer">Spotify</a><a class="nkdl" href="https://music.youtube.com/search?q=' + q + '" target="_blank" rel="noopener noreferrer">YT Music</a><a class="nkdl" href="https://www.youtube.com/results?search_query=' + q + '" target="_blank" rel="noopener noreferrer">YouTube</a>') + "</div>" +
       '<p class="nkalt">' + esc(alt) + '</p><button type="button" class="nkbtn">' + esc(btn) + "</button></div>";
   }
   function kartHTML(n, alt, btn) {
@@ -235,8 +235,8 @@
         '<div class="nkseg nkmod" id="nkMod"><button type="button" data-m="not">Not yaz</button><button type="button" data-m="sarki">Şarkı öner 🎵</button></div>' +
         '<div id="nkSarki" hidden><label class="nklb" for="nkSAd">Şarkı</label><input class="nkin" id="nkSAd" maxlength="60" autocomplete="off" placeholder="Şarkının adı">' +
         '<label class="nklb" for="nkSKim">Söyleyen</label><input class="nkin" id="nkSKim" maxlength="50" autocomplete="off" placeholder="Sanatçı">' +
-        '<label class="nklb" for="nkSLink">Bağlantı <small>(isteğe bağlı)</small></label><input class="nkin" id="nkSLink" type="url" inputmode="url" maxlength="300" autocomplete="off" placeholder="Spotify ya da YouTube linki">' +
-        '<small class="nkipucu">Link koymazsan kartta Spotify ve YouTube\'da arama düğmeleri çıkar.</small></div>' +
+        '<label class="nklb" for="nkSLink">Bağlantı <small>(isteğe bağlı)</small></label><input class="nkin" id="nkSLink" type="url" inputmode="url" maxlength="300" autocomplete="off" placeholder="Spotify ya da YouTube Music linki">' +
+        '<small class="nkipucu">Link koymazsan kartta Spotify, YouTube Music ve YouTube\'da arama düğmeleri çıkar.</small></div>' +
         '<textarea class="nkta" id="nkMetin" maxlength="' + MAX + '" rows="4" placeholder="Bir not yaz…"></textarea><small class="nksay" id="nkSay">0/' + MAX + "</small>" +
         '<div id="nkTemaBlok"><div class="nkbas">Kart</div><div class="nktemalar" id="nkTemalar">' + SIRA.map(function (t) {
           return '<button type="button" data-t="' + t + '"><i class="nksw nk-' + t + '">' + TEMA[t].emo + "</i><span>" + TEMA[t].ad + "</span></button>";
@@ -254,7 +254,7 @@
       $("nkYazKapat").onclick = function () { ov.hidden = true; };
       $("nkOnizle").onclick = function () {
         var m = $("nkMetin").value.trim();
-        if (yaz.mod === "sarki") kartGoster({ kimden: "", metin: m || "🎵", tema: sarkiTema() || 'sarki:{"a":"Şarkının adı","s":"Sanatçı"}' }, "Önizleme · " + otekiAd + " böyle görecek", "Kapat");
+        if (yaz.mod === "sarki") kartGoster({ onizle: true, kimden: "", metin: m || "🎵", tema: sarkiTema() || 'sarki:{"a":"Şarkının adı","s":"Sanatçı"}' }, "Önizleme · " + otekiAd + " böyle görecek", "Kapat");
         else kartGoster({ metin: m || "Notun burada görünecek.", tema: yaz.tema }, "Önizleme · " + otekiAd + " böyle görecek", "Kapat");
       };
       $("nkGonder").onclick = gonder;
@@ -374,7 +374,7 @@
   };
   Hesap.izle(function (k) {
     if (!k || !k.kesin || basladi) return; basladi = true;
-    ben = k.uid; benKul = k.kul || ""; otekiAd = Hesap.gorunenAd ? Hesap.gorunenAd(k.kul === "bus" ? "yec" : "bus") : (k.kul === "bus" ? "Yunus" : "Büşra");
+    ben = k.uid; benKul = k.kul || ""; benAd = k.ad || (Hesap.gorunenAd ? Hesap.gorunenAd(k.kul) : ""); otekiAd = Hesap.gorunenAd ? Hesap.gorunenAd(k.kul === "bus" ? "yec" : "bus") : (k.kul === "bus" ? "Yunus" : "Büşra");
     Hesap.db().then(function (d) {
       db = d; kart.hidden = false; menuyuCiz();
       d.collection("oyuncular").onSnapshot(function (snap) {

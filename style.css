@@ -4062,3 +4062,6 @@ body[data-page="takvim"] .tkherotx b{font-size:1.36rem}
 @-webkit-keyframes nkSarkiAd{from{opacity:0;-webkit-transform:translateY(10px) scale(.92)}to{opacity:1;-webkit-transform:none}}
 @keyframes nkSarkiAd{from{opacity:0;transform:translateY(10px) scale(.92)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){.nkplak,.nkkol,.nknota,.nkeq i,.nksad{-webkit-animation:none;animation:none}.nknota{opacity:.8}}
+.nkdinle{flex-wrap:wrap}
+.nkdl{flex:1 1 0;min-width:0;padding:0 6px;font-size:.88rem;white-space:nowrap}
+.nkdinle.ara:before{content:"Şurada aç";flex:0 0 100%;margin-bottom:-2px;font-size:12px;font-weight:700;opacity:.7}
