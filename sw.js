@@ -3,8 +3,8 @@
    - Sayfalar (html): önce ağ (en güncel sürüm), ağ 1,2 sn'de cevap vermezse ya da yoksa saklanan kopya → hem güncel hem hızlı.
    - Sürümlü dosyalar (?v=…), resimler, ses, Firebase SDK ve Google yazı tipleri: önce saklanan kopya, yoksa ağ.
    - Firestore / giriş istekleri hiç saklanmaz (canlı veri).
-   Yeni sürüm yüklenince SURUM'u değiştirmek yeterli; eski saklananlar silinir. */
-var SURUM = "qg-1022x";
+   Yeni sürüm yüklenince SURUM'u değiştirmek yeterli; eski saklananlar silinir, js/css dosyaları sunucudan tazelenir. */
+var SURUM = "qg-1022y";
 var ONCE = ["oyunlar.html", "manifest.webmanifest", "ikon/app-192.png"];
 self.addEventListener("install", function (e) {
   e.waitUntil(caches.open(SURUM).then(function (c) { return c.addAll(ONCE).catch(function () {}); }).then(function () { return self.skipWaiting(); }));
@@ -16,7 +16,9 @@ function sakla(req, res) { if (res && (res.ok || res.type === "opaque")) { var k
 function oncedenSakli(req) {
   return caches.match(req).then(function (hit) {
     if (hit && /[?&]v=|firebasejs\/\d/.test(req.url)) return hit;           /* sürümlü dosya değişmez: ağa hiç gitme */
-    var ag = fetch(req).then(function (res) { return sakla(req, res); });
+    /* kendi js/css dosyalarımız saklanırken tarayıcının eski kopyası değil sunucudaki güncel hali alınır (değişmediyse sunucu "aynı" der, yeniden inmez) */
+    var kendi = req.url.indexOf(self.location.origin) === 0 && /\.(js|css)(\?|$)/.test(req.url);
+    var ag = (kendi ? fetch(req.url, { cache: "no-cache" }) : fetch(req)).then(function (res) { return sakla(req, res); });
     if (hit) { ag.catch(function () {}); return hit; }
     return ag;
   });
