@@ -2,7 +2,8 @@
    notlar/{id} = { kimden, kime, metin (en çok 240), tema: gece | cicek | kahve | kutlama,
                    t: yazıldığı an, acilis: 0 (hemen) ya da ms (o saatten önce görünmez), okundu: null | an }
    Gelen not, açılış saati gelince menüde kartla çıkar; "Tamam" deyince okundu yazılır, gönderen geçmişte görür.
-   Okunmamış notu gönderen geri alabilir (silinir). */
+   Okunmamış notu gönderen geri alabilir (silinir).
+   Şarkı önerisi de bir nottur: tema alanı "sarki:" + JSON { a: şarkı adı, s: sanatçı, l: bağlantı } olur, metin yanındaki nottur (yoksa "🎵"). */
 (function () {
   "use strict";
   var kart = document.getElementById("toNotlar");
@@ -13,7 +14,8 @@
     gece: { ad: "Gece", emo: "🌙" }, gunes: { ad: "Günaydın", emo: "☀️" }, cicek: { ad: "Çiçek", emo: "🌸" }, kahve: { ad: "Kahve", emo: "☕" },
     tatli: { ad: "Tatlı", emo: "🧁" }, kutlama: { ad: "Kutlama", emo: "🎉" }, kalp: { ad: "Kalp", emo: "💗" }, deniz: { ad: "Deniz", emo: "🐬" },
     yagmur: { ad: "Yağmur", emo: "🌧️" }, sonbahar: { ad: "Sonbahar", emo: "🍂" }, kar: { ad: "Kar", emo: "❄️" }, sinema: { ad: "Sinema", emo: "🍿" },
-    kedi: { ad: "Kedi", emo: "🐱" }, uykucu: { ad: "Uykucu", emo: "😺" }, sifa: { ad: "Şifa", emo: "🍵" }
+    kedi: { ad: "Kedi", emo: "🐱" }, uykucu: { ad: "Uykucu", emo: "😺" }, sifa: { ad: "Şifa", emo: "🍵" },
+    sarki: { ad: "Şarkı", emo: "🎵" }                                  /* kart seçicide yok; şarkı önerisinin kendi kartı */
   };
   var SIRA = ["gece", "gunes", "cicek", "kahve", "tatli", "kutlama", "kalp", "deniz", "yagmur", "sonbahar", "kar", "sinema", "kedi", "uykucu", "sifa"];
   var db = null, ben = null, benKul = "", oteki = null, otekiAd = "", notlar = [], gosterilen = {}, kartAcik = false, basladi = false;
@@ -32,6 +34,13 @@
     var s = ad.toLocaleLowerCase("tr"), v = s.match(/[aeıioöuü]/g), son = v ? v[v.length - 1] : "a";
     return ad + "'" + (/[aeıioöuü]$/.test(s) ? "y" : "") + ("eiöü".indexOf(son) >= 0 ? "e" : "a");
   }
+  function sarkiOf(n) {                                              /* not bir şarkı önerisiyse { a, s, l } */
+    var t = String((n && n.tema) || ""); if (t.indexOf("sarki:") !== 0) return null;
+    try { var o = JSON.parse(t.slice(6)); return o && o.a ? o : null; } catch (e) { return null; }
+  }
+  function temaOf(n) { return sarkiOf(n) ? "sarki" : TEMA[n.tema] && n.tema !== "sarki" ? n.tema : "gece"; }
+  function linkTemiz(l) { l = String(l || "").trim(); return /^https?:\/\/[^\s<>"']+$/i.test(l) ? l : ""; }
+  function sarkiBaslik(sk) { return sk.a + (sk.s ? " – " + sk.s : ""); }
   function tost(t) {
     var el = $("nkTost"); if (!el) { el = document.createElement("div"); el.id = "nkTost"; el.className = "nktost"; el.setAttribute("role", "status"); document.body.appendChild(el); }
     el.textContent = t; el.classList.add("on"); clearTimeout(tost.z); tost.z = setTimeout(function () { el.classList.remove("on"); }, 3200);
@@ -145,8 +154,24 @@
     else sahne = SAHNE[t];
     return duse + '<div class="nksahne" aria-hidden="true">' + sahne + "</div>";
   }
+  var NOTA = [["♪", 12, 58, 0], ["♫", 24, 20, 1.3], ["♩", 80, 14, .6], ["♪", 90, 56, 2.1], ["♫", 70, 78, 2.8], ["♩", 6, 84, 3.4]];
+  function sarkiKart(n, sk, alt, btn) {                               /* dönen plak, pikap kolu, yükselen notalar, atan ses çubukları */
+    var m = String(n.metin || ""), boy = m.length > 90 ? " uzun" : m.length > 40 ? " orta" : "", benden = n.kimden === ben, link = linkTemiz(sk.l), q = encodeURIComponent(sarkiBaslik(sk).replace(" – ", " "));
+    var eq = ""; for (var i = 0; i < 13; i++) eq += '<i style="animation-delay:-' + ((i * 0.37) % 1.3).toFixed(2) + "s;-webkit-animation-delay:-" + ((i * 0.37) % 1.3).toFixed(2) + "s;animation-duration:" + (0.8 + (i * 7 % 5) * 0.14).toFixed(2) + "s;-webkit-animation-duration:" + (0.8 + (i * 7 % 5) * 0.14).toFixed(2) + 's"></i>';
+    return '<div class="nk nk-sarki" role="dialog" aria-label="Şarkı önerisi">' +
+      '<div class="nksahne nkpikap" aria-hidden="true">' + NOTA.map(function (x) { return '<span class="nknota" style="left:' + x[1] + "%;top:" + x[2] + "%;animation-delay:" + x[3] + "s;-webkit-animation-delay:" + x[3] + 's">' + x[0] + "</span>"; }).join("") +
+      '<span class="nkplak"><b>♥</b></span><span class="nkkol"></span></div>' +
+      '<p class="nkskim">' + esc(benden ? yonelme(otekiAd) + " önerdiğin şarkı" : otekiAd + " sana bir şarkı öneriyor") + "</p>" +
+      '<h3 class="nksad' + (sk.a.length > 26 ? " uzun" : "") + '">' + esc(sk.a) + "</h3>" + (sk.s ? '<p class="nkskisi">' + esc(sk.s) + "</p>" : "") +
+      '<div class="nkeq" aria-hidden="true">' + eq + "</div>" +
+      (m && m !== "🎵" ? '<div class="nkkagit nkkucuk"><span class="nkbant"></span><p class="nkmetin' + boy + '">' + esc(m).replace(/\n/g, "<br>") + "</p></div>" : "") +
+      '<div class="nkdinle">' + (link ? '<a class="nkdl ana" href="' + esc(link) + '" target="_blank" rel="noopener noreferrer">▶ Dinle</a>'
+        : '<a class="nkdl" href="https://open.spotify.com/search/' + q + '" target="_blank" rel="noopener noreferrer">Spotify\'da aç</a><a class="nkdl" href="https://www.youtube.com/results?search_query=' + q + '" target="_blank" rel="noopener noreferrer">YouTube\'da aç</a>') + "</div>" +
+      '<p class="nkalt">' + esc(alt) + '</p><button type="button" class="nkbtn">' + esc(btn) + "</button></div>";
+  }
   function kartHTML(n, alt, btn) {
-    var t = TEMA[n.tema] ? n.tema : "gece", m = String(n.metin || ""), boy = m.length > 130 ? " uzun" : m.length > 60 ? " orta" : "";
+    var sk = sarkiOf(n); if (sk) return sarkiKart(n, sk, alt, btn);
+    var t = temaOf(n), m = String(n.metin || ""), boy = m.length > 130 ? " uzun" : m.length > 60 ? " orta" : "";
     return '<div class="nk nk-' + t + '" role="dialog" aria-label="Not">' + sanat(t) +
       '<div class="nkkagit"><span class="nkbant"></span><p class="nkmetin' + boy + '">' + esc(m).replace(/\n/g, "<br>") + "</p></div>" +
       '<p class="nkalt">' + esc(alt) + '</p><button type="button" class="nkbtn">' + esc(btn) + "</button></div>";
@@ -169,7 +194,7 @@
     if ($("qmAcilis") || document.querySelector(".kdov")) { setTimeout(sirayaBak, 600); return; }      /* açılış animasyonu ya da kedi kartı bitsin */
     var L = bekleyenler(); if (!L.length) return;
     var n = L[0]; gosterilen[n.id] = true; kartAcik = true;
-    kartGoster(n, gelenAlt(n), "Tamam " + (TEMA[n.tema] || TEMA.gece).emo, function () {
+    kartGoster(n, gelenAlt(n), "Tamam " + TEMA[temaOf(n)].emo, function () {
       kartAcik = false;
       db.collection("notlar").doc(n.id).set({ okundu: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true }).catch(function () {});
       setTimeout(sirayaBak, 380);
@@ -196,7 +221,7 @@
   }
 
   /* ---------- not yaz ---------- */
-  var yaz = { tema: "gece", zaman: "hemen" };
+  var yaz = { tema: "gece", zaman: "hemen", mod: "not" };
   function sabah() { var d = new Date(), h = new Date(); h.setHours(8, 0, 0, 0); if (h <= d) h.setDate(h.getDate() + 1); return h.getTime(); }
   function yerelDeger(t) { var d = new Date(t); return d.getFullYear() + "-" + iki(d.getMonth() + 1) + "-" + iki(d.getDate()) + "T" + iki(d.getHours()) + ":" + iki(d.getMinutes()); }
   function yereldenMs(v) { var m = /^(\d{4})-(\d\d)-(\d\d)T(\d\d):(\d\d)/.exec(v || ""); return m ? new Date(+m[1], +m[2] - 1, +m[3], +m[4], +m[5]).getTime() : 0; }
@@ -207,10 +232,15 @@
       ov = document.createElement("div"); ov.className = "gkover nkov"; ov.id = "nkYaz"; ov.hidden = true;
       ov.innerHTML = '<div class="nkpanel" role="dialog" aria-label="Not yaz">' +
         '<h2>' + esc(yonelme(otekiAd)) + ' not 💌</h2>' +
+        '<div class="nkseg nkmod" id="nkMod"><button type="button" data-m="not">Not yaz</button><button type="button" data-m="sarki">Şarkı öner 🎵</button></div>' +
+        '<div id="nkSarki" hidden><label class="nklb" for="nkSAd">Şarkı</label><input class="nkin" id="nkSAd" maxlength="60" autocomplete="off" placeholder="Şarkının adı">' +
+        '<label class="nklb" for="nkSKim">Söyleyen</label><input class="nkin" id="nkSKim" maxlength="50" autocomplete="off" placeholder="Sanatçı">' +
+        '<label class="nklb" for="nkSLink">Bağlantı <small>(isteğe bağlı)</small></label><input class="nkin" id="nkSLink" type="url" inputmode="url" maxlength="300" autocomplete="off" placeholder="Spotify ya da YouTube linki">' +
+        '<small class="nkipucu">Link koymazsan kartta Spotify ve YouTube\'da arama düğmeleri çıkar.</small></div>' +
         '<textarea class="nkta" id="nkMetin" maxlength="' + MAX + '" rows="4" placeholder="Bir not yaz…"></textarea><small class="nksay" id="nkSay">0/' + MAX + "</small>" +
-        '<div class="nkbas">Kart</div><div class="nktemalar" id="nkTemalar">' + SIRA.map(function (t) {
+        '<div id="nkTemaBlok"><div class="nkbas">Kart</div><div class="nktemalar" id="nkTemalar">' + SIRA.map(function (t) {
           return '<button type="button" data-t="' + t + '"><i class="nksw nk-' + t + '">' + TEMA[t].emo + "</i><span>" + TEMA[t].ad + "</span></button>";
-        }).join("") + "</div>" +
+        }).join("") + "</div></div>" +
         '<div class="nkbas">Ne zaman açılsın?</div><div class="nkseg" id="nkZaman"><button type="button" data-z="hemen">Hemen</button><button type="button" data-z="sabah">Sabah 08:00<small id="nkSabahGun"></small></button><button type="button" data-z="ozel">Saat seç</button></div>' +
         '<input type="datetime-local" class="nksaat" id="nkSaat" hidden>' +
         '<p class="nkuyari" id="nkUyari" role="alert"></p>' +
@@ -220,14 +250,27 @@
       $("nkMetin").addEventListener("input", function () { $("nkSay").textContent = this.value.length + "/" + MAX; $("nkUyari").textContent = ""; });
       $("nkTemalar").onclick = function (e) { var b = e.target.closest ? e.target.closest("button") : null; if (b) { yaz.tema = b.getAttribute("data-t"); yazCiz(); } };
       $("nkZaman").onclick = function (e) { var b = e.target.closest ? e.target.closest("button") : null; if (b) { yaz.zaman = b.getAttribute("data-z"); yazCiz(); if (yaz.zaman === "ozel") try { $("nkSaat").focus(); } catch (er) {} } };
+      $("nkMod").onclick = function (e) { var b = e.target.closest ? e.target.closest("button") : null; if (b) { yaz.mod = b.getAttribute("data-m"); $("nkUyari").textContent = ""; yazCiz(); if (yaz.mod === "sarki") try { $("nkSAd").focus(); } catch (er) {} } };
       $("nkYazKapat").onclick = function () { ov.hidden = true; };
-      $("nkOnizle").onclick = function () { var m = $("nkMetin").value.trim(); kartGoster({ metin: m || "Notun burada görünecek.", tema: yaz.tema }, "Önizleme · " + otekiAd + " böyle görecek", "Kapat"); };
+      $("nkOnizle").onclick = function () {
+        var m = $("nkMetin").value.trim();
+        if (yaz.mod === "sarki") kartGoster({ kimden: "", metin: m || "🎵", tema: sarkiTema() || 'sarki:{"a":"Şarkının adı","s":"Sanatçı"}' }, "Önizleme · " + otekiAd + " böyle görecek", "Kapat");
+        else kartGoster({ metin: m || "Notun burada görünecek.", tema: yaz.tema }, "Önizleme · " + otekiAd + " böyle görecek", "Kapat");
+      };
       $("nkGonder").onclick = gonder;
     }
     yazCiz(); ov.hidden = false;
     setTimeout(function () { try { $("nkMetin").focus(); } catch (e) {} }, 60);
   }
+  function sarkiTema() {                                             /* formdaki şarkıyı tema alanına yazılacak biçime çevirir; ad yoksa "" */
+    var a = $("nkSAd").value.trim().slice(0, 60), k = $("nkSKim").value.trim().slice(0, 50), l = linkTemiz($("nkSLink").value);
+    if (!a) return ""; var o = { a: a }; if (k) o.s = k; if (l) o.l = l; return "sarki:" + JSON.stringify(o);
+  }
   function yazCiz() {
+    var sm = yaz.mod === "sarki";
+    [].forEach.call($("nkMod").children, function (b) { b.classList.toggle("on", b.getAttribute("data-m") === yaz.mod); });
+    $("nkSarki").hidden = !sm; $("nkTemaBlok").hidden = sm;
+    $("nkMetin").placeholder = sm ? "Yanına bir not (isteğe bağlı)…" : "Bir not yaz…"; $("nkMetin").classList.toggle("kisa", sm);
     [].forEach.call($("nkTemalar").children, function (b) { b.classList.toggle("on", b.getAttribute("data-t") === yaz.tema); });
     [].forEach.call($("nkZaman").children, function (b) { b.classList.toggle("on", b.getAttribute("data-z") === yaz.zaman); });
     $("nkSabahGun").textContent = gunFark(sabah()) === 0 ? "bugün" : "yarın";
@@ -236,16 +279,23 @@
     if (!s.value) s.value = yerelDeger(sabah());
   }
   function gonder() {
-    var m = $("nkMetin").value.trim(), uy = $("nkUyari");
+    var m = $("nkMetin").value.trim(), uy = $("nkUyari"), sm = yaz.mod === "sarki", tema = yaz.tema;
+    if (sm) {
+      tema = sarkiTema();
+      if (!tema) { uy.textContent = "Şarkının adını yaz 🎵"; return; }
+      if ($("nkSLink").value.trim() && !linkTemiz($("nkSLink").value)) { uy.textContent = "Bağlantı https:// ile başlamalı; ya düzelt ya da boş bırak."; return; }
+      if (!m) m = "🎵";
+    }
     if (!m) { uy.textContent = "Önce bir şey yaz 🙂"; return; }
     if (!oteki) { uy.textContent = otekiAd + " henüz giriş yapmadı; o girince not gönderebilirsin."; return; }
     var ac = yaz.zaman === "hemen" ? 0 : yaz.zaman === "sabah" ? sabah() : yereldenMs($("nkSaat").value);
     if (yaz.zaman === "ozel" && (!ac || ac < Date.now() + 60000)) { uy.textContent = "İleride bir saat seç."; return; }
     var b = $("nkGonder"); b.disabled = true; b.textContent = "Gidiyor…";
-    db.collection("notlar").add({ kimden: ben, kime: oteki, metin: m.slice(0, MAX), tema: yaz.tema, t: firebase.firestore.FieldValue.serverTimestamp(), acilis: ac, okundu: null })
+    db.collection("notlar").add({ kimden: ben, kime: oteki, metin: m.slice(0, MAX), tema: tema, t: firebase.firestore.FieldValue.serverTimestamp(), acilis: ac, okundu: null })
       .then(function () {
         b.disabled = false; b.textContent = "Gönder"; $("nkMetin").value = ""; $("nkSay").textContent = "0/" + MAX; $("nkYaz").hidden = true;
-        tost(ac ? "Not yolda 💌 Açılış: " + zaman(ac) : "Not gitti 💌 " + otekiAd + " menüyü açınca görecek.");
+        if (sm) { $("nkSAd").value = ""; $("nkSKim").value = ""; $("nkSLink").value = ""; }
+        tost(sm ? (ac ? "Şarkı yolda 🎵 Açılış: " + zaman(ac) : "Şarkı gitti 🎵 " + otekiAd + " menüyü açınca görecek.") : ac ? "Not yolda 💌 Açılış: " + zaman(ac) : "Not gitti 💌 " + otekiAd + " menüyü açınca görecek.");
         if ($("nkListe") && !$("nkListe").hidden) { liste.sekme = "giden"; listeCiz(); }
       }, function () { b.disabled = false; b.textContent = "Gönder"; uy.textContent = "Gönderilemedi; internet bağlantına bakıp tekrar dene."; });
   }
@@ -293,12 +343,12 @@
       .sort(function (a, b) { return (b.acilis || yaziZamani(b)) - (a.acilis || yaziZamani(a)); });
     if (!L.length) { ul.innerHTML = '<li class="nkbos">' + (gelen ? "Henüz gelen not yok." : "Henüz not göndermedin. Yukarıdan ilkini yaz 💌") + "</li>"; return; }
     ul.innerHTML = L.map(function (n) {
-      var t = TEMA[n.tema] ? n.tema : "gece";
+      var t = temaOf(n), sk = sarkiOf(n);
       if (gelen && !acikMi(n)) return '<li class="nki kilit"><span class="nkie nk-' + t + '">🔒</span><span class="nkit"><b>Bir not yolda</b><small>Açılış: ' + esc(zaman(n.acilis)) + "</small></span></li>";
       var alt = gelen ? (n.acilis ? "⏰ " + zaman(n.acilis) : zaman(yaziZamani(n))) :
         !acikMi(n) ? "⏰ Açılış: " + zaman(n.acilis) : n.okundu ? "✓ Okundu · " + zaman(ms(n.okundu) || Date.now()) : "Gitti · henüz açmadı";
       var geri = !gelen && !n.okundu ? '<button type="button" class="nkgeri" data-sil="' + esc(n.id) + '">' + (liste.silinecek === n.id ? "Emin misin?" : "Geri al") + "</button>" : "";
-      return '<li class="nki' + (!gelen && n.okundu ? " okundu" : "") + '" data-id="' + esc(n.id) + '"><span class="nkie nk-' + t + '">' + TEMA[t].emo + '</span><span class="nkit"><b>' + esc(n.metin) + "</b><small>" + esc(alt) + "</small></span>" + geri + "</li>";
+      return '<li class="nki' + (!gelen && n.okundu ? " okundu" : "") + '" data-id="' + esc(n.id) + '"><span class="nkie nk-' + t + '">' + TEMA[t].emo + '</span><span class="nkit"><b>' + esc(sk ? sarkiBaslik(sk) : n.metin) + "</b><small>" + esc(alt) + "</small></span>" + geri + "</li>";
     }).join("");
   }
   function listeTik(e) {

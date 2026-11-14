@@ -4016,3 +4016,49 @@ body[data-page="takvim"] .tkherotx b{font-size:1.36rem}
 @keyframes gkSkor{from{opacity:0;transform:translateY(8px) scale(.8)}to{opacity:1;transform:none}}
 @-webkit-keyframes gkSakin{from{opacity:0;-webkit-transform:translateY(10px)}to{opacity:1;-webkit-transform:none}}
 @keyframes gkSakin{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+/* Notlar – şarkı önerisi kartı: dönen plak, pikap kolu, yükselen notalar, atan ses çubukları */
+.nk-sarki{background:radial-gradient(120% 70% at 50% 0%,#3a6a86 0%,#213a5a 44%,#141a36 100%)}
+.nkie.nk-sarki,.nksw.nk-sarki{background:linear-gradient(135deg,#3a6a86,#1b2a4e)}
+.nkpikap{height:136px;margin-bottom:10px}
+.nkplak{position:absolute;left:50%;top:8px;width:124px;height:124px;margin-left:-62px;border-radius:50%;background:repeating-radial-gradient(circle at 50% 50%,#121018 0,#121018 2px,#2a2634 2px,#2a2634 3px);box-shadow:0 10px 24px rgba(0,0,0,.55),inset 0 0 0 3px #0b0a10;-webkit-animation:nkDon 5.5s linear infinite;animation:nkDon 5.5s linear infinite}
+.nkplak:before{content:"";position:absolute;left:0;top:0;right:0;bottom:0;border-radius:50%;background:conic-gradient(from 30deg,rgba(255,255,255,0) 0 18%,rgba(255,255,255,.2) 24%,rgba(255,255,255,0) 30% 68%,rgba(255,255,255,.14) 74%,rgba(255,255,255,0) 80%)}
+.nkplak b{position:absolute;left:50%;top:50%;width:46px;height:46px;margin:-23px 0 0 -23px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:17px;line-height:1;color:#7a1033;background:linear-gradient(135deg,#ffb3cc,#f2c35b);box-shadow:inset 0 0 0 2px rgba(255,255,255,.5)}
+.nkplak b:after{content:"";position:absolute;left:50%;top:50%;width:6px;height:6px;margin:-3px 0 0 -3px;border-radius:50%;background:#141a36}
+.nkkol{position:absolute;left:50%;top:0;width:7px;height:84px;margin-left:66px;border-radius:4px;background:linear-gradient(90deg,#e9edf5,#aab3c6);-webkit-transform-origin:50% 9px;transform-origin:50% 9px;-webkit-transform:rotate(26deg);transform:rotate(26deg);-webkit-animation:nkKol 2.8s ease-in-out infinite alternate;animation:nkKol 2.8s ease-in-out infinite alternate;box-shadow:0 4px 8px rgba(0,0,0,.35)}
+.nkkol:before{content:"";position:absolute;left:50%;top:0;width:20px;height:20px;margin-left:-10px;border-radius:50%;background:radial-gradient(circle at 40% 35%,#fff,#9aa3b8);box-shadow:0 2px 5px rgba(0,0,0,.4)}
+.nkkol:after{content:"";position:absolute;left:50%;bottom:-4px;width:15px;height:20px;margin-left:-7.5px;border-radius:4px;background:#f2c35b;box-shadow:inset 0 -5px 0 #c9992f}
+.nknota{position:absolute;z-index:2;font-size:20px;line-height:1;color:#ffe6a6;opacity:0;text-shadow:0 2px 6px rgba(0,0,0,.35);-webkit-animation:nkNota 4.2s ease-in-out infinite;animation:nkNota 4.2s ease-in-out infinite}
+.nknota:nth-child(2n){color:#ffb3cc;font-size:17px}
+.nknota:nth-child(3n){color:#bfe3ff}
+.nkskim{position:relative;z-index:1;margin:0 0 4px;font-family:Caveat,"Bradley Hand",cursive;font-weight:700;font-size:21px;line-height:1.1;color:#ffe6a6}
+.nksad{position:relative;z-index:1;margin:0;font:900 1.6rem/1.12 Nunito,system-ui,sans-serif;letter-spacing:-.01em;overflow-wrap:anywhere;word-wrap:break-word;-webkit-animation:nkSarkiAd .6s cubic-bezier(.2,1.4,.4,1) .15s both;animation:nkSarkiAd .6s cubic-bezier(.2,1.4,.4,1) .15s both}
+.nksad.uzun{font-size:1.28rem}
+.nkskisi{position:relative;z-index:1;margin:4px 0 0;font-weight:700;font-size:1rem;color:#cfe0f5}
+.nkeq{position:relative;z-index:1;display:flex;justify-content:center;align-items:flex-end;gap:4px;height:26px;margin:12px 0 4px}
+.nkeq i{display:block;width:5px;height:100%;border-radius:3px;background:linear-gradient(180deg,#ffb3cc,#f2c35b);-webkit-transform-origin:50% 100%;transform-origin:50% 100%;-webkit-animation:nkEq 1s ease-in-out infinite alternate;animation:nkEq 1s ease-in-out infinite alternate}
+.nkkagit.nkkucuk{margin-top:16px;padding:20px 14px 16px;max-height:22vh}
+.nkkucuk .nkmetin{font-size:27px}.nkkucuk .nkmetin.orta{font-size:23px}.nkkucuk .nkmetin.uzun{font-size:20px}
+.nkdinle{position:relative;z-index:1;display:flex;gap:8px;margin-top:16px}
+.nkdl{flex:1;display:flex;align-items:center;justify-content:center;min-height:46px;padding:0 10px;border-radius:14px;font:800 .92rem Nunito,system-ui,sans-serif;color:#fff;text-decoration:none;background:rgba(255,255,255,.12);box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.3);-webkit-tap-highlight-color:transparent}
+.nkdl.ana{color:#3b2a08;background:linear-gradient(180deg,#ffe08a,#f2b33c);box-shadow:0 4px 0 #b17e1c}
+.nkdl:active{-webkit-transform:translateY(2px);transform:translateY(2px)}
+.nkdl:focus-visible{outline:3px solid #ffe6a6;outline-offset:2px}
+.nk-sarki .nkalt{margin:14px 0 10px}
+.nk-sarki .nkbtn{background:#bfe3ff;color:#16304f;box-shadow:0 4px 0 #7fa9cf}
+.nkmod{margin-bottom:12px}
+.nklb{display:block;margin:10px 2px 5px;font-size:.82rem;font-weight:800;color:#7a5a76}
+.nklb small{font-weight:700;opacity:.7}
+.nkin{display:block;width:100%;box-sizing:border-box;min-height:48px;border:2px solid #f0d5e3;border-radius:14px;padding:8px 12px;font:700 16px Nunito,system-ui,sans-serif;color:#3b2440;background:#fff;outline:none;-webkit-appearance:none;appearance:none}
+.nkin:focus{border-color:#ec6f9a}
+.nkipucu{display:block;margin:6px 2px 12px;font-size:.74rem;line-height:1.3;color:#9a7a96}
+.nkta.kisa{min-height:72px}
+#nkSarki[hidden],#nkTemaBlok[hidden]{display:none}
+@-webkit-keyframes nkKol{from{-webkit-transform:rotate(24deg)}to{-webkit-transform:rotate(28deg)}}
+@keyframes nkKol{from{transform:rotate(24deg)}to{transform:rotate(28deg)}}
+@-webkit-keyframes nkNota{0%{opacity:0;-webkit-transform:translateY(10px) rotate(-8deg) scale(.7)}25%{opacity:.95}100%{opacity:0;-webkit-transform:translateY(-34px) rotate(14deg) scale(1.1)}}
+@keyframes nkNota{0%{opacity:0;transform:translateY(10px) rotate(-8deg) scale(.7)}25%{opacity:.95}100%{opacity:0;transform:translateY(-34px) rotate(14deg) scale(1.1)}}
+@-webkit-keyframes nkEq{from{-webkit-transform:scaleY(.18)}to{-webkit-transform:scaleY(1)}}
+@keyframes nkEq{from{transform:scaleY(.18)}to{transform:scaleY(1)}}
+@-webkit-keyframes nkSarkiAd{from{opacity:0;-webkit-transform:translateY(10px) scale(.92)}to{opacity:1;-webkit-transform:none}}
+@keyframes nkSarkiAd{from{opacity:0;transform:translateY(10px) scale(.92)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.nkplak,.nkkol,.nknota,.nkeq i,.nksad{-webkit-animation:none;animation:none}.nknota{opacity:.8}}
