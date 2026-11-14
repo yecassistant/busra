@@ -100,6 +100,7 @@ body[data-page="tablo"],body[data-page="tablo"] *{overflow-anchor:none}
 .tbds b{min-width:1.3em;font-size:1.5rem;font-weight:900;line-height:1;text-align:center}
 .tbds b.a{color:#ffb3cc}.tbds b.b{color:#c9b5ff}
 .tbda{display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:.74rem;color:rgba(235,225,255,.6)}
+.tbda.orta{justify-content:center}
 .tbda u{text-decoration:none;font-weight:800;color:rgba(235,225,255,.75)}
 .tbda u.ust{color:#f2c35b}
 .tbbos{display:flex;flex-wrap:wrap;gap:8px}
@@ -260,9 +261,7 @@ body[data-page="tablo"],body[data-page="tablo"] *{overflow-anchor:none}
   try { kapsam = sessionStorage.getItem("tb_kapsam") || "ay"; } catch (e) {}
   var AYUZUN = ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"];
   function ekIn2(ad) { var m = String(ad).toLowerCase().match(/[aeıioöuü](?![\s\S]*[aeıioöuü])/), v = m ? m[0] : "a", son = /[aeıioöuü]$/i.test(ad); return ad + "'" + (son ? "n" : "") + ({ a: "ı", "ı": "ı", e: "i", i: "i", o: "u", u: "u", "ö": "ü", "ü": "ü" }[v] || "ı") + "n"; }
-  /* az maç az puan: oyun maç başına 2 puan dağıtır, 5 maçta 10'a dolar; pay yine (galibiyet + beraberliğin yarısı + 1) / (maç + 2) */
-  function kasa(n) { return Math.min(10, 2 * n); }
-  function pay(w0, br, n) { return Math.round(kasa(n) * (w0 + br / 2 + 1) / (n + 2)); }
+  /* puanlama: her galibiyet 1 puan, beraberlik puan getirmez (Ekim kupası eski hesapla sabit kaldı) */
   function gununSay(list, y, m) {                                     /* Günün Kelimesi: ikinizin de bitirdiği her gün bir maç (y,m verilirse sadece o ay) */
     var d0 = list[0].d || {}, d1 = list[1].d || {}, r = { w0: 0, w1: 0, n: 0, br: 0 }, on = y === undefined ? "gk_d" : "gk_d" + y + "-" + pad(m + 1) + "-", gun;
     for (gun in d0) {
@@ -295,8 +294,7 @@ body[data-page="tablo"],body[data-page="tablo"] *{overflow-anchor:none}
       var x = S[k] || { w0: 0, w1: 0, n: 0, br: 0 }, d = null;
       if (durumlu) { if (k === "gunun") { var br = obj(((list[0].uid === ben ? list[0].d : list[1].d) || {})["gk_d" + ymd(new Date())]); d = !br || br.s === "p" ? { ben: true, t: "bugünkü kelime" } : null; } else d = durumOf(k); }
       if (!x.n) { T.bos.push({ k: k, d: d }); return; }
-      var p0 = pay(x.w0, x.br, x.n);
-      var p1 = kasa(x.n) - p0;
+      var p0 = x.w0, p1 = x.w1;
       T.p0 += p0; T.p1 += p1;
       T.oynandi.push({ k: k, d: d, w0: x.w0, w1: x.w1, n: x.n, br: x.br, p0: p0, p1: p1 });
     });
@@ -337,13 +335,13 @@ body[data-page="tablo"],body[data-page="tablo"] *{overflow-anchor:none}
       html += '<div class="tbbas ilk">Kupa rafı<small>' + (raf ? "biten ayların kupaları" : "ilk kupa " + esc(AYUZUN[mm]) + " sonunda gelir") + "</small></div>" + (raf ? '<div class="tbraf2">' + raf + "</div>" : "");
     }
     if (T.oynandi.length) {
-      html += '<div class="tbbas">' + (ayMod ? "Bu ay oynadıklarımız" : "Oynadıklarımız") + "<small>maç başına 2 puan, en çok 10</small></div>";
+      html += '<div class="tbbas">' + (ayMod ? "Bu ay oynadıklarımız" : "Oynadıklarımız") + "<small>her galibiyet 1 puan</small></div>";
       T.oynandi.forEach(function (x, i) {
-        var yuzde = Math.round(100 * (x.w0 + x.br / 2 + 1) / (x.n + 2));
+        var yuzde = x.w0 + x.w1 ? Math.round(100 * x.w0 / (x.w0 + x.w1)) : 50;
         html += '<a class="tbd' + (x.d && x.d.ben ? " sira" : "") + '" style="--i:' + i + '" href="' + (LINK[x.k] || "oyunlar.html") + '">' +
           '<span class="tbdu"><i aria-hidden="true">' + (IK[x.k] || "🎲") + "</i><b>" + esc(OYUN[x.k]) + (!ayMod && x.k === "sayi" ? " 😊" : "") + "</b>" + (x.d ? '<em' + (x.d.ben ? ' class="ben"' : "") + ">" + esc(x.d.t) + "</em>" : "") + "</span>" +
           '<span class="tbds"><b class="' + sinif(L0) + '">' + x.w0 + '</b><span class="tbbar"><i class="' + sinif(L0) + '" style="width:' + yuzde + '%"></i><i class="' + sinif(L1) + '" style="width:' + (100 - yuzde) + '%"></i></span><b class="' + sinif(L1) + '">' + x.w1 + "</b></span>" +
-          '<span class="tbda"><u class="' + (x.p0 > x.p1 ? "ust" : "") + '">+' + x.p0 + " puan</u><small>" + x.n + (x.k === "gunun" ? " gün" : " oyun") + (x.br ? " · " + x.br + " berabere" : "") + '</small><u class="' + (x.p1 > x.p0 ? "ust" : "") + '">+' + x.p1 + " puan</u></span></a>";
+          '<span class="tbda orta"><small>' + x.n + (x.k === "gunun" ? " gün" : " oyun") + (x.br ? " · " + x.br + " berabere" : "") + "</small></span></a>";
       });
     }
     if (T.bos.length) {
@@ -375,7 +373,7 @@ body[data-page="tablo"],body[data-page="tablo"] *{overflow-anchor:none}
       (top ? '<span class="tbbar buyuk"><i class="' + sinif(sol) + '" style="width:' + Math.round(100 * a / top) + '%"></i><i class="' + sinif(sag) + '" style="width:' + (100 - Math.round(100 * a / top)) + '%"></i></span>' : "") +
       '<p class="tbvalt">' + alt + "</p>" +
       (ayMod ? '<div class="tbay"><span class="tbayb"><i style="width:' + Math.round(100 * bugun.getDate() / gunSay) + '%"></i></span><small>' + (kalan > 0 ? "kupanın sahibi " + kalan + " gün sonra belli olur" : "bugün son gün, kupa bu gece sahibini bulur") + "</small></div>" : "") +
-      '<p class="tbnasil">' + (ayMod ? "Her ay 0–0'dan başlar. " : "") + "Her oyun maç başına 2 puan dağıtır, 5 maçta 10 puana dolar. Tek maç skoru uçurmaz; fark ancak çok kazandıkça açılır.</p>";
+      '<p class="tbnasil">' + (ayMod ? "Her ay 0–0'dan başlar. " : "") + "Her galibiyet 1 puan. Beraberlik puan getirmez. Günün Kelimesi'nde her gün bir maç sayılır.</p>";
     $("mini").innerHTML = iki ? '<span class="hsava sm ' + sinif(sol) + '">' + esc(adOf(sol).charAt(0)) + "</span><b>" + a + "</b><span class=\"tbbar\">" + (top ? '<i class="' + sinif(sol) + '" style="width:' + Math.round(100 * a / top) + '%"></i><i class="' + sinif(sag) + '" style="width:' + (100 - Math.round(100 * a / top)) + '%"></i>' : "") + "</span><b>" + b + '</b><span class="hsava sm ' + sinif(sag) + '">' + esc(adOf(sag).charAt(0)) + "</span><small>" + (ayMod ? esc(AYUZUN[mm]) + " kupası" : "Genel") + "</small>" : "";
     if (say) sayAnim();
   }
