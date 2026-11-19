@@ -262,14 +262,24 @@ body[data-page="tablo"],body[data-page="tablo"] *{overflow-anchor:none}
   var AYUZUN = ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"];
   function ekIn2(ad) { var m = String(ad).toLowerCase().match(/[aeıioöuü](?![\s\S]*[aeıioöuü])/), v = m ? m[0] : "a", son = /[aeıioöuü]$/i.test(ad); return ad + "'" + (son ? "n" : "") + ({ a: "ı", "ı": "ı", e: "i", i: "i", o: "u", u: "u", "ö": "ü", "ü": "ü" }[v] || "ı") + "n"; }
   /* puanlama: her galibiyet 1 puan, beraberlik puan getirmez (Ekim kupası eski hesapla sabit kaldı) */
-  function gununSay(list, y, m) {                                     /* Günün Kelimesi: ikinizin de bitirdiği her gün bir maç (y,m verilirse sadece o ay) */
-    var d0 = list[0].d || {}, d1 = list[1].d || {}, r = { w0: 0, w1: 0, n: 0, br: 0 }, on = y === undefined ? "gk_d" : "gk_d" + y + "-" + pad(m + 1) + "-", gun;
-    for (gun in d0) {
-      if (gun.indexOf(on) !== 0 || !d1[gun]) continue;
-      var r0 = obj(d0[gun]), r1 = obj(d1[gun]); if (!r0 || !r1 || (r0.s !== "w" && r0.s !== "l") || (r1.s !== "w" && r1.s !== "l")) continue;
-      r.n++;
-      if (r0.s === "w" && r1.s === "w") { var t0 = (r0.g || []).length, t1 = (r1.g || []).length; if (t0 < t1) r.w0++; else if (t1 < t0) r.w1++; else r.br++; }
-      else if (r0.s === "w") r.w0++; else if (r1.s === "w") r.w1++; else r.br++;
+  function gununSay(list, y, m) {                                     /* Günün Kelimesi: her gün bir maç (y,m verilirse sadece o ay) */
+    /* İkiniz de bitirdiyseniz az tahminde bulan kazanır (eşitse berabere). Gün bittiği halde biri hiç bitirmediyse, bulan o günü kazanır.
+       Bugün için sadece ikiniz de bitirince sayılır (gün içinde skor bir ileri bir geri gitmesin). İkinizin de oynamaya başladığı günden öncesi sayılmaz. */
+    var d0 = list[0].d || {}, d1 = list[1].d || {}, r = { w0: 0, w1: 0, n: 0, br: 0 }, on = y === undefined ? "gk_d" : "gk_d" + y + "-" + pad(m + 1) + "-", gun, gunler = {}, ilk0 = "", ilk1 = "";
+    for (gun in d0) if (gun.indexOf("gk_d") === 0) { gunler[gun] = 1; if (!ilk0 || gun < ilk0) ilk0 = gun; }
+    for (gun in d1) if (gun.indexOf("gk_d") === 0) { gunler[gun] = 1; if (!ilk1 || gun < ilk1) ilk1 = gun; }
+    if (!ilk0 || !ilk1) return r;
+    var bas = ilk0 > ilk1 ? ilk0 : ilk1, bugunK = "gk_d" + ymd(new Date());
+    for (gun in gunler) {
+      if (gun.indexOf(on) !== 0 || gun < bas || gun > bugunK) continue;
+      var r0 = obj(d0[gun]), r1 = obj(d1[gun]), b0 = !!r0 && (r0.s === "w" || r0.s === "l"), b1 = !!r1 && (r1.s === "w" || r1.s === "l");
+      if (b0 && b1) {
+        r.n++;
+        if (r0.s === "w" && r1.s === "w") { var t0 = (r0.g || []).length, t1 = (r1.g || []).length; if (t0 < t1) r.w0++; else if (t1 < t0) r.w1++; else r.br++; }
+        else if (r0.s === "w") r.w0++; else if (r1.s === "w") r.w1++; else r.br++;
+      } else if (gun < bugunK) {                                       /* gün bitti, biri bitirmedi */
+        if (b0 && r0.s === "w") { r.n++; r.w0++; } else if (b1 && r1.s === "w") { r.n++; r.w1++; }
+      }
     }
     return r;
   }
@@ -373,7 +383,7 @@ body[data-page="tablo"],body[data-page="tablo"] *{overflow-anchor:none}
       (top ? '<span class="tbbar buyuk"><i class="' + sinif(sol) + '" style="width:' + Math.round(100 * a / top) + '%"></i><i class="' + sinif(sag) + '" style="width:' + (100 - Math.round(100 * a / top)) + '%"></i></span>' : "") +
       '<p class="tbvalt">' + alt + "</p>" +
       (ayMod ? '<div class="tbay"><span class="tbayb"><i style="width:' + Math.round(100 * bugun.getDate() / gunSay) + '%"></i></span><small>' + (kalan > 0 ? "kupanın sahibi " + kalan + " gün sonra belli olur" : "bugün son gün, kupa bu gece sahibini bulur") + "</small></div>" : "") +
-      '<p class="tbnasil">' + (ayMod ? "Her ay 0–0'dan başlar. " : "") + "Her galibiyet 1 puan. Beraberlik puan getirmez. Günün Kelimesi'nde her gün bir maç sayılır.</p>";
+      '<p class="tbnasil">' + (ayMod ? "Her ay 0–0'dan başlar. " : "") + "Her galibiyet 1 puan. Beraberlik puan getirmez. Günün Kelimesi'nde her gün bir maç: az tahminde bulan kazanır, biri o gün hiç oynamazsa bulan kazanır.</p>";
     $("mini").innerHTML = iki ? '<span class="hsava sm ' + sinif(sol) + '">' + esc(adOf(sol).charAt(0)) + "</span><b>" + a + "</b><span class=\"tbbar\">" + (top ? '<i class="' + sinif(sol) + '" style="width:' + Math.round(100 * a / top) + '%"></i><i class="' + sinif(sag) + '" style="width:' + (100 - Math.round(100 * a / top)) + '%"></i>' : "") + "</span><b>" + b + '</b><span class="hsava sm ' + sinif(sag) + '">' + esc(adOf(sag).charAt(0)) + "</span><small>" + (ayMod ? esc(AYUZUN[mm]) + " kupası" : "Genel") + "</small>" : "";
     if (say) sayAnim();
   }
